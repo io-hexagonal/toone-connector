@@ -8,6 +8,14 @@ See, start and decide on your [Toone](https://trytoone.com) routines from Claude
 - Node.js 20 or newer on your PATH.
 - Claude Code, or Cowork running on your computer. It does not work in web or phone chat.
 
+## Install
+
+In Claude Code:
+
+```
+/plugin install toone --marketplace mattwebhub/toone-connector
+```
+
 ## Try these
 
 - "What are my Toone routines doing right now?"

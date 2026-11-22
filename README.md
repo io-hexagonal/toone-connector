@@ -10,7 +10,7 @@ It is three things in one small package:
 - **A tool server** (`toone-connector mcp`) for any MCP client.
 - **A command line** (`toone-connector status`, `start`, …) for a terminal.
 
-> **Status: 0.1, works on one machine.** Reads are tested against a running Toone app. Starting, pausing, continuing, cancelling and answering are tested up to the confirmation; they have not yet been confirmed against a live run. Nothing is published to npm or a plugin directory.
+> **Status: 0.1, works on one machine.** All 11 tools are tested against a running Toone app (Direct edition, macOS). The three actions are confirmed against live runs of a harmless test routine: start with a missing input, answer it, pause, continue, run to completion, start again and cancel, then read both results back (`pnpm e2e:live`). Not yet tested: routines with sub-routines, failed steps held for a fix, automatic (script) steps, several workspaces at once, and any client other than the test client and Claude Code. Nothing is published to npm or a plugin directory.
 
 ## What you need
 
@@ -69,6 +69,8 @@ The three tools that act ask **you** through the client's own prompt (MCP elicit
 
 This is the connector's own safeguard. The Toone app does not yet ask for consent from outside callers; see [SECURITY.md](SECURITY.md).
 
+Pause, continue and cancel are applied by Toone a moment after it accepts them. The connector waits up to 20 seconds and reports the result, including when Toone accepted a request but could not apply it.
+
 ## How it is built
 
 Ports and adapters, checked by [Zoner](https://github.com/io-hexagonal/zoner) on every `pnpm verify`:
@@ -91,7 +93,18 @@ plugin/                      the Claude Code plugin (manifest, skills, bundled s
 ```sh
 pnpm verify   # types, unit tests, architecture check, build
 pnpm e2e      # 15 checks against the running Toone app; never confirms an action
+pnpm e2e:live "Connector E2E (safe to delete)" --workspace NAME
+              # confirms real actions on ONE named routine; refuses to run without one
 ```
+
+`e2e:live` starts real runs. Point it only at a routine that does nothing outside its own run: one per-run input, then a few steps that only reply "OK". It never matches a routine loosely; the name or id must be exact.
+
+## Known issues
+
+These are in the Toone app, not the connector:
+
+- **Pausing right as a step starts or ends can break the run.** Paused within a second or two of a step starting, the step failed after Continue. Paused just after a step finished, Continue was refused and the run stayed paused until cancelled. The connector reports both instead of claiming success. Pausing while a step is under way works.
+- **Runs started from the connector report back into its conversation in Toone.** Toone posts each pause, wait and finish there, and its own assistant replies to each one, which uses a model turn.
 
 ## Not in 0.1
 
