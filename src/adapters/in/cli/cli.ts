@@ -1,8 +1,11 @@
 import { createInterface } from 'node:readline/promises';
 import type { Confirm, Connector } from '../../../application/ports/in/connector.js';
+import type { ExploreConnector } from '../../../application/ports/in/explore.js';
 import { ConnectorError } from '../../../domain/errors.js';
 import type { RunSummary } from '../../../domain/run.js';
 import { ago } from '../../../domain/text.js';
+import type { WaitingItem } from '../../../domain/waiting.js';
+import { runExploreCommand } from './explore-commands.js';
 
 export const USAGE = `toone-connector: see, start and decide on your Toone routines.
 
@@ -14,7 +17,9 @@ export const USAGE = `toone-connector: see, start and decide on your Toone routi
   toone-connector books                              record books
   toone-connector handled BOOK [WORDS] [--status S]  who or what was already handled
   toone-connector start ROUTINE [--input id=value]   run a routine (asks first)
-  toone-connector pause|continue|cancel RUN_ID       change a run (asks first)
+  toone-connector pause|continue|cancel RUN_ID       change a run (asks first); continue retries a held failed step
+  toone-connector explore WORDS [--kind routine|bundle]  search Toone Explore; explore ID shows one listing
+  toone-connector install LISTING                    open a listing in Toone to install it (asks first)
   toone-connector doctor                             check the connection to Toone
   toone-connector mcp                                serve the tools to Claude (used by the plugin)
 
@@ -27,6 +32,7 @@ interface Args {
   workspace?: string;
   status?: string;
   limit?: number;
+  kind?: string;
   json: boolean;
   yes: boolean;
   inputs: Record<string, string>;
@@ -42,6 +48,7 @@ export function parseArgs(argv: string[]): Args {
     else if (a === '--workspace') args.workspace = next();
     else if (a === '--status') args.status = next();
     else if (a === '--limit') args.limit = Number(next());
+    else if (a === '--kind') args.kind = next();
     else if (a === '--input') {
       const pair = next();
       const cut = pair.indexOf('=');
@@ -52,7 +59,7 @@ export function parseArgs(argv: string[]): Args {
 }
 
 /** Runs one command and returns the process exit code. */
-export async function runCli(connector: Connector, argv: string[], out: (line: string) => void): Promise<number> {
+export async function runCli(connector: Connector, argv: string[], out: (line: string) => void, explore?: ExploreConnector): Promise<number> {
   const args = parseArgs(argv);
   const scope = { workspace: args.workspace };
   const now = new Date();
@@ -73,7 +80,7 @@ export async function runCli(connector: Connector, argv: string[], out: (line: s
           out(o.running.length ? 'Running or paused:' : 'Nothing is running.');
           o.running.forEach((r) => out(runLine(r)));
           out(o.waiting.length ? 'Waiting for you:' : 'Nothing is waiting for you.');
-          o.waiting.forEach((w) => out(`  ${w.routineName}: ${w.what} → ${w.howToAnswer}`));
+          o.waiting.forEach((w) => out(`  ${waitingLine(w)}`));
           if (o.lastFinished.length) out('Last finished:');
           o.lastFinished.forEach((r) => out(runLine(r)));
         });
@@ -81,7 +88,7 @@ export async function runCli(connector: Connector, argv: string[], out: (line: s
       }
       case 'waiting': {
         const w = await connector.waiting(scope);
-        show(w, () => (w.waiting.length ? w.waiting.forEach((i) => out(`${i.routineName}: ${i.what} → ${i.howToAnswer}`)) : out('Nothing is waiting for you.')));
+        show(w, () => (w.waiting.length ? w.waiting.forEach((i) => out(waitingLine(i))) : out('Nothing is waiting for you.')));
         return 0;
       }
       case 'routines': {
@@ -126,6 +133,10 @@ export async function runCli(connector: Connector, argv: string[], out: (line: s
         out(await connector.control({ ...scope, runId: first, action: args.command }, terminalConfirm(args.yes, out)));
         return 0;
       }
+      case 'explore':
+      case 'install':
+        if (!explore) throw new ConnectorError('CATALOG_UNAVAILABLE', 'Explore is not available here.');
+        return await runExploreCommand(explore, { ...args, command: args.command }, out, terminalConfirm(args.yes, out));
       default:
         out(USAGE);
         return args.command === 'help' || args.command === '--help' ? 0 : 2;
@@ -134,6 +145,12 @@ export async function runCli(connector: Connector, argv: string[], out: (line: s
     out(error instanceof ConnectorError ? error.message : `Unexpected failure: ${error instanceof Error ? error.message : String(error)}`);
     return 1;
   }
+}
+
+/** One waiting item; a decision lists its choices. */
+function waitingLine(i: WaitingItem): string {
+  const choices = i.choices ? Object.entries(i.choices).map(([c, how]) => `${c}: ${how}`).join('; ') : i.howToAnswer;
+  return `${i.routineName}: ${i.what} → ${choices}`;
 }
 
 function terminalConfirm(yes: boolean, out: (line: string) => void): Confirm {
