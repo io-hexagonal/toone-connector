@@ -40795,20 +40795,20 @@ async function serveMcp(connector, options, explore) {
   );
   if (explore) registerExploreTools(server, explore, confirm, reply);
   await server.connect(new StdioServerTransport());
+  process.stdin.once("end", () => process.exit(0));
+  process.stdin.once("close", () => process.exit(0));
 }
 async function reply(work) {
   try {
-    return { content: [{ type: "text", text: withNote(JSON.stringify(await work())) }] };
+    return { content: withNote(JSON.stringify(await work())) };
   } catch (error62) {
     const text = error62 instanceof ConnectorError ? `${error62.message} [${error62.code}]` : `Unexpected failure: ${error62 instanceof Error ? error62.message : String(error62)}`;
-    return { content: [{ type: "text", text: withNote(text) }], isError: true };
+    return { content: withNote(text), isError: true };
   }
 }
 function withNote(text) {
   const note = connectionNote();
-  return note ? `${text}
-
-${note}` : text;
+  return note ? [{ type: "text", text }, { type: "text", text: note }] : [{ type: "text", text }];
 }
 function confirmVia(server, withoutPrompt) {
   return async (ask) => {

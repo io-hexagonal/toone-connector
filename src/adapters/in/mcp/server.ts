@@ -107,20 +107,24 @@ export async function serveMcp(connector: Connector, options: McpOptions, explor
   if (explore) registerExploreTools(server, explore, confirm, reply);
 
   await server.connect(new StdioServerTransport());
+  // The client going away ends the server, even while a connection to Toone is open.
+  process.stdin.once('end', () => process.exit(0));
+  process.stdin.once('close', () => process.exit(0));
 }
 
 async function reply(work: () => Promise<unknown>): Promise<ToolResult> {
   try {
-    return { content: [{ type: 'text', text: withNote(JSON.stringify(await work())) }] };
+    return { content: withNote(JSON.stringify(await work())) };
   } catch (error) {
     const text = error instanceof ConnectorError ? `${error.message} [${error.code}]` : `Unexpected failure: ${error instanceof Error ? error.message : String(error)}`;
-    return { content: [{ type: 'text', text: withNote(text) }], isError: true };
+    return { content: withNote(text), isError: true };
   }
 }
 
-function withNote(text: string): string {
+/** The note travels as its own item, so the answer itself stays parseable. */
+function withNote(text: string): ToolResult['content'] {
   const note = connectionNote();
-  return note ? `${text}\n\n${note}` : text;
+  return note ? [{ type: 'text', text }, { type: 'text', text: note }] : [{ type: 'text', text }];
 }
 
 /** Asks through the client's own prompt, so the answer comes from the person and not from the model. */
