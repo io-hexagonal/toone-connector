@@ -42,6 +42,15 @@ describe('ConnectorService actions', () => {
     expect(app.control).not.toHaveBeenCalled();
     expect(app.supplyInputs).not.toHaveBeenCalled();
   });
+  it('names the waiting routine when asking to answer it', async () => {
+    const app = fakeApp();
+    app.liveStatus = async () => ({ runs: toActiveRuns({ routines: { runs: [{ runId: 'r', routineId: 'a/radar', routineName: 'Reddit Radar', status: 'awaitingInput',
+      invocations: [{ awaitingExecutionId: 'e', currentSteps: [{ stepId: 's1', title: 'Pick', missingInputIds: ['topic'] }] }] }] } }), blocked: [] });
+    const asked: string[] = [];
+    await new ConnectorService(app, '/p').answer({ executionId: 'e', inputs: { topic: 'x' } }, async (ask) => (asked.push(ask.title), true));
+    expect(asked[0]).toBe('Send this answer to "Reddit Radar"?');
+    expect(app.supplyInputs).toHaveBeenCalledOnce();
+  });
 });
 
 describe('bridge mappers', () => {

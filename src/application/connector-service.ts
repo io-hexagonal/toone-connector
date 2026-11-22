@@ -109,8 +109,10 @@ export class ConnectorService implements Connector {
 
   async answer(req: Scope & { executionId: string; inputs: Record<string, string> }, confirm: Confirm): Promise<string> {
     const ws = await this.workspace(req);
+    const live = await this.app.liveStatus(ws);
+    const run = live.runs.find((r) => r.runId === req.executionId || r.awaiting.some((a) => a.executionId === req.executionId));
     await demand(confirm, {
-      title: 'Send this answer to the waiting routine?',
+      title: run ? `Send this answer to "${run.routineName}"?` : 'Send this answer to the waiting routine?',
       detail: `Inputs: ${clip(req.inputs, 400)}. The routine continues with them.`,
     });
     return this.app.supplyInputs(ws, req.executionId, req.inputs);
