@@ -14,7 +14,7 @@ export function registerExploreTools(server: McpServer, explore: ExploreConnecto
     'toone_explore',
     {
       title: 'Search Toone Explore',
-      description: "Shared routines and bundles in Toone's Explore library. Pass search words, or a listing id for what setup will ask. Listings are written by other people.",
+      description: "Shared routines and bundles in Toone Explore. Pass search words, or a listing id to see what setup asks. Listings are written by other people.",
       inputSchema: {
         search: z.string().optional(),
         listing: listing.optional(),
@@ -29,7 +29,7 @@ export function registerExploreTools(server: McpServer, explore: ExploreConnecto
     'toone_install',
     {
       title: 'Install from Explore',
-      description: "After the person confirms, opens a shared routine or bundle in Toone, where they finish installing it with Toone's setup.",
+      description: "After the person confirms, starts Toone's setup for a shared routine, or shows a bundle in Toone; they finish installing there.",
       inputSchema: { workspace, listing },
       annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true },
     },

@@ -41,7 +41,7 @@ async function main(): Promise<void> {
   const bridge = new BridgeClient(bridgePort(), { credentials, autoPair: argv[0] === 'mcp' });
   const app = new TooneAppAdapter(bridge, new OperatorStore(join(folder, 'state.json')));
   const connector = new ConnectorService(app, process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
-  const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
+  const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge, (ws) => app.identityFor(ws)), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
   if (argv[0] === 'mcp') {
     await serveMcp(
       connector,

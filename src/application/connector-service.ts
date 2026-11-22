@@ -1,4 +1,5 @@
 import { retryAsk } from '../domain/decision.js';
+import { draftHandoff, makeRoutineAsk, routineDescription, type DraftHandoff } from '../domain/drafting.js';
 import { ConnectorError } from '../domain/errors.js';
 import { recordMatches, type HandledPage, type RecordBook } from '../domain/records.js';
 import { resolveRoutine, searchRoutines, type Routine } from '../domain/routine.js';
@@ -118,6 +119,13 @@ export class ConnectorService implements Connector {
       detail: `Inputs: ${clip(req.inputs, 400)}. The routine continues with them.`,
     });
     return this.app.supplyInputs(ws, req.executionId, req.inputs);
+  }
+
+  async makeRoutine(req: Scope & { description: string }, confirm: Confirm): Promise<DraftHandoff> {
+    const description = routineDescription(req.description);
+    const ws = await this.workspace(req);
+    await demand(confirm, makeRoutineAsk(description, ws.name));
+    return draftHandoff(await this.app.createRoutine(ws, description), ws.name);
   }
 
   private async workspace(scope: Scope): Promise<Workspace> {

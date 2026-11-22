@@ -21,7 +21,10 @@ export async function runExploreCommand(explore: ExploreConnector, args: Explore
   const show = (value: unknown, human: () => void): void => (args.json ? out(JSON.stringify(value, null, 2)) : human());
   if (args.command === 'install') {
     const done = await explore.install({ workspace: args.workspace, listing: text }, confirm);
-    show(done, () => out(done.next));
+    show(done, () => {
+      out(done.next);
+      if (done.toone) out(`Toone: ${done.toone}`);
+    });
     return 0;
   }
   if (parseListingRef(text)) {

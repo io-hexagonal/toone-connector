@@ -1,3 +1,4 @@
+import type { DraftHandoff } from '../../../domain/drafting.js';
 import type { HandledPage, RecordBook } from '../../../domain/records.js';
 import type { Routine } from '../../../domain/routine.js';
 import type { ActiveRun, RunControlAction, RunDetail, RunSummary, StartReceipt } from '../../../domain/run.js';
@@ -38,4 +39,6 @@ export interface Connector {
   start(req: Scope & { routine: string; inputs?: Record<string, string> }, confirm: Confirm): Promise<StartReceipt>;
   control(req: Scope & { runId: string; action: RunControlAction }, confirm: Confirm): Promise<string>;
   answer(req: Scope & { executionId: string; inputs: Record<string, string> }, confirm: Confirm): Promise<string>;
+  /** Hands a description to Toone, whose own assistant drafts the routine; the person publishes it there. */
+  makeRoutine(req: Scope & { description: string }, confirm: Confirm): Promise<DraftHandoff>;
 }

@@ -15,7 +15,16 @@ export interface FakeOptions {
   paired?: Record<string, string>;
   /** Answer with a server proof made from the wrong secret (a port squatter). */
   forgeServerProof?: boolean;
+  /** Answers one command; undefined falls back to the default answers. */
+  answer?: (params: Record<string, unknown>, kind: Received['kind']) => FakeReply | undefined;
 }
+
+/** A payload, an app error inside the payload, a bridge refusal, or a dropped connection. */
+export type FakeReply =
+  | { payload: unknown }
+  | { error: { code: string; message: string } }
+  | { refuse: { errorCode: string; error: string } }
+  | 'drop';
 
 export interface Received {
   kind: 'paired' | 'unpaired';
@@ -97,8 +106,20 @@ export class FakeToone {
     socket.on('message', (raw) => {
       const message = JSON.parse(raw.toString()) as Received['message'];
       this.received.push({ kind, message });
-      const payload = message.command?.params['op'] === 'desktop_workspaces' ? { workspaces: [] } : { threadId: 't-1', agentId: 'operator' };
-      socket.send(JSON.stringify({ id: message.id, success: true, data: { type: 'agent_result', data: { status: 'ok', payload: JSON.stringify(payload) } } }));
+      const params = message.command?.params ?? {};
+      const custom = this.options.answer?.(params, kind);
+      if (custom === 'drop') {
+        socket.terminate();
+        return;
+      }
+      if (custom && 'refuse' in custom) {
+        socket.send(JSON.stringify({ id: message.id, success: false, ...custom.refuse }));
+        return;
+      }
+      const [status, payload] = custom && 'error' in custom ? ['error', custom.error]
+        : custom ? ['ok', custom.payload]
+        : ['ok', params['op'] === 'desktop_workspaces' ? { workspaces: [] } : { threadId: 't-1', agentId: 'operator' }];
+      socket.send(JSON.stringify({ id: message.id, success: true, data: { type: 'agent_result', data: { status, payload: JSON.stringify(payload) } } }));
     });
   }
 

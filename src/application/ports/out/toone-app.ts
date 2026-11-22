@@ -1,3 +1,5 @@
+import type { DraftStart, SetupStart } from '../../../domain/drafting.js';
+import type { ListingRef } from '../../../domain/explore.js';
 import type { RecordBook, RecordQuery, RecordResult } from '../../../domain/records.js';
 import type { Routine } from '../../../domain/routine.js';
 import type { ActiveRun, RunControlAction, RunDetail, RunSummary, StartReceipt } from '../../../domain/run.js';
@@ -16,5 +18,9 @@ export interface TooneAppPort {
   start(workspace: Workspace, routineId: string, inputs: Record<string, string>): Promise<StartReceipt>;
   control(workspace: Workspace, runId: string, action: RunControlAction): Promise<string>;
   supplyInputs(workspace: Workspace, executionId: string, inputs: Record<string, string>): Promise<string>;
+  /** Toone's own assistant drafts a routine from the description. NOT_SUPPORTED_BY_APP on a Toone without it. */
+  createRoutine(workspace: Workspace, description: string): Promise<DraftStart>;
+  /** Toone's setup conversation for an Explore routine. NOT_SUPPORTED_BY_APP on a Toone without it. */
+  startSetup(workspace: Workspace, listing: ListingRef): Promise<SetupStart>;
   close(): Promise<void>;
 }

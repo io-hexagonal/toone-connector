@@ -1,12 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import type { TooneAppPort } from '../../../application/ports/out/toone-app.js';
+import type { DraftStart, SetupStart } from '../../../domain/drafting.js';
 import { ConnectorError } from '../../../domain/errors.js';
+import type { ListingRef } from '../../../domain/explore.js';
 import type { RecordBook, RecordQuery, RecordResult } from '../../../domain/records.js';
 import type { Routine } from '../../../domain/routine.js';
 import type { RunControlAction, RunDetail, RunSummary, StartReceipt } from '../../../domain/run.js';
 import type { LiveStatus } from '../../../domain/waiting.js';
 import type { Workspace } from '../../../domain/workspace.js';
 import type { BridgeClient, BridgeIdentity } from './bridge-client.js';
+import { flowRefusal, toDraftStart, toSetupStart } from './flows.js';
 import {
   findControlState,
   toActiveRuns,
@@ -28,6 +31,8 @@ const LABEL = 'Toone Connector';
 const STATUS_PAGE = 50;
 const CONTROL_SETTLE_MS = 20_000;
 const CONTROL_POLL_MS = 1_000;
+/** Setup loads the listing from Explore first, so it can take a while. */
+const FLOW_TIMEOUT_MS = 60_000;
 const PENDING_CONTROL = new Set(['accepted', 'applying']);
 const DONE: Record<RunControlAction, string> = { pause: 'Paused.', continue: 'Continued.', cancel: 'Cancelled.' };
 
@@ -109,8 +114,45 @@ export class TooneAppAdapter implements TooneAppPort {
     return toControlMessage(payload, 'inputs accepted');
   }
 
+  async createRoutine(workspace: Workspace, description: string): Promise<DraftStart> {
+    const payload = await this.flow(workspace, 'draft', { op: 'desktop_create_routine', desktop: { workspaceId: workspace.id, description } });
+    return toDraftStart(payload);
+  }
+
+  async startSetup(workspace: Workspace, listing: ListingRef): Promise<SetupStart> {
+    const payload = await this.flow(workspace, 'setup', {
+      op: 'desktop_start_setup',
+      desktop: { workspaceId: workspace.id, listingKind: listing.kind, listingId: listing.id },
+    });
+    return toSetupStart(payload);
+  }
+
   close(): Promise<void> {
     return this.bridge.close();
+  }
+
+  /** The connector's own conversation in Toone for this workspace; Toone names the connector from it. */
+  async identityFor(workspace: Workspace): Promise<BridgeIdentity> {
+    return this.identity(workspace);
+  }
+
+  /**
+   * Starts one of Toone's own flows. When the answer is lost (a timeout or a dropped connection),
+   * asks once more with the same request id: Toone answers "reused" instead of starting it twice.
+   */
+  private async flow(workspace: Workspace, kind: 'draft' | 'setup', params: { op: string; desktop: Record<string, unknown> }): Promise<unknown> {
+    const send = { ...params, desktop: { ...params.desktop, clientRequestId: randomUUID() } };
+    const once = async (): Promise<unknown> => this.bridge.call('agent', send, await this.identity(workspace), FLOW_TIMEOUT_MS);
+    try {
+      try {
+        return await once();
+      } catch (error) {
+        if (!(error instanceof ConnectorError) || (error.code !== 'TIMEOUT' && error.code !== 'APP_NOT_RUNNING')) throw error;
+        return await once();
+      }
+    } catch (error) {
+      throw flowRefusal(error, kind);
+    }
   }
 
   private async agent(workspace: Workspace, params: Record<string, unknown>): Promise<unknown> {

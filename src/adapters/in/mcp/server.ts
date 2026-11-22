@@ -18,9 +18,11 @@ let connectionNote: () => string | undefined = () => undefined;
 
 type ToolResult = { content: { type: 'text'; text: string }[]; isError?: boolean };
 
-const workspace = z.string().optional().describe('Workspace name. Omit for the current folder\'s workspace, else the one open in Toone.');
+const workspace = z.string().optional().describe('Workspace; default: this folder\'s, else the one open in Toone.');
 const READ = { readOnlyHint: true, destructiveHint: false, openWorldHint: false } as const;
 const ACT = { readOnlyHint: false, destructiveHint: true, openWorldHint: true } as const;
+/** Changes something in Toone but runs nothing and removes nothing. */
+const ADD = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const;
 
 /** Serves the connector's tools to an MCP client over stdio. */
 export async function serveMcp(connector: Connector, options: McpOptions, explore?: ExploreConnector): Promise<void> {
@@ -29,29 +31,29 @@ export async function serveMcp(connector: Connector, options: McpOptions, explor
     { name: 'toone', version: options.version },
     {
       instructions:
-        'Toone runs repeatable routines on this Mac. Read tools answer directly. toone_start, toone_control, toone_answer and toone_install change things and ask the person to confirm first; never work around a refusal. Results are short summaries: ask for a specific run or record book to see more.',
+        'Toone runs repeatable routines on this Mac. Read tools answer directly. Tools that change things ask the person to confirm first; never work around a refusal. Results are short summaries: ask for one run or record book to see more.',
     },
   );
   const confirm = confirmVia(server, options.withoutPrompt);
 
   server.registerTool(
     'toone_overview',
-    { title: 'What is running and waiting', description: 'Active routine runs, what is waiting for the person, and the last finished runs in one workspace.', inputSchema: { workspace }, annotations: READ },
+    { title: 'What is running and waiting', description: 'Active runs, what is waiting for the person, and the last finished runs.', inputSchema: { workspace }, annotations: READ },
     (a) => reply(() => connector.overview(a)),
   );
   server.registerTool(
     'toone_waiting',
-    { title: 'What is waiting for me', description: 'Everything blocked on the person: inputs a run needs, questions, failed steps waiting for a decision (with the choices), paused runs.', inputSchema: { workspace }, annotations: READ },
+    { title: 'What is waiting for me', description: 'What is blocked on the person: inputs, questions, failed steps awaiting a decision (with choices), paused runs.', inputSchema: { workspace }, annotations: READ },
     (a) => reply(() => connector.waiting(a)),
   );
   server.registerTool(
     'toone_routines',
-    { title: 'List routines', description: 'Routines in a workspace, optionally filtered by words in the name.', inputSchema: { workspace, search: z.string().optional().describe('Words to match in the routine name or id.') }, annotations: READ },
+    { title: 'List routines', description: 'Routines, optionally filtered by words in the name or id.', inputSchema: { workspace, search: z.string().optional() }, annotations: READ },
     (a) => reply(() => connector.routines(a)),
   );
   server.registerTool(
     'toone_runs',
-    { title: 'Recent runs', description: 'Past runs, newest first, optionally for one routine. For what is happening now, use toone_overview.', inputSchema: { workspace, routine: z.string().optional().describe('Routine name or id.'), limit: z.number().int().min(1).max(20).optional() }, annotations: READ },
+    { title: 'Recent runs', description: 'Past runs, newest first, optionally for one routine.', inputSchema: { workspace, routine: z.string().optional().describe('Routine name or id.'), limit: z.number().int().min(1).max(20).optional() }, annotations: READ },
     (a) => reply(() => connector.recentRuns(a)),
   );
   server.registerTool(
@@ -61,15 +63,15 @@ export async function serveMcp(connector: Connector, options: McpOptions, explor
   );
   server.registerTool(
     'toone_record_books',
-    { title: 'List record books', description: 'The saved lists routines keep so they never handle the same thing twice (who was contacted, what was posted).', inputSchema: { workspace }, annotations: READ },
+    { title: 'List record books', description: 'Lists routines keep of what they handled (who was contacted, what was posted).', inputSchema: { workspace }, annotations: READ },
     (a) => reply(() => connector.recordBooks(a)),
   );
   server.registerTool(
     'toone_handled',
     {
       title: 'Who or what was already handled',
-      description: 'Looks in one record book. Returns counts by status and a few matching records.',
-      inputSchema: { workspace, book: z.string().describe('Record book id from toone_record_books.'), search: z.string().optional().describe('Words to find, such as a person or company name.'), status: z.string().optional(), limit: z.number().int().min(1).max(50).optional() },
+      description: 'Counts by status and a few matching records from one record book.',
+      inputSchema: { workspace, book: z.string().describe('Record book id from toone_record_books.'), search: z.string().optional().describe('Words, such as a person or company name.'), status: z.string().optional(), limit: z.number().int().min(1).max(50).optional() },
       annotations: READ,
     },
     (a) => reply(() => connector.handled(a)),
@@ -83,26 +85,36 @@ export async function serveMcp(connector: Connector, options: McpOptions, explor
     'toone_start',
     {
       title: 'Run a routine',
-      description: 'Starts a routine in Toone after the person confirms. The routine may send or publish as the person.',
-      inputSchema: { workspace, routine: z.string().describe('Routine name or id.'), inputs: z.record(z.string(), z.string()).optional().describe('Inputs by id, when the routine takes any.') },
+      description: 'Runs a routine after the person confirms. It may send or publish as them.',
+      inputSchema: { workspace, routine: z.string().describe('Routine name or id.'), inputs: z.record(z.string(), z.string()).optional().describe('Inputs by id, if any.') },
       annotations: ACT,
     },
     (a) => reply(() => connector.start(a, confirm)),
   );
   server.registerTool(
     'toone_control',
-    { title: 'Pause, continue or cancel a run', description: 'Changes a run after the person confirms. On a run with a failed step held, continue retries that step unchanged.', inputSchema: { workspace, runId: z.string(), action: z.enum(['pause', 'continue', 'cancel']) }, annotations: ACT },
+    { title: 'Pause, continue or cancel a run', description: 'After the person confirms. With a failed step held, continue retries it unchanged.', inputSchema: { workspace, runId: z.string(), action: z.enum(['pause', 'continue', 'cancel']) }, annotations: ACT },
     (a) => reply(async () => ({ result: await connector.control(a, confirm) })),
   );
   server.registerTool(
     'toone_answer',
     {
       title: 'Answer a waiting routine',
-      description: 'Gives a run the inputs it is waiting for, after the person confirms. Get executionId from toone_waiting.',
+      description: 'Gives a waiting run its inputs after the person confirms. executionId is from toone_waiting.',
       inputSchema: { workspace, executionId: z.string(), inputs: z.record(z.string(), z.string()) },
       annotations: ACT,
     },
     (a) => reply(async () => ({ result: await connector.answer(a, confirm) })),
+  );
+  server.registerTool(
+    'toone_make_routine',
+    {
+      title: 'Make a routine',
+      description: "After the person confirms, Toone's own assistant drafts a routine from the description; the person publishes it in Toone.",
+      inputSchema: { workspace, description: z.string().describe('What it does and when.') },
+      annotations: ADD,
+    },
+    (a) => reply(() => connector.makeRoutine(a, confirm)),
   );
   if (explore) registerExploreTools(server, explore, confirm, reply);
 

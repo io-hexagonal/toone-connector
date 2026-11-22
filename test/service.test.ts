@@ -15,6 +15,8 @@ function fakeApp(): TooneAppPort {
     start: vi.fn(async (_w, routineId) => ({ routineId, requestId: 'q', state: 'accepted', awaitingInputIds: [] })),
     control: vi.fn(async () => 'ok'),
     supplyInputs: vi.fn(async () => 'ok'),
+    createRoutine: vi.fn(async () => ({ status: 'started' as const, draftId: 'd', threadId: 't', message: 'm' })),
+    startSetup: vi.fn(async () => ({ status: 'started' as const, threadId: 't', revisionId: 'r', title: 'x', message: 'm' })),
     close: async () => {},
   };
 }

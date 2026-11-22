@@ -1,6 +1,9 @@
 import { ConnectorError } from '../domain/errors.js';
 import {
+  findItYourself,
   installAsk,
+  pageNext,
+  setupNext,
   parseListingRef,
   pickListing,
   type ExploreDetail,
@@ -44,15 +47,28 @@ export class ExploreService implements ExploreConnector {
     if (!(await confirm(installAsk(detail, project.name)))) {
       throw new ConnectorError('NOT_CONFIRMED', 'Not confirmed, so nothing was done.');
     }
-    await this.links.showExploreListing(detail);
-    const button = detail.kind === 'bundle' ? 'Use this bundle' : 'Use this routine';
-    return {
-      kind: detail.kind,
-      id: detail.id,
-      title: detail.title,
-      project: project.name,
-      next: `Toone now shows it in Explore. To install, press "${button}" there; Toone's setup asks for what it needs and installs it into ${project.name}.`,
-    };
+    const done = { kind: detail.kind, id: detail.id, title: detail.title, project: project.name };
+    if (detail.kind === 'routine') {
+      try {
+        const setup = await this.app.startSetup(project, detail);
+        return { ...done, how: 'setup', next: setupNext(setup.title || detail.title, project.name, setup.status === 'reused'), toone: setup.message };
+      } catch (error) {
+        // An older Toone has no setup for connectors: open the listing, as before.
+        if (!(error instanceof ConnectorError && error.code === 'NOT_SUPPORTED_BY_APP')) throw error;
+      }
+    }
+    const why = detail.kind === 'routine' ? 'This Toone version cannot start setup from the connector, so it shows the listing instead. ' : '';
+    const shown = await this.showPage(detail, project);
+    return { ...done, how: shown === 'opened' ? 'page' : 'offer', next: pageNext(detail.kind, project.name, shown, why) };
+  }
+
+  private async showPage(detail: ExploreDetail, project: Workspace): Promise<'opened' | 'offered'> {
+    try {
+      return await this.links.showExploreListing(detail, project);
+    } catch (error) {
+      if (!(error instanceof ConnectorError && error.code === 'NOT_SUPPORTED_BY_APP')) throw error;
+      throw new ConnectorError('NOT_SUPPORTED_BY_APP', `${error.message} ${findItYourself(detail.title, detail.id, detail.kind, project.name)}`, error.appCode);
+    }
   }
 
   /** Explore installs into the project open in Toone, so that is the only one this can target. */

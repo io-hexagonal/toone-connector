@@ -51,7 +51,8 @@ describe('explore domain', () => {
     expect(ask.title).toBe('Install "Apply to Grants" into growth?');
     expect(ask.detail).toContain('code files');
     expect(ask.detail).toContain('Setup will ask you for: Funding plan');
-    expect(ask.detail).toContain('Use this routine');
+    expect(ask.detail).toContain('Toone starts its setup in growth');
+    expect(installAsk(detail({ kind: 'bundle', routines: ['a', 'b'] }), 'g').detail).toContain('Use this bundle');
     expect(installAsk(detail({ codeFiles: false, youProvide: [] }), 'g').detail).toContain('no code files');
   });
 });
@@ -92,25 +93,31 @@ describe('ExploreCatalog', () => {
   });
 });
 
+const ws = { id: 'w1', name: 'growth', projectPath: '/p/growth', loaded: true, selectedInApp: true };
+const noIdentity = async () => ({ threadId: 't', agentId: 'a' });
+const unpairedBridge = (call: () => Promise<unknown>) =>
+  ({ call: vi.fn(call), connectionGeneration: async () => 1, paired: false }) as unknown as BridgeClient;
+
 describe('AppLinks', () => {
   it('opens the listing in the running app, not any copy of Toone', async () => {
-    const bridge = { call: vi.fn(async () => ({ executablePath: '/Apps/Toone.app/Contents/MacOS/Toone' })) } as unknown as BridgeClient;
+    const bridge = unpairedBridge(async () => ({ executablePath: '/Apps/Toone.app/Contents/MacOS/Toone' }));
     const openWith = vi.fn(async () => {});
-    await new AppLinks(bridge, openWith).showExploreListing({ kind: 'bundle', id: 'wfb_mq35pytutf7lj72j' });
+    await expect(new AppLinks(bridge, noIdentity, openWith).showExploreListing({ kind: 'bundle', id: 'wfb_mq35pytutf7lj72j' }, ws)).resolves.toBe('opened');
     expect(openWith).toHaveBeenCalledWith('/Apps/Toone.app', 'toone://explore/bundles/wfb_mq35pytutf7lj72j');
   });
   it('refuses ids that are not Explore ids, and an app that does not say where it is', async () => {
     expect(() => exploreLink({ kind: 'routine', id: 'wfb_mq35pytutf7lj72j' })).toThrowError(ConnectorError);
     expect(appBundlePath('/usr/bin/node')).toBeNull();
-    const bridge = { call: vi.fn(async () => ({})) } as unknown as BridgeClient;
+    const bridge = unpairedBridge(async () => ({}));
     const openWith = vi.fn(async () => {});
-    await expect(new AppLinks(bridge, openWith).showExploreListing({ kind: 'routine', id: 'wfl_abcdefgh12' })).rejects.toThrowError(ConnectorError);
+    await expect(new AppLinks(bridge, noIdentity, openWith).showExploreListing({ kind: 'routine', id: 'wfl_abcdefgh12' }, ws)).rejects.toThrowError(ConnectorError);
     expect(openWith).not.toHaveBeenCalled();
   });
 });
 
 function fakes(selected = true) {
   const app = {
+    startSetup: vi.fn(async () => { throw new ConnectorError('NOT_SUPPORTED_BY_APP', 'old'); }),
     workspaces: async () => [
       { id: 'w1', name: 'growth', projectPath: '/p/growth', loaded: true, selectedInApp: selected },
       { id: 'w2', name: 'other', projectPath: '/p/other', loaded: true, selectedInApp: false },
@@ -120,7 +127,7 @@ function fakes(selected = true) {
     search: vi.fn(async () => ({ routines: [listing()], bundles: [] })),
     detail: vi.fn(async (ref) => detail({ id: ref.id, kind: ref.kind })),
   };
-  const links: AppLinksPort = { showExploreListing: vi.fn(async () => {}) };
+  const links: AppLinksPort = { showExploreListing: vi.fn(async () => 'opened' as const) };
   return { service: new ExploreService(app, catalog, links, '/p/other'), catalog, links };
 }
 
@@ -130,12 +137,12 @@ describe('ExploreService install', () => {
     await expect(service.install({ listing: 'wfl_abcdefgh12' }, async () => false)).rejects.toMatchObject({ code: 'NOT_CONFIRMED' });
     expect(links.showExploreListing).not.toHaveBeenCalled();
   });
-  it('names the project open in Toone, then hands the listing to the app', async () => {
+  it('names the project open in Toone, then shows the listing when Toone cannot start setup', async () => {
     const { service, links } = fakes();
     const asked: string[] = [];
     const done = await service.install({ listing: 'Apply to Grants' }, async (ask) => (asked.push(ask.title), true));
     expect(asked).toEqual(['Install "Apply to Grants" into growth?']);
-    expect(links.showExploreListing).toHaveBeenCalledWith(expect.objectContaining({ kind: 'routine', id: 'wfl_abcdefgh12' }));
+    expect(links.showExploreListing).toHaveBeenCalledWith(expect.objectContaining({ kind: 'routine', id: 'wfl_abcdefgh12' }), expect.objectContaining({ name: 'growth' }));
     expect(done).toMatchObject({ project: 'growth', id: 'wfl_abcdefgh12' });
     expect(done.next).toContain('Use this routine');
   });

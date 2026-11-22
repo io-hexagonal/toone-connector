@@ -42,11 +42,17 @@ export interface ExploreResults {
   bundles: ExploreListing[];
 }
 
-/** What the connector did for an install: Toone shows the listing; the person installs it there. */
+/**
+ * What the connector did for an install. 'setup': Toone started its setup conversation.
+ * 'page': Toone shows the listing's page. 'offer': Toone offers the page with an "Open" notice.
+ */
 export interface InstallHandoff extends ListingRef {
   title: string;
   project: string;
+  how: 'setup' | 'page' | 'offer';
   next: string;
+  /** Toone's own words, when it started setup. */
+  toone?: string;
 }
 
 const ID_PATTERN = /^(wfl|wfb)_[a-z0-9]{8,32}$/;
@@ -90,7 +96,29 @@ export function installAsk(detail: ExploreDetail, project: string): { title: str
       : 'It comes with no code files.',
     detail.youProvide.length > 0 ? `Setup will ask you for: ${clip(detail.youProvide.join('; '), 300)}.` : 'Setup lists nothing you must provide.',
     detail.thirdParties.length > 0 ? `It uses: ${clip(detail.thirdParties.join(', '), 160)}.` : '',
-    `Toone opens its Explore page in ${project}. Nothing is installed until you press "${button}" there and finish Toone's setup.`,
+    detail.kind === 'routine'
+      ? `Toone starts its setup in ${project} (an older Toone opens the listing instead); nothing is installed until you finish it there.`
+      : `Toone shows its Explore page in ${project}. Nothing is installed until you press "${button}" there and finish Toone's setup.`,
   ];
   return { title: `Install "${detail.title}" into ${project}?`, detail: parts.filter(Boolean).join(' ') };
+}
+
+const buttonFor = (kind: ListingKind): string => (kind === 'bundle' ? 'Use this bundle' : 'Use this routine');
+
+/** After Toone started its setup conversation for a routine. */
+export function setupNext(title: string, project: string, reused: boolean): string {
+  const what = reused ? `Toone had already started setting up "${title}"` : `Toone started setting up "${title}"`;
+  return `${what} in ${project}. Click "Open" on Toone's notice to go to it; its assistant asks you there about code files and what it needs. Nothing is installed until you finish.`;
+}
+
+/** After Toone showed or offered the listing's page. `why` explains a fallback from setup. */
+export function pageNext(kind: ListingKind, project: string, shown: 'opened' | 'offered', why = ''): string {
+  const button = buttonFor(kind);
+  const where = shown === 'opened' ? 'Toone now shows it in Explore. To install, press' : 'Toone shows a notice with an "Open" button for it; your screen was left as it was. Click it, then press';
+  return `${why}${where} "${button}"; Toone's setup asks for what it needs and installs it into ${project}.`;
+}
+
+/** Where to find a listing by hand, when the connector cannot show it. */
+export function findItYourself(title: string, id: string, kind: ListingKind, project: string): string {
+  return `Nothing was installed. In Toone, open Explore in ${project}, search for "${title}" (${id}) and press "${buttonFor(kind)}".`;
 }

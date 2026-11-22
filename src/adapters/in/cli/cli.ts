@@ -20,8 +20,9 @@ export const USAGE = `toone-connector: see, start and decide on your Toone routi
   toone-connector handled BOOK [WORDS] [--status S]  who or what was already handled
   toone-connector start ROUTINE [--input id=value]   run a routine (asks first)
   toone-connector pause|continue|cancel RUN_ID       change a run (asks first); continue retries a held failed step
+  toone-connector make-routine DESCRIPTION           hand Toone a description to draft a routine (asks first)
   toone-connector explore WORDS [--kind routine|bundle]  search Toone Explore; explore ID shows one listing
-  toone-connector install LISTING                    open a listing in Toone to install it (asks first)
+  toone-connector install LISTING                    start Toone's setup for a listing (asks first)
   toone-connector doctor                             check the connection to Toone
   toone-connector pair [--read-only]                 pair with Toone (you allow it in the app)
   toone-connector unpair                             forget this connector's pairing on this Mac
@@ -139,6 +140,14 @@ export async function runCli(connector: Connector, argv: string[], out: (line: s
       case 'continue':
       case 'cancel': {
         out(await connector.control({ ...scope, runId: first, action: args.command }, terminalConfirm(args.yes, out)));
+        return 0;
+      }
+      case 'make-routine': {
+        const draft = await connector.makeRoutine({ ...scope, description: args.words.join(' ') }, terminalConfirm(args.yes, out));
+        show(draft, () => {
+          out(draft.next);
+          if (draft.toone) out(`Toone: ${draft.toone}`);
+        });
         return 0;
       }
       case 'explore':
