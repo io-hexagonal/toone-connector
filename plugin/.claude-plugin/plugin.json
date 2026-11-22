@@ -13,5 +13,9 @@
     "url": "https://trytoone.com"
   },
   "repository": "https://github.com/mattwebhub/toone-connector",
-  "homepage": "https://trytoone.com"
+  "homepage": "https://trytoone.com",
+  "documentationUrl": "https://github.com/mattwebhub/toone-connector#readme",
+  "supportUrl": "https://github.com/mattwebhub/toone-connector/issues",
+  "privacyPolicyUrl": "https://trytoone.com/en/privacy",
+  "termsOfServiceUrl": "https://trytoone.com/en/terms"
 }
