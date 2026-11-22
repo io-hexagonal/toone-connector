@@ -1,0 +1,12 @@
+id: arch/require-via-3c038c03
+level: architecture
+kind: graph
+severity: error
+status: proven
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - require_via: { from: [adapter.in, adapter.out], to: application, via: [port.in, port.out] }
+message: "reaches {to.module} without the required intermediate: {chain}"
+fix: "Route the dependency through the required intermediate instead of importing {to.module} directly."
+budget: { incremental_p95_ms: 5 }

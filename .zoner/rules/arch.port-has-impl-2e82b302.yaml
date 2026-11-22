@@ -1,0 +1,12 @@
+id: arch/port-has-impl-2e82b302
+level: architecture
+kind: graph
+severity: warn
+status: advisory
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - port_has_impl: { port_role: port.out, impl_role: adapter.out, min: 1, require_fake: false }
+message: "port {port} is missing {missing}"
+fix: "Add an adapter class implementing {port}, and an in-memory fake under the test tree when fakes are required."
+budget: { incremental_p95_ms: 5 }

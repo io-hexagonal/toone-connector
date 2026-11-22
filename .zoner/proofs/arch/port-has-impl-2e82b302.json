@@ -1,0 +1,164 @@
+{
+  "details": {
+    "engine": {
+      "zoner": "0.0.0",
+      "matcher": "ast-grep-0.45.3+zoner-fuel-1",
+      "language_pack": "tree-sitter-rust-0.24.2+zoner-pattern-2;tree-sitter-python-0.25.0+zoner-pattern-1;tree-sitter-typescript-0.23.2+zoner-pattern-1;tree-sitter-javascript-0.25.0+zoner-pattern-1"
+    },
+    "provenance": {
+      "source": "preset:hexagonal",
+      "lock_ref": "preset/hexagonal@1"
+    },
+    "epochs": [],
+    "g1": null,
+    "g2": null,
+    "g3": null,
+    "g4": null,
+    "g5": null,
+    "g6": null,
+    "g7": null,
+    "g8": null,
+    "g9": null,
+    "overrides": [],
+    "max_status": null,
+    "deps": {
+      "archspec_selectors_hash": "04c419faaea61e0f4e516ab8e24c1fed",
+      "extract_rules": [],
+      "metric_thresholds_hash": null
+    }
+  },
+  "rule": "arch/port-has-impl-2e82b302",
+  "rule_content_hash": "c65a91390255f6aea24a862731cd3df7",
+  "fixtures_hash": "00000000000000000000000000000000",
+  "zoner_version": "0.0.0",
+  "gates": [
+    {
+      "gate": "G1",
+      "status": {
+        "Skipped": {
+          "why": "M4: the proof harness ships with M4"
+        }
+      },
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G2",
+      "status": "Passed",
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G3",
+      "status": {
+        "Skipped": {
+          "why": "canonical fixtures verified by Zoner's suite for hexagonal@1"
+        }
+      },
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G4",
+      "status": {
+        "Skipped": {
+          "why": "M4: the proof harness ships with M4"
+        }
+      },
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G5",
+      "status": {
+        "Skipped": {
+          "why": "M4: the proof harness ships with M4"
+        }
+      },
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G6",
+      "status": "NotApplicable",
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G7",
+      "status": "Passed",
+      "metrics": {
+        "hits": 3,
+        "baselined": 3,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": "low",
+        "concentration": {
+          "from_unit": "src/application/ports/out/**",
+          "to_unit": "src/application/ports/out/**",
+          "share_permille": 1000
+        }
+      }
+    },
+    {
+      "gate": "G8",
+      "status": {
+        "Skipped": {
+          "why": "M4: the proof harness ships with M4"
+        }
+      },
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    },
+    {
+      "gate": "G9",
+      "status": {
+        "Skipped": {
+          "why": "M4: the proof harness ships with M4"
+        }
+      },
+      "metrics": {
+        "hits": null,
+        "baselined": null,
+        "fp_wilson_upper_permille": null,
+        "g7_evidence": null,
+        "concentration": null
+      }
+    }
+  ],
+  "verdict": "advisory"
+}

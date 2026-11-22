@@ -1,0 +1,45 @@
+{
+  "name": "toone-connector",
+  "version": "0.1.0",
+  "description": "See, start and decide on your Toone routines from Claude. An MCP server, a CLI and a Claude Code plugin.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "toone-connector": "dist/main.js"
+  },
+  "files": [
+    "dist",
+    "plugin",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup src/main.ts --format esm --target node20 --clean && tsup --config tsup.plugin.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "arch": "zoner check",
+    "verify": "pnpm typecheck && pnpm test && pnpm arch && pnpm build",
+    "e2e": "node scripts/e2e-mcp.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "ws": "^8.23.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/ws": "^8.18.2",
+    "tsup": "^9.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattwebhub/toone-connector.git"
+  },
+  "homepage": "https://trytoone.com",
+  "packageManager": "pnpm@12.14.0"
+}

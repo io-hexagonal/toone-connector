@@ -1,0 +1,12 @@
+id: arch/independent-9274fb97
+level: architecture
+kind: graph
+severity: error
+status: proven
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - independent: { members: ["path:src/adapters/in/cli/**", "path:src/adapters/in/mcp/**", "path:src/adapters/out/bridge/**"] }
+message: "imports its independent sibling {to.module}"
+fix: "Move the shared code into a module both may import."
+budget: { incremental_p95_ms: 5 }

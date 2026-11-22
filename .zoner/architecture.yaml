@@ -1,0 +1,52 @@
+# .zoner/architecture.yaml: written by zoner (schema: docs/07 §1.5). Edit by hand or re-run
+# `zoner infer`; `verdicts` are informational and excluded from spec_hash.
+schema: 1
+preset: hexagonal@1
+parameters:
+  ports: topology
+  adapter_isolation: true
+  domain_declares_driven_ports: false
+  shared_kernel: false
+roles:
+  - name: bootstrap
+    select: ["path:src/*"]
+    vocabulary: [bootstrap, main]
+  - name: port.in
+    select: ["path:src/application/ports/in/**"]
+    vocabulary: [ports, in, inbound, driving]
+  - name: port.out
+    select: ["path:src/application/ports/out/**"]
+    vocabulary: [ports, out, outbound, driven]
+  - name: adapter.in
+    select: ["path:src/adapters/in/**"]
+    vocabulary: [adapters, in, inbound, driving, http, cli]
+  - name: adapter.out
+    select: ["path:src/adapters/out/bridge/**"]
+    vocabulary: [adapters, out, outbound, driven, db, persistence, infrastructure]
+  - name: application
+    select: ["path:src/application/*"]
+    vocabulary: [application, app, usecases, services, use_cases]
+  - name: domain
+    select: ["path:src/domain/**"]
+    vocabulary: [domain, core, model]
+  - name: shared
+    select: ["path:src/shared/**", "path:**/*-shared/src/**"]
+    vocabulary: [shared, kernel, common]
+matrix:
+  bootstrap: [bootstrap, port.in, port.out, adapter.in, adapter.out, application, domain, shared]
+  port.in: [port.in, domain]
+  port.out: [port.out, domain]
+  adapter.in: [adapter.in, port.in, domain]
+  adapter.out: [adapter.out, port.out, domain]
+  application: [application, port.in, port.out, domain]
+  domain: [domain]
+  shared: [shared]
+constraints:
+  - layers: { order: [[bootstrap], [adapter.in, adapter.out], [application, port.in, port.out], [domain]], mode: relaxed, closed: false }
+  - require_via: { from: [adapter.in, adapter.out], to: application, via: [port.in, port.out] }
+  - independent: { members: ["path:src/adapters/in/cli/**", "path:src/adapters/in/mcp/**", "path:src/adapters/out/bridge/**"] }
+  - port_has_impl: { port_role: port.out, impl_role: adapter.out, min: 1, require_fake: false }
+  - purity: { role: [domain, application, port.in, port.out], forbid_external: ["std:fs", "std:fs/*", "std:child_process", "std:worker_threads", "std:os", "std:readline", "std:net", "std:http", "std:https", "std:http2", "std:dgram", "std:tls", "ext:axios", "ext:node-fetch", "ext:got", "ext:ws", "ext:undici", "ext:pg", "ext:mysql", "ext:mysql2", "ext:mongodb", "ext:redis", "ext:ioredis", "ext:sqlite3", "ext:better-sqlite3", "ext:knex", "ext:express", "ext:koa", "ext:fastify", "ext:@nestjs/*", "ext:@hapi/*", "ext:hapi", "ext:next"] }
+  - acyclic: { scope: [domain, application, port.in, port.out], granularity: module, include_type_only: false }
+verdicts:
+  ".": { preset: hexagonal@1, confidence: 0.227, note: "chosen by the user" }

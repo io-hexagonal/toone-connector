@@ -1,0 +1,17 @@
+{
+  "name": "toone",
+  "version": "0.1.0",
+  "description": "See, start and decide on your Toone routines from Claude. Needs the Toone app (Direct edition) open on this Mac.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "toone",
+    "routines",
+    "automation"
+  ],
+  "author": {
+    "name": "Toone",
+    "url": "https://trytoone.com"
+  },
+  "repository": "https://github.com/mattwebhub/toone-connector",
+  "homepage": "https://trytoone.com"
+}

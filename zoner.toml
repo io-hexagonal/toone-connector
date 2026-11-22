@@ -1,0 +1,3 @@
+# zoner.toml: Zoner settings for the Toone connector. Human settings only; never secrets.
+# Architecture: hexagonal (ports and adapters), recorded in .zoner/architecture.yaml.
+include = ["src/**"]

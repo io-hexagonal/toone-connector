@@ -1,0 +1,12 @@
+id: arch/acyclic-ed7aedd3
+level: architecture
+kind: graph
+severity: error
+status: proven
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - acyclic: { scope: [domain, application, port.in, port.out], granularity: module, include_type_only: false }
+message: "import cycle: {chain}"
+fix: "Break the cycle: move the shared code into a module both sides import, or invert one edge with an interface."
+budget: { incremental_p95_ms: 5 }

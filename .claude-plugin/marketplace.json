@@ -1,0 +1,16 @@
+{
+  "name": "toone",
+  "owner": {
+    "name": "Toone"
+  },
+  "plugins": [
+    {
+      "name": "toone",
+      "source": "./plugin",
+      "description": "See, start and decide on your Toone routines from Claude."
+    }
+  ],
+  "metadata": {
+    "description": "The Toone connector for Claude: see, start and decide on your routines."
+  }
+}

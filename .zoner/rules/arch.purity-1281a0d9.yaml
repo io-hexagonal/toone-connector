@@ -1,0 +1,12 @@
+id: arch/purity-1281a0d9
+level: architecture
+kind: graph
+severity: error
+status: proven
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - purity: { role: [domain, application, port.in, port.out], forbid_external: ["std:fs", "std:fs/*", "std:child_process", "std:worker_threads", "std:os", "std:readline", "std:net", "std:http", "std:https", "std:http2", "std:dgram", "std:tls", "ext:axios", "ext:node-fetch", "ext:got", "ext:ws", "ext:undici", "ext:pg", "ext:mysql", "ext:mysql2", "ext:mongodb", "ext:redis", "ext:ioredis", "ext:sqlite3", "ext:better-sqlite3", "ext:knex", "ext:express", "ext:koa", "ext:fastify", "ext:@nestjs/*", "ext:@hapi/*", "ext:hapi", "ext:next"] }
+message: "{from.role} code imports the {to.role} package {to.package}"
+fix: "Remove the {to.package} import from {from.role} code, or move the code that needs it to a role allowed to use it."
+budget: { incremental_p95_ms: 5 }

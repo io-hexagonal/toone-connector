@@ -1,0 +1,12 @@
+id: arch/layers-7920cc1a
+level: architecture
+kind: graph
+severity: error
+status: proven
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - layers: { order: [[bootstrap], [adapter.in, adapter.out], [application, port.in, port.out], [domain]], mode: relaxed }
+message: "layer {from.layer} imports {to.module} (layer {to.layer}) against the layer order"
+fix: "Remove this import: layer {from.layer} may import only {allowed}; move the code it needs into one of those layers."
+budget: { incremental_p95_ms: 5 }

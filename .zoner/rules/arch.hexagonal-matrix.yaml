@@ -1,0 +1,19 @@
+id: arch/hexagonal-matrix
+level: architecture
+kind: graph
+severity: error
+status: proven
+category: arch
+provenance: { source: "preset:hexagonal", lock_ref: preset/hexagonal@1 }
+constraints:
+  - allow_only: { from: bootstrap, to: [bootstrap, port.in, port.out, adapter.in, adapter.out, application, domain, shared] }
+  - allow_only: { from: port.in, to: [port.in, domain] }
+  - allow_only: { from: port.out, to: [port.out, domain] }
+  - allow_only: { from: adapter.in, to: [adapter.in, port.in, domain] }
+  - allow_only: { from: adapter.out, to: [adapter.out, port.out, domain] }
+  - allow_only: { from: application, to: [application, port.in, port.out, domain] }
+  - allow_only: { from: domain, to: domain }
+  - allow_only: { from: shared, to: shared }
+message: "{from.role} code depends on {to.role} module {to.module}"
+fix: "Remove this import: {from.role} code may import only {allowed}."
+budget: { incremental_p95_ms: 5 }
