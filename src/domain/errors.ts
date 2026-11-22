@@ -17,4 +17,16 @@ export type ConnectorErrorCode =
   | 'ROUTINE_AMBIGUOUS'
   | 'NOT_CONFIRMED'
   | 'CONFIRMATION_UNAVAILABLE'
-  | 'TIMEOUT';
+  | 'TIMEOUT'
+  /** Toone is asking the person to approve this connector. */
+  | 'PAIRING_PENDING'
+  /** The person declined pairing in Toone. */
+  | 'PAIRING_DENIED'
+  /** Toone only accepts paired apps and this connector is not paired. */
+  | 'PAIRING_REQUIRED'
+  /** Toone did not accept the stored pairing (revoked, or another Toone). */
+  | 'PAIRING_REJECTED'
+  /** Toone is already asking about another app. */
+  | 'PAIRING_BUSY'
+  /** The program on the port could not prove it is the paired Toone app. */
+  | 'APP_NOT_VERIFIED';
