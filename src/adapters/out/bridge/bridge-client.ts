@@ -82,6 +82,11 @@ export class BridgeClient {
     return this.generation;
   }
 
+  /** True while the open connection is a paired one. */
+  get paired(): boolean {
+    return this.link === 'paired';
+  }
+
   /** A sentence to add to answers given over an unpaired connection. */
   connectionNote(): string | undefined {
     if (this.link === 'unpaired-old-app') {
@@ -192,12 +197,12 @@ export class BridgeClient {
     clearTimeout(waiting.timer);
     const inner = reply.data?.data;
     if (!reply.success) {
-      waiting.reject(new ConnectorError('APP_ERROR', appMessage(reply.error, reply.errorCode)));
+      waiting.reject(refusal(reply.error, reply.errorCode));
       return;
     }
     const payload = decode(inner?.payload);
     if (inner?.status && inner.status !== 'ok') {
-      waiting.reject(new ConnectorError('APP_ERROR', appMessage(describe(payload) ?? inner.message, undefined)));
+      waiting.reject(refusal(describe(payload) ?? inner.message, codeOf(payload)));
       return;
     }
     waiting.resolve(payload);
@@ -249,10 +254,24 @@ function decode(payload: unknown): unknown {
 function describe(payload: unknown): string | undefined {
   if (typeof payload === 'string') return payload;
   if (payload && typeof payload === 'object') {
-    const p = payload as { message?: unknown; code?: unknown };
-    if (typeof p.message === 'string') return typeof p.code === 'string' ? `${p.message} (${p.code})` : p.message;
+    const p = payload as { message?: unknown };
+    if (typeof p.message === 'string') return p.message;
   }
   return undefined;
+}
+
+export const READ_ONLY_MESSAGE =
+  'This connector is paired read only, so Toone refused it. To allow it, run `toone-connector pair` in a terminal and choose "May start and control routines" in Toone (then revoke the old entry in Settings › Connected Apps).';
+
+/** Toone's refusal as an error the person can act on; Toone's own code stays on it. */
+function refusal(message: string | undefined, code: string | undefined): ConnectorError {
+  if (code === 'PAIRED_READ_ONLY') return new ConnectorError('PAIRED_READ_ONLY', READ_ONLY_MESSAGE, code);
+  return new ConnectorError('APP_ERROR', appMessage(message, code), code);
+}
+
+function codeOf(payload: unknown): string | undefined {
+  const code = payload && typeof payload === 'object' ? (payload as { code?: unknown }).code : undefined;
+  return typeof code === 'string' ? code : undefined;
 }
 
 function appMessage(message: string | undefined, code: string | undefined): string {
