@@ -1,3 +1,4 @@
+import { retryAsk } from '../domain/decision.js';
 import { ConnectorError } from '../domain/errors.js';
 import { recordMatches, type HandledPage, type RecordBook } from '../domain/records.js';
 import { resolveRoutine, searchRoutines, type Routine } from '../domain/routine.js';
@@ -95,7 +96,8 @@ export class ConnectorService implements Connector {
     const live = await this.app.liveStatus(ws);
     const run = live.runs.find((r) => r.runId === req.runId);
     const label = run ? `"${run.routineName}"` : `run ${req.runId}`;
-    await demand(confirm, {
+    const retry = req.action === 'continue' ? retryAsk(run) : null;
+    await demand(confirm, retry ?? {
       title: `${capitalise(req.action)} ${label}?`,
       detail:
         req.action === 'continue'

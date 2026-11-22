@@ -4,6 +4,7 @@ import type { ActiveRun, AwaitingInput, RunDetail, RunStep, RunSummary, StartRec
 import { clip } from '../../../domain/text.js';
 import type { BlockedThread } from '../../../domain/waiting.js';
 import type { Workspace } from '../../../domain/workspace.js';
+import { toHeldSteps, withHeld } from './held-steps.js';
 
 type Raw = Record<string, unknown>;
 
@@ -85,6 +86,7 @@ export function toActiveRuns(payload: unknown): ActiveRun[] {
       canCancel: controls.canCancel === true,
       awaiting: toAwaiting(r),
       heldSteps: (Array.isArray(controls.heldSteps) ? controls.heldSteps : []).map(stepName),
+      ...withHeld(toHeldSteps(r)),
     };
   });
 }
