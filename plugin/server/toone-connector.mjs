@@ -108,7 +108,7 @@ var require_code = __commonJS({
     }
     exports._ = _;
     var plus = new _Code("+");
-    function str4(strs, ...args) {
+    function str5(strs, ...args) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
       while (i < args.length) {
@@ -119,7 +119,7 @@ var require_code = __commonJS({
       optimize(expr);
       return new _Code(expr);
     }
-    exports.str = str4;
+    exports.str = str5;
     function addCodeArg(code, arg) {
       if (arg instanceof _Code)
         code.push(...arg._items);
@@ -162,7 +162,7 @@ var require_code = __commonJS({
       return;
     }
     function strConcat(c1, c2) {
-      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str4`${c1}${c2}`;
+      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str5`${c1}${c2}`;
     }
     exports.strConcat = strConcat;
     function interpolate(x) {
@@ -1124,22 +1124,22 @@ var require_util = __commonJS({
       return (0, codegen_1._)`${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
     }
     exports.schemaRefOrVal = schemaRefOrVal;
-    function unescapeFragment(str4) {
-      return unescapeJsonPointer(decodeURIComponent(str4));
+    function unescapeFragment(str5) {
+      return unescapeJsonPointer(decodeURIComponent(str5));
     }
     exports.unescapeFragment = unescapeFragment;
-    function escapeFragment(str4) {
-      return encodeURIComponent(escapeJsonPointer(str4));
+    function escapeFragment(str5) {
+      return encodeURIComponent(escapeJsonPointer(str5));
     }
     exports.escapeFragment = escapeFragment;
-    function escapeJsonPointer(str4) {
-      if (typeof str4 == "number")
-        return `${str4}`;
-      return str4.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPointer(str5) {
+      if (typeof str5 == "number")
+        return `${str5}`;
+      return str5.replace(/~/g, "~0").replace(/\//g, "~1");
     }
     exports.escapeJsonPointer = escapeJsonPointer;
-    function unescapeJsonPointer(str4) {
-      return str4.replace(/~1/g, "/").replace(/~0/g, "~");
+    function unescapeJsonPointer(str5) {
+      return str5.replace(/~1/g, "/").replace(/~0/g, "~");
     }
     exports.unescapeJsonPointer = unescapeJsonPointer;
     function eachItem(xs, f) {
@@ -2164,8 +2164,8 @@ var require_json_schema_traverse = __commonJS({
         post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
       }
     }
-    function escapeJsonPtr(str4) {
-      return str4.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPtr(str5) {
+      return str5.replace(/~/g, "~0").replace(/\//g, "~1");
     }
   }
 });
@@ -3262,10 +3262,10 @@ var require_utils = __commonJS({
         isIPV6: true
       };
     }
-    function findToken(str4, token) {
+    function findToken(str5, token) {
       let ind = 0;
-      for (let i = 0; i < str4.length; i++) {
-        if (str4[i] === token) ind++;
+      for (let i = 0; i < str5.length; i++) {
+        if (str5[i] === token) ind++;
       }
       return ind;
     }
@@ -4335,7 +4335,7 @@ var require_core = __commonJS({
     var util_1 = require_util();
     var $dataRefSchema = require_data();
     var uri_1 = require_uri();
-    var defaultRegExp = (str4, flags) => new RegExp(str4, flags);
+    var defaultRegExp = (str5, flags) => new RegExp(str5, flags);
     defaultRegExp.code = "new RegExp";
     var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
     var EXT_SCOPE_NAMES = /* @__PURE__ */ new Set([
@@ -5130,16 +5130,16 @@ var require_ucs2length = __commonJS({
   "node_modules/.pnpm/ajv@8.20.0/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function ucs2length(str4) {
-      const len = str4.length;
+    function ucs2length(str5) {
+      const len = str5.length;
       let length = 0;
       let pos = 0;
       let value;
       while (pos < len) {
         length++;
-        value = str4.charCodeAt(pos++);
+        value = str5.charCodeAt(pos++);
         if (value >= 55296 && value <= 56319 && pos < len) {
-          value = str4.charCodeAt(pos);
+          value = str5.charCodeAt(pos);
           if ((value & 64512) === 56320)
             pos++;
         }
@@ -7022,8 +7022,8 @@ var require_formats = __commonJS({
     }
     var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
     var DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    function date5(str4) {
-      const matches = DATE.exec(str4);
+    function date5(str5) {
+      const matches = DATE.exec(str5);
       if (!matches)
         return false;
       const year = +matches[1];
@@ -7042,8 +7042,8 @@ var require_formats = __commonJS({
     }
     var TIME = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i;
     function getTime(strictTimeZone) {
-      return function time3(str4) {
-        const matches = TIME.exec(str4);
+      return function time3(str5) {
+        const matches = TIME.exec(str5);
         if (!matches)
           return false;
         const hr = +matches[1];
@@ -7089,8 +7089,8 @@ var require_formats = __commonJS({
     var DATE_TIME_SEPARATOR = /t|\s/i;
     function getDateTime(strictTimeZone) {
       const time3 = getTime(strictTimeZone);
-      return function date_time(str4) {
-        const dateTime = str4.split(DATE_TIME_SEPARATOR);
+      return function date_time(str5) {
+        const dateTime = str5.split(DATE_TIME_SEPARATOR);
         return dateTime.length === 2 && date5(dateTime[0]) && time3(dateTime[1]);
       };
     }
@@ -7115,13 +7115,13 @@ var require_formats = __commonJS({
     }
     var NOT_URI_FRAGMENT = /\/|:/;
     var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-    function uri(str4) {
-      return NOT_URI_FRAGMENT.test(str4) && URI.test(str4);
+    function uri(str5) {
+      return NOT_URI_FRAGMENT.test(str5) && URI.test(str5);
     }
     var BYTE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gm;
-    function byte(str4) {
+    function byte(str5) {
       BYTE.lastIndex = 0;
-      return BYTE.test(str4);
+      return BYTE.test(str5);
     }
     var MIN_INT32 = -(2 ** 31);
     var MAX_INT32 = 2 ** 31 - 1;
@@ -7135,11 +7135,11 @@ var require_formats = __commonJS({
       return true;
     }
     var Z_ANCHOR = /[^\\]\\Z/;
-    function regex(str4) {
-      if (Z_ANCHOR.test(str4))
+    function regex(str5) {
+      if (Z_ANCHOR.test(str5))
         return false;
       try {
-        new RegExp(str4);
+        new RegExp(str5);
         return true;
       } catch (e) {
         return false;
@@ -10999,12 +10999,14 @@ import { createInterface } from "readline/promises";
 
 // src/domain/errors.ts
 var ConnectorError = class extends Error {
-  constructor(code, message) {
+  constructor(code, message, appCode) {
     super(message);
     this.code = code;
+    this.appCode = appCode;
     this.name = "ConnectorError";
   }
   code;
+  appCode;
 };
 
 // src/domain/pairing.ts
@@ -11061,9 +11063,22 @@ function installAsk(detail, project) {
     detail.codeFiles ? "It comes with code files; Toone setup shows them and asks before installing them." : "It comes with no code files.",
     detail.youProvide.length > 0 ? `Setup will ask you for: ${clip(detail.youProvide.join("; "), 300)}.` : "Setup lists nothing you must provide.",
     detail.thirdParties.length > 0 ? `It uses: ${clip(detail.thirdParties.join(", "), 160)}.` : "",
-    `Toone opens its Explore page in ${project}. Nothing is installed until you press "${button}" there and finish Toone's setup.`
+    detail.kind === "routine" ? `Toone starts its setup in ${project} (an older Toone opens the listing instead); nothing is installed until you finish it there.` : `Toone shows its Explore page in ${project}. Nothing is installed until you press "${button}" there and finish Toone's setup.`
   ];
   return { title: `Install "${detail.title}" into ${project}?`, detail: parts.filter(Boolean).join(" ") };
+}
+var buttonFor = (kind) => kind === "bundle" ? "Use this bundle" : "Use this routine";
+function setupNext(title, project, reused) {
+  const what = reused ? `Toone had already started setting up "${title}"` : `Toone started setting up "${title}"`;
+  return `${what} in ${project}. Click "Open" on Toone's notice to go to it; its assistant asks you there about code files and what it needs. Nothing is installed until you finish.`;
+}
+function pageNext(kind, project, shown, why = "") {
+  const button = buttonFor(kind);
+  const where = shown === "opened" ? "Toone now shows it in Explore. To install, press" : 'Toone shows a notice with an "Open" button for it; your screen was left as it was. Click it, then press';
+  return `${why}${where} "${button}"; Toone's setup asks for what it needs and installs it into ${project}.`;
+}
+function findItYourself(title, id, kind, project) {
+  return `Nothing was installed. In Toone, open Explore in ${project}, search for "${title}" (${id}) and press "${buttonFor(kind)}".`;
 }
 
 // src/adapters/in/cli/explore-commands.ts
@@ -11073,7 +11088,10 @@ async function runExploreCommand(explore, args, out, confirm) {
   const show = (value, human) => args.json ? out(JSON.stringify(value, null, 2)) : human();
   if (args.command === "install") {
     const done = await explore.install({ workspace: args.workspace, listing: text }, confirm);
-    show(done, () => out(done.next));
+    show(done, () => {
+      out(done.next);
+      if (done.toone) out(`Toone: ${done.toone}`);
+    });
     return 0;
   }
   if (parseListingRef(text)) {
@@ -11110,8 +11128,9 @@ var USAGE = `toone-connector: see, start and decide on your Toone routines.
   toone-connector handled BOOK [WORDS] [--status S]  who or what was already handled
   toone-connector start ROUTINE [--input id=value]   run a routine (asks first)
   toone-connector pause|continue|cancel RUN_ID       change a run (asks first); continue retries a held failed step
+  toone-connector make-routine DESCRIPTION           hand Toone a description to draft a routine (asks first)
   toone-connector explore WORDS [--kind routine|bundle]  search Toone Explore; explore ID shows one listing
-  toone-connector install LISTING                    open a listing in Toone to install it (asks first)
+  toone-connector install LISTING                    start Toone's setup for a listing (asks first)
   toone-connector doctor                             check the connection to Toone
   toone-connector pair [--read-only]                 pair with Toone (you allow it in the app)
   toone-connector unpair                             forget this connector's pairing on this Mac
@@ -11213,6 +11232,14 @@ async function runCli(connector, argv, out, explore, pairing) {
       case "continue":
       case "cancel": {
         out(await connector.control({ ...scope, runId: first, action: args.command }, terminalConfirm(args.yes, out)));
+        return 0;
+      }
+      case "make-routine": {
+        const draft = await connector.makeRoutine({ ...scope, description: args.words.join(" ") }, terminalConfirm(args.yes, out));
+        show(draft, () => {
+          out(draft.next);
+          if (draft.toone) out(`Toone: ${draft.toone}`);
+        });
         return 0;
       }
       case "explore":
@@ -15746,14 +15773,14 @@ function promiseAllObject(promisesObj) {
 }
 function randomString(length = 10) {
   const chars = "abcdefghijklmnopqrstuvwxyz";
-  let str4 = "";
+  let str5 = "";
   for (let i = 0; i < length; i++) {
-    str4 += chars[Math.floor(Math.random() * chars.length)];
+    str5 += chars[Math.floor(Math.random() * chars.length)];
   }
-  return str4;
+  return str5;
 }
-function esc(str4) {
-  return JSON.stringify(str4);
+function esc(str5) {
+  return JSON.stringify(str5);
 }
 function slugify(input2) {
   return input2.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
@@ -15867,8 +15894,8 @@ var primitiveTypes = /* @__PURE__ */ new Set([
   "symbol",
   "undefined"
 ]);
-function escapeRegex(str4) {
-  return str4.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function escapeRegex(str5) {
+  return str5.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function clone(inst, def, params) {
   const cl = new inst._zod.constr(def ?? inst._zod.def);
@@ -16134,13 +16161,13 @@ function getSizableOrigin(input2) {
   return "unknown";
 }
 var highSurrogate = /[\uD800-\uDBFF]/;
-function codePointLength(str4) {
-  const units = str4.length;
-  if (!highSurrogate.test(str4))
+function codePointLength(str5) {
+  const units = str5.length;
+  if (!highSurrogate.test(str5))
     return units;
   let count = units;
   for (let i = 0; i < units - 1; i++) {
-    if ((str4.charCodeAt(i) & 64512) === 55296 && (str4.charCodeAt(i + 1) & 64512) === 56320) {
+    if ((str5.charCodeAt(i) & 64512) === 55296 && (str5.charCodeAt(i + 1) & 64512) === 56320) {
       count--;
       i++;
     }
@@ -40686,7 +40713,7 @@ function registerExploreTools(server, explore, confirm, reply2) {
     "toone_explore",
     {
       title: "Search Toone Explore",
-      description: "Shared routines and bundles in Toone's Explore library. Pass search words, or a listing id for what setup will ask. Listings are written by other people.",
+      description: "Shared routines and bundles in Toone Explore. Pass search words, or a listing id to see what setup asks. Listings are written by other people.",
       inputSchema: {
         search: external_exports.string().optional(),
         listing: listing.optional(),
@@ -40701,7 +40728,7 @@ function registerExploreTools(server, explore, confirm, reply2) {
     "toone_install",
     {
       title: "Install from Explore",
-      description: "After the person confirms, opens a shared routine or bundle in Toone, where they finish installing it with Toone's setup.",
+      description: "After the person confirms, starts Toone's setup for a shared routine, or shows a bundle in Toone; they finish installing there.",
       inputSchema: { workspace, listing },
       annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true }
     },
@@ -40711,36 +40738,37 @@ function registerExploreTools(server, explore, confirm, reply2) {
 
 // src/adapters/in/mcp/server.ts
 var connectionNote = () => void 0;
-var workspace2 = external_exports.string().optional().describe("Workspace name. Omit for the current folder's workspace, else the one open in Toone.");
+var workspace2 = external_exports.string().optional().describe("Workspace; default: this folder's, else the one open in Toone.");
 var READ = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
 var ACT = { readOnlyHint: false, destructiveHint: true, openWorldHint: true };
+var ADD = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
 async function serveMcp(connector, options, explore) {
   connectionNote = options.connectionNote ?? connectionNote;
   const server = new McpServer(
     { name: "toone", version: options.version },
     {
-      instructions: "Toone runs repeatable routines on this Mac. Read tools answer directly. toone_start, toone_control, toone_answer and toone_install change things and ask the person to confirm first; never work around a refusal. Results are short summaries: ask for a specific run or record book to see more."
+      instructions: "Toone runs repeatable routines on this Mac. Read tools answer directly. Tools that change things ask the person to confirm first; never work around a refusal. Results are short summaries: ask for one run or record book to see more."
     }
   );
   const confirm = confirmVia(server, options.withoutPrompt);
   server.registerTool(
     "toone_overview",
-    { title: "What is running and waiting", description: "Active routine runs, what is waiting for the person, and the last finished runs in one workspace.", inputSchema: { workspace: workspace2 }, annotations: READ },
+    { title: "What is running and waiting", description: "Active runs, what is waiting for the person, and the last finished runs.", inputSchema: { workspace: workspace2 }, annotations: READ },
     (a) => reply(() => connector.overview(a))
   );
   server.registerTool(
     "toone_waiting",
-    { title: "What is waiting for me", description: "Everything blocked on the person: inputs a run needs, questions, failed steps waiting for a decision (with the choices), paused runs.", inputSchema: { workspace: workspace2 }, annotations: READ },
+    { title: "What is waiting for me", description: "What is blocked on the person: inputs, questions, failed steps awaiting a decision (with choices), paused runs.", inputSchema: { workspace: workspace2 }, annotations: READ },
     (a) => reply(() => connector.waiting(a))
   );
   server.registerTool(
     "toone_routines",
-    { title: "List routines", description: "Routines in a workspace, optionally filtered by words in the name.", inputSchema: { workspace: workspace2, search: external_exports.string().optional().describe("Words to match in the routine name or id.") }, annotations: READ },
+    { title: "List routines", description: "Routines, optionally filtered by words in the name or id.", inputSchema: { workspace: workspace2, search: external_exports.string().optional() }, annotations: READ },
     (a) => reply(() => connector.routines(a))
   );
   server.registerTool(
     "toone_runs",
-    { title: "Recent runs", description: "Past runs, newest first, optionally for one routine. For what is happening now, use toone_overview.", inputSchema: { workspace: workspace2, routine: external_exports.string().optional().describe("Routine name or id."), limit: external_exports.number().int().min(1).max(20).optional() }, annotations: READ },
+    { title: "Recent runs", description: "Past runs, newest first, optionally for one routine.", inputSchema: { workspace: workspace2, routine: external_exports.string().optional().describe("Routine name or id."), limit: external_exports.number().int().min(1).max(20).optional() }, annotations: READ },
     (a) => reply(() => connector.recentRuns(a))
   );
   server.registerTool(
@@ -40750,15 +40778,15 @@ async function serveMcp(connector, options, explore) {
   );
   server.registerTool(
     "toone_record_books",
-    { title: "List record books", description: "The saved lists routines keep so they never handle the same thing twice (who was contacted, what was posted).", inputSchema: { workspace: workspace2 }, annotations: READ },
+    { title: "List record books", description: "Lists routines keep of what they handled (who was contacted, what was posted).", inputSchema: { workspace: workspace2 }, annotations: READ },
     (a) => reply(() => connector.recordBooks(a))
   );
   server.registerTool(
     "toone_handled",
     {
       title: "Who or what was already handled",
-      description: "Looks in one record book. Returns counts by status and a few matching records.",
-      inputSchema: { workspace: workspace2, book: external_exports.string().describe("Record book id from toone_record_books."), search: external_exports.string().optional().describe("Words to find, such as a person or company name."), status: external_exports.string().optional(), limit: external_exports.number().int().min(1).max(50).optional() },
+      description: "Counts by status and a few matching records from one record book.",
+      inputSchema: { workspace: workspace2, book: external_exports.string().describe("Record book id from toone_record_books."), search: external_exports.string().optional().describe("Words, such as a person or company name."), status: external_exports.string().optional(), limit: external_exports.number().int().min(1).max(50).optional() },
       annotations: READ
     },
     (a) => reply(() => connector.handled(a))
@@ -40772,26 +40800,36 @@ async function serveMcp(connector, options, explore) {
     "toone_start",
     {
       title: "Run a routine",
-      description: "Starts a routine in Toone after the person confirms. The routine may send or publish as the person.",
-      inputSchema: { workspace: workspace2, routine: external_exports.string().describe("Routine name or id."), inputs: external_exports.record(external_exports.string(), external_exports.string()).optional().describe("Inputs by id, when the routine takes any.") },
+      description: "Runs a routine after the person confirms. It may send or publish as them.",
+      inputSchema: { workspace: workspace2, routine: external_exports.string().describe("Routine name or id."), inputs: external_exports.record(external_exports.string(), external_exports.string()).optional().describe("Inputs by id, if any.") },
       annotations: ACT
     },
     (a) => reply(() => connector.start(a, confirm))
   );
   server.registerTool(
     "toone_control",
-    { title: "Pause, continue or cancel a run", description: "Changes a run after the person confirms. On a run with a failed step held, continue retries that step unchanged.", inputSchema: { workspace: workspace2, runId: external_exports.string(), action: external_exports.enum(["pause", "continue", "cancel"]) }, annotations: ACT },
+    { title: "Pause, continue or cancel a run", description: "After the person confirms. With a failed step held, continue retries it unchanged.", inputSchema: { workspace: workspace2, runId: external_exports.string(), action: external_exports.enum(["pause", "continue", "cancel"]) }, annotations: ACT },
     (a) => reply(async () => ({ result: await connector.control(a, confirm) }))
   );
   server.registerTool(
     "toone_answer",
     {
       title: "Answer a waiting routine",
-      description: "Gives a run the inputs it is waiting for, after the person confirms. Get executionId from toone_waiting.",
+      description: "Gives a waiting run its inputs after the person confirms. executionId is from toone_waiting.",
       inputSchema: { workspace: workspace2, executionId: external_exports.string(), inputs: external_exports.record(external_exports.string(), external_exports.string()) },
       annotations: ACT
     },
     (a) => reply(async () => ({ result: await connector.answer(a, confirm) }))
+  );
+  server.registerTool(
+    "toone_make_routine",
+    {
+      title: "Make a routine",
+      description: "After the person confirms, Toone's own assistant drafts a routine from the description; the person publishes it in Toone.",
+      inputSchema: { workspace: workspace2, description: external_exports.string().describe("What it does and when.") },
+      annotations: ADD
+    },
+    (a) => reply(() => connector.makeRoutine(a, confirm))
   );
   if (explore) registerExploreTools(server, explore, confirm, reply);
   await server.connect(new StdioServerTransport());
@@ -41014,6 +41052,10 @@ var BridgeClient = class {
     await this.open();
     return this.generation;
   }
+  /** True while the open connection is a paired one. */
+  get paired() {
+    return this.link === "paired";
+  }
   /** A sentence to add to answers given over an unpaired connection. */
   connectionNote() {
     if (this.link === "unpaired-old-app") {
@@ -41113,12 +41155,12 @@ var BridgeClient = class {
     clearTimeout(waiting.timer);
     const inner = reply2.data?.data;
     if (!reply2.success) {
-      waiting.reject(new ConnectorError("APP_ERROR", appMessage(reply2.error, reply2.errorCode)));
+      waiting.reject(refusal2(reply2.error, reply2.errorCode));
       return;
     }
     const payload = decode4(inner?.payload);
     if (inner?.status && inner.status !== "ok") {
-      waiting.reject(new ConnectorError("APP_ERROR", appMessage(describe3(payload) ?? inner.message, void 0)));
+      waiting.reject(refusal2(describe3(payload) ?? inner.message, codeOf(payload)));
       return;
     }
     waiting.resolve(payload);
@@ -41166,9 +41208,18 @@ function describe3(payload) {
   if (typeof payload === "string") return payload;
   if (payload && typeof payload === "object") {
     const p = payload;
-    if (typeof p.message === "string") return typeof p.code === "string" ? `${p.message} (${p.code})` : p.message;
+    if (typeof p.message === "string") return p.message;
   }
   return void 0;
+}
+var READ_ONLY_MESSAGE = 'This connector is paired read only, so Toone refused it. To allow it, run `toone-connector pair` in a terminal and choose "May start and control routines" in Toone (then revoke the old entry in Settings \u203A Connected Apps).';
+function refusal2(message, code) {
+  if (code === "PAIRED_READ_ONLY") return new ConnectorError("PAIRED_READ_ONLY", READ_ONLY_MESSAGE, code);
+  return new ConnectorError("APP_ERROR", appMessage(message, code), code);
+}
+function codeOf(payload) {
+  const code = payload && typeof payload === "object" ? payload.code : void 0;
+  return typeof code === "string" ? code : void 0;
 }
 function appMessage(message, code) {
   const text = message ?? "Toone refused the request.";
@@ -41291,6 +41342,39 @@ var TooneAppPairingAdapter = class {
 // src/adapters/out/bridge/toone-app-adapter.ts
 import { randomUUID as randomUUID3 } from "crypto";
 
+// src/adapters/out/bridge/flows.ts
+var str = (v) => typeof v === "string" ? v : "";
+var UNKNOWN_OPERATION = /* @__PURE__ */ new Set(["UNKNOWN_AGENT_OPERATION", "UNKNOWN_DESKTOP_OPERATION", "UNKNOWN_OPERATION"]);
+function toFlowStart(payload) {
+  return {
+    status: payload.status === "reused" ? "reused" : "started",
+    threadId: str(payload.threadId),
+    message: clip(str(payload.message), 400)
+  };
+}
+function toDraftStart(payload) {
+  const raw = payload ?? {};
+  return { ...toFlowStart(raw), draftId: str(raw.draftId) };
+}
+function toSetupStart(payload) {
+  const raw = payload ?? {};
+  return { ...toFlowStart(raw), revisionId: str(raw.revisionId), title: str(raw.title) };
+}
+function flowRefusal(error62, flow) {
+  if (!(error62 instanceof ConnectorError) || !error62.appCode) return error62;
+  const code = error62.appCode;
+  if (UNKNOWN_OPERATION.has(code) || code === "SETUP_NOT_AVAILABLE_FOR_BUNDLES") {
+    const what = flow === "draft" ? "take a routine description from the connector" : "start setup from the connector";
+    const instead = flow === "draft" ? " Update Toone, or describe the routine to Toone's assistant in the app." : "";
+    return new ConnectorError("NOT_SUPPORTED_BY_APP", `This Toone version cannot ${what} yet.${instead}`, code);
+  }
+  if (code === "ROUTINE_CREATION_LIMIT") {
+    return new ConnectorError("ROUTINE_LIMIT", `Toone did not start a draft: its plan's limit on routines is reached, so nothing was drafted. ${error62.message}`, code);
+  }
+  if (code === "SETUP_REFUSED") return new ConnectorError("SETUP_REFUSED", `Toone's setup refused this routine, so nothing was set up. ${error62.message}`, code);
+  return error62;
+}
+
 // src/domain/records.ts
 var FIELD_LIMIT = 120;
 var MAX_FIELDS = 8;
@@ -41311,14 +41395,14 @@ function recordMatches(record2, search) {
 // src/adapters/out/bridge/held-steps.ts
 var obj = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
 var list = (v) => Array.isArray(v) ? v.map(obj) : [];
-var str = (v) => typeof v === "string" ? v : "";
+var str2 = (v) => typeof v === "string" ? v : "";
 var REASON_LIMIT = 200;
 function titlesOf(run) {
   const titles = /* @__PURE__ */ new Map();
   for (const invocation of list(run.invocations)) {
-    for (const step of list(invocation.currentSteps)) if (str(step.stepId) && str(step.title)) titles.set(str(step.stepId), str(step.title));
+    for (const step of list(invocation.currentSteps)) if (str2(step.stepId) && str2(step.title)) titles.set(str2(step.stepId), str2(step.title));
   }
-  for (const step of list(obj(run.controls).waitingAutomaticSteps)) if (str(step.stepId) && str(step.title)) titles.set(str(step.stepId), str(step.title));
+  for (const step of list(obj(run.controls).waitingAutomaticSteps)) if (str2(step.stepId) && str2(step.title)) titles.set(str2(step.stepId), str2(step.title));
   return titles;
 }
 function withHeld(held) {
@@ -41330,10 +41414,10 @@ function toHeldSteps(run) {
   return (Array.isArray(held) ? held : []).map((entry) => {
     if (typeof entry === "string") return { step: titles.get(entry) ?? entry, reason: null, automatic: false };
     const h = obj(entry);
-    const id = str(h.stepId);
-    const reason = str(h.reason);
+    const id = str2(h.stepId);
+    const reason = str2(h.reason);
     return {
-      step: str(h.title) || titles.get(id) || id || "a step",
+      step: str2(h.title) || titles.get(id) || id || "a step",
       reason: reason ? clip(reason, REASON_LIMIT) : null,
       automatic: h.kind === "code"
     };
@@ -41343,34 +41427,34 @@ function toHeldSteps(run) {
 // src/adapters/out/bridge/mappers.ts
 var obj2 = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
 var list2 = (v) => Array.isArray(v) ? v.map(obj2) : [];
-var str2 = (v) => typeof v === "string" ? v : "";
+var str3 = (v) => typeof v === "string" ? v : "";
 var strOrNull = (v) => typeof v === "string" && v !== "" ? v : null;
 var strings = (v) => Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
 function toWorkspaces(payload) {
   return list2(obj2(payload).workspaces).map((w) => ({
-    id: str2(w.workspaceId),
-    name: str2(w.name),
-    projectPath: str2(w.projectPath),
+    id: str3(w.workspaceId),
+    name: str3(w.name),
+    projectPath: str3(w.projectPath),
     loaded: w.loaded === true,
     selectedInApp: w.selectedInUI === true
   }));
 }
 function toRoutines(payload) {
   return list2(obj2(payload).routines).map((r) => ({
-    id: str2(r.routineId),
-    name: str2(r.name),
-    department: str2(r.departmentId),
-    owner: str2(r.owner),
+    id: str3(r.routineId),
+    name: str3(r.name),
+    department: str3(r.departmentId),
+    owner: str3(r.owner),
     parentId: strOrNull(r.parentId),
     needsRepair: r.needsRepair === true
   }));
 }
 function toRunSummary(r) {
   return {
-    runId: str2(r.runId),
-    routineId: str2(r.routineId),
-    routineName: str2(r.routineName) || str2(r.name),
-    status: str2(r.status),
+    runId: str3(r.runId),
+    routineId: str3(r.routineId),
+    routineName: str3(r.routineName) || str3(r.name),
+    status: str3(r.status),
     startedAt: strOrNull(r.startedAt) ?? strOrNull(r.createdAt),
     endedAt: strOrNull(r.sealedAt),
     lastStep: strOrNull(r.currentBoundary) ?? strOrNull(r.boundaryLabel) ?? strOrNull(r.boundary)
@@ -41382,7 +41466,7 @@ function toRecentRuns(payload) {
 function stepName(step) {
   if (typeof step === "string") return step;
   const s = obj2(step);
-  return str2(s.title) || str2(s.stepTitle) || str2(s.stepId) || "a step";
+  return str3(s.title) || str3(s.stepTitle) || str3(s.stepId) || "a step";
 }
 function toAwaiting(run) {
   const out = [];
@@ -41392,7 +41476,7 @@ function toAwaiting(run) {
       if (missing.length === 0) continue;
       out.push({
         // The app names the waiting execution on the invocation, not on its steps.
-        executionId: str2(step.executionId) || str2(invocation.awaitingExecutionId) || str2(invocation.executionId) || strings(run.awaitingExecutionIds)[0] || "",
+        executionId: str3(step.executionId) || str3(invocation.awaitingExecutionId) || str3(invocation.executionId) || strings(run.awaitingExecutionIds)[0] || "",
         stepTitle: strOrNull(step.title) ?? strOrNull(step.stepId),
         missingInputIds: missing
       });
@@ -41419,10 +41503,10 @@ function toActiveRuns(payload) {
 }
 function toBlockedThreads(payload) {
   return list2(obj2(payload).conversations).filter((c) => c.activityState === "waiting_for_input").map((c) => ({
-    title: str2(c.title),
+    title: str3(c.title),
     routineId: strOrNull(c.routineId),
     runId: strOrNull(c.routineRunId),
-    activity: clip(str2(c.activity), 160)
+    activity: clip(str3(c.activity), 160)
   }));
 }
 var SUMMARY_LIMIT = 300;
@@ -41433,34 +41517,34 @@ function toRunDetail(payload, runId, known) {
   const staged = list2(snapshot.stages).map((stage) => {
     const said = strOrNull(stage.resultSummary) ?? strOrNull(stage.reason);
     return {
-      title: str2(stage.title) || str2(stage.id),
+      title: str3(stage.title) || str3(stage.id),
       kind: stage.kind === "code" ? "script" : "agent",
-      state: str2(stage.phase) || str2(stage.resultStatus),
+      state: str3(stage.phase) || str3(stage.resultStatus),
       summary: said ? clip(said, SUMMARY_LIMIT) : null
     };
   });
   const scripts = list2(p.codeSteps).map((s) => {
     const last = list2(s.attempts).at(-1) ?? {};
     return {
-      title: str2(s.title) || str2(s.stepId),
+      title: str3(s.title) || str3(s.stepId),
       kind: "script",
-      state: str2(s.phase) || str2(last.outcome),
+      state: str3(s.phase) || str3(last.outcome),
       summary: strOrNull(last.summary) ? clip(last.summary, SUMMARY_LIMIT) : strOrNull(last.failureReason)
     };
   });
   return {
-    ...head ?? { runId, routineId: "", routineName: "", status: str2(snapshot.phase), startedAt: null, endedAt: null, lastStep: null },
+    ...head ?? { runId, routineId: "", routineName: "", status: str3(snapshot.phase), startedAt: null, endedAt: null, lastStep: null },
     runId,
     steps: staged.length > 0 ? staged : scripts
   };
 }
 function toRecordBooks(payload) {
   return list2(obj2(payload).ledgers).map((l) => ({
-    id: str2(l.id),
-    name: str2(l.name),
-    purpose: clip(str2(l.purpose), 200),
+    id: str3(l.id),
+    name: str3(l.name),
+    purpose: clip(str3(l.purpose), 200),
     records: typeof l.records === "number" ? l.records : 0,
-    usedBy: list2(l.used_by).map((u) => str2(u.name)).filter(Boolean)
+    usedBy: list2(l.used_by).map((u) => str3(u.name)).filter(Boolean)
   }));
 }
 function toRecords(payload) {
@@ -41468,7 +41552,7 @@ function toRecords(payload) {
   const records = list2(p.records).map((r) => {
     const fields = obj2(r.fields);
     return {
-      key: str2(r.key),
+      key: str3(r.key),
       status: strOrNull(fields.status),
       updatedAt: strOrNull(r.updated_at),
       fields: slimFields(Object.fromEntries(Object.entries(fields).filter(([name]) => name !== "status")))
@@ -41485,22 +41569,22 @@ function toStartReceipt(payload, routineId, requestId) {
   const p = obj2(payload);
   return {
     routineId,
-    requestId: str2(p.requestId) || requestId,
-    state: str2(p.queueState) || str2(p.status) || "accepted",
+    requestId: str3(p.requestId) || requestId,
+    state: str3(p.queueState) || str3(p.status) || "accepted",
     awaitingInputIds: strings(p.awaitingInputIds)
   };
 }
 function toControlMessage(payload, fallback) {
   const p = obj2(payload);
-  return clip(str2(p.message) || str2(p.state) || str2(p.status) || fallback, 200);
+  return clip(str3(p.message) || str3(p.state) || str3(p.status) || fallback, 200);
 }
 function toControlState(payload) {
   const p = obj2(payload);
-  return { operationId: str2(p.operationId), state: str2(p.state), error: strOrNull(p.error) };
+  return { operationId: str3(p.operationId), state: str3(p.state), error: strOrNull(p.error) };
 }
 function findControlState(statusPayload, operationId) {
-  const found = list2(obj2(obj2(statusPayload).routines).recentControls).find((c) => str2(c.operationId) === operationId);
-  return found ? { operationId, state: str2(found.state), error: strOrNull(found.error) } : null;
+  const found = list2(obj2(obj2(statusPayload).routines).recentControls).find((c) => str3(c.operationId) === operationId);
+  return found ? { operationId, state: str3(found.state), error: strOrNull(found.error) } : null;
 }
 
 // src/adapters/out/bridge/toone-app-adapter.ts
@@ -41508,6 +41592,7 @@ var LABEL = "Toone Connector";
 var STATUS_PAGE = 50;
 var CONTROL_SETTLE_MS = 2e4;
 var CONTROL_POLL_MS = 1e3;
+var FLOW_TIMEOUT_MS = 6e4;
 var PENDING_CONTROL = /* @__PURE__ */ new Set(["accepted", "applying"]);
 var DONE = { pause: "Paused.", continue: "Continued.", cancel: "Cancelled." };
 var TooneAppAdapter = class {
@@ -41576,8 +41661,41 @@ var TooneAppAdapter = class {
     const payload = await this.runtime(workspace3, { op: "supply_inputs", executionId, invocationInputs: inputs, clientRequestId: randomUUID3() });
     return toControlMessage(payload, "inputs accepted");
   }
+  async createRoutine(workspace3, description) {
+    const payload = await this.flow(workspace3, "draft", { op: "desktop_create_routine", desktop: { workspaceId: workspace3.id, description } });
+    return toDraftStart(payload);
+  }
+  async startSetup(workspace3, listing2) {
+    const payload = await this.flow(workspace3, "setup", {
+      op: "desktop_start_setup",
+      desktop: { workspaceId: workspace3.id, listingKind: listing2.kind, listingId: listing2.id }
+    });
+    return toSetupStart(payload);
+  }
   close() {
     return this.bridge.close();
+  }
+  /** The connector's own conversation in Toone for this workspace; Toone names the connector from it. */
+  async identityFor(workspace3) {
+    return this.identity(workspace3);
+  }
+  /**
+   * Starts one of Toone's own flows. When the answer is lost (a timeout or a dropped connection),
+   * asks once more with the same request id: Toone answers "reused" instead of starting it twice.
+   */
+  async flow(workspace3, kind, params) {
+    const send = { ...params, desktop: { ...params.desktop, clientRequestId: randomUUID3() } };
+    const once = async () => this.bridge.call("agent", send, await this.identity(workspace3), FLOW_TIMEOUT_MS);
+    try {
+      try {
+        return await once();
+      } catch (error62) {
+        if (!(error62 instanceof ConnectorError) || error62.code !== "TIMEOUT" && error62.code !== "APP_NOT_RUNNING") throw error62;
+        return await once();
+      }
+    } catch (error62) {
+      throw flowRefusal(error62, kind);
+    }
   }
   async agent(workspace3, params) {
     return this.bridge.call("agent", params, await this.identity(workspace3));
@@ -41620,14 +41738,21 @@ function exploreLink(ref) {
   return `toone://explore/${checked.kind === "routine" ? "routines" : "bundles"}/${checked.id}`;
 }
 var AppLinks = class {
-  constructor(bridge, openWith = openWithMacOS) {
+  constructor(bridge, identityFor, openWith = openWithMacOS) {
     this.bridge = bridge;
+    this.identityFor = identityFor;
     this.openWith = openWith;
   }
   bridge;
+  identityFor;
   openWith;
-  async showExploreListing(ref) {
+  async showExploreListing(ref, workspace3) {
     const link = exploreLink(ref);
+    await this.bridge.connectionGeneration();
+    if (this.bridge.paired) {
+      await this.offer(ref, workspace3);
+      return "offered";
+    }
     const about = await this.bridge.call("agent", { op: "desktop_diagnostics", desktop: {} });
     const appPath = appBundlePath(about?.executablePath);
     if (!appPath) throw new ConnectorError("APP_ERROR", "Toone did not say where it runs from, so the connector cannot open the page in it. Open Explore in Toone instead.");
@@ -41636,26 +41761,39 @@ var AppLinks = class {
     } catch {
       throw new ConnectorError("APP_ERROR", `Could not open the page in Toone. Open ${link} yourself, or find it in Toone's Explore.`);
     }
+    return "opened";
+  }
+  async offer(ref, workspace3) {
+    const params = { op: "desktop_navigate", desktop: { workspaceId: workspace3.id, target: "explore", listingKind: ref.kind, listingId: ref.id } };
+    try {
+      await this.bridge.call("agent", params, await this.identityFor(workspace3));
+    } catch (error62) {
+      const code = error62 instanceof ConnectorError ? error62.appCode : void 0;
+      if (code === "INVALID_NAVIGATION_TARGET" || code && UNKNOWN_OPERATION.has(code)) {
+        throw new ConnectorError("NOT_SUPPORTED_BY_APP", "This Toone version cannot show an Explore page to a paired connector.", code);
+      }
+      throw error62;
+    }
   }
 };
 
 // src/adapters/out/explore/explore-mappers.ts
 var obj3 = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
 var list3 = (v) => Array.isArray(v) ? v.map(obj3) : [];
-var str3 = (v) => typeof v === "string" ? v : "";
+var str4 = (v) => typeof v === "string" ? v : "";
 var SUMMARY_LIMIT2 = 200;
 var TEXT_LIMIT = 120;
 var MAX_ITEMS = 8;
-var titleOf = (e) => str3(e.display_title) || str3(e.title);
+var titleOf = (e) => str4(e.display_title) || str4(e.title);
 function toListing(kind, e) {
   const price = obj3(e.price);
-  const author = str3(e.author_name) || "someone";
+  const author = str4(e.author_name) || "someone";
   return {
     kind,
-    id: kind === "routine" ? str3(e.workflow_id) : str3(e.bundle_id),
+    id: kind === "routine" ? str4(e.workflow_id) : str4(e.bundle_id),
     title: titleOf(e),
-    summary: clip(str3(e.card_summary) || str3(e.summary), SUMMARY_LIMIT2),
-    price: priceLabel(typeof price.amount === "number" ? price.amount : 0, str3(price.currency) || "USD"),
+    summary: clip(str4(e.card_summary) || str4(e.summary), SUMMARY_LIMIT2),
+    price: priceLabel(typeof price.amount === "number" ? price.amount : 0, str4(price.currency) || "USD"),
     by: e.author_official === true ? `${author} (official)` : author,
     codeFiles: e.has_code_artifacts === true || list3(e.members).some((m) => obj3(m.entry ?? m).has_code_artifacts === true),
     steps: kind === "routine" && typeof e.step_count === "number" ? e.step_count : null,
@@ -41669,12 +41807,12 @@ function toExploreDetail(kind, payload) {
   const p = obj3(payload);
   const e = Object.keys(obj3(p.data)).length > 0 ? obj3(p.data) : p;
   const profile = obj3(e.listing_profile);
-  const prepare = str3(obj3(profile.time_and_effort).you_prepare);
+  const prepare = str4(obj3(profile.time_and_effort).you_prepare);
   return {
     ...toListing(kind, e),
-    youProvide: list3(profile.you_provide).map((i) => clip(str3(i.label), TEXT_LIMIT)).filter(Boolean).slice(0, MAX_ITEMS),
+    youProvide: list3(profile.you_provide).map((i) => clip(str4(i.label), TEXT_LIMIT)).filter(Boolean).slice(0, MAX_ITEMS),
     prepare: prepare ? clip(prepare, 300) : null,
-    thirdParties: list3(profile.third_parties).map((t) => str3(t.name) || str3(t.domain)).filter(Boolean).slice(0, MAX_ITEMS)
+    thirdParties: list3(profile.third_parties).map((t) => str4(t.name) || str4(t.domain)).filter(Boolean).slice(0, MAX_ITEMS)
   };
 }
 
@@ -41737,6 +41875,33 @@ function retryAsk(run) {
   return {
     title: `Retry ${names} in "${run.routineName}"?`,
     detail: "Toone runs the failed step again as it is; the routine is not changed. If what made it fail is still there, it fails again and waits for you."
+  };
+}
+
+// src/domain/drafting.ts
+var DESCRIPTION_LIMIT = 8e3;
+function routineDescription(text) {
+  const description = text.trim();
+  if (!description) throw new ConnectorError("INVALID_REQUEST", "Describe the routine first: what it should do, and when.");
+  if (description.length > DESCRIPTION_LIMIT) {
+    throw new ConnectorError("INVALID_REQUEST", `The description is ${description.length} characters; Toone takes up to ${DESCRIPTION_LIMIT}. Shorten it.`);
+  }
+  return description;
+}
+function makeRoutineAsk(description, project) {
+  return {
+    title: `Make a routine in ${project}?`,
+    detail: `Toone's own assistant drafts a routine from this description: "${clip(description, 240)}". You review and publish the draft in Toone; nothing runs until you do.`
+  };
+}
+function draftHandoff(start, project) {
+  const what = start.status === "reused" ? "Toone had already started this draft for the same request" : "Toone started drafting the routine";
+  return {
+    workspace: project,
+    status: start.status,
+    draftId: start.draftId,
+    next: `${what} in ${project}. Click "Open" on Toone's notice about it to follow along; Toone may ask you questions there. You review and publish it in Toone; nothing runs until you do.`,
+    toone: start.message
   };
 }
 
@@ -41927,6 +42092,12 @@ var ConnectorService = class {
     });
     return this.app.supplyInputs(ws, req.executionId, req.inputs);
   }
+  async makeRoutine(req, confirm) {
+    const description = routineDescription(req.description);
+    const ws = await this.workspace(req);
+    await demand(confirm, makeRoutineAsk(description, ws.name));
+    return draftHandoff(await this.app.createRoutine(ws, description), ws.name);
+  }
   async workspace(scope) {
     return pickWorkspace(await this.app.workspaces(), scope.workspace, this.cwd);
   }
@@ -41972,15 +42143,26 @@ var ExploreService = class {
     if (!await confirm(installAsk(detail, project.name))) {
       throw new ConnectorError("NOT_CONFIRMED", "Not confirmed, so nothing was done.");
     }
-    await this.links.showExploreListing(detail);
-    const button = detail.kind === "bundle" ? "Use this bundle" : "Use this routine";
-    return {
-      kind: detail.kind,
-      id: detail.id,
-      title: detail.title,
-      project: project.name,
-      next: `Toone now shows it in Explore. To install, press "${button}" there; Toone's setup asks for what it needs and installs it into ${project.name}.`
-    };
+    const done = { kind: detail.kind, id: detail.id, title: detail.title, project: project.name };
+    if (detail.kind === "routine") {
+      try {
+        const setup = await this.app.startSetup(project, detail);
+        return { ...done, how: "setup", next: setupNext(setup.title || detail.title, project.name, setup.status === "reused"), toone: setup.message };
+      } catch (error62) {
+        if (!(error62 instanceof ConnectorError && error62.code === "NOT_SUPPORTED_BY_APP")) throw error62;
+      }
+    }
+    const why = detail.kind === "routine" ? "This Toone version cannot start setup from the connector, so it shows the listing instead. " : "";
+    const shown = await this.showPage(detail, project);
+    return { ...done, how: shown === "opened" ? "page" : "offer", next: pageNext(detail.kind, project.name, shown, why) };
+  }
+  async showPage(detail, project) {
+    try {
+      return await this.links.showExploreListing(detail, project);
+    } catch (error62) {
+      if (!(error62 instanceof ConnectorError && error62.code === "NOT_SUPPORTED_BY_APP")) throw error62;
+      throw new ConnectorError("NOT_SUPPORTED_BY_APP", `${error62.message} ${findItYourself(detail.title, detail.id, detail.kind, project.name)}`, error62.appCode);
+    }
   }
   /** Explore installs into the project open in Toone, so that is the only one this can target. */
   async projectOpenInApp(wanted) {
@@ -42038,7 +42220,7 @@ async function main() {
   const bridge = new BridgeClient(bridgePort(), { credentials, autoPair: argv[0] === "mcp" });
   const app = new TooneAppAdapter(bridge, new OperatorStore(join(folder, "state.json")));
   const connector = new ConnectorService(app, process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
-  const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
+  const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge, (ws) => app.identityFor(ws)), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
   if (argv[0] === "mcp") {
     await serveMcp(
       connector,
