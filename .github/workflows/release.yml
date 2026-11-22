@@ -1,0 +1,41 @@
+name: release
+# Runs only when a version tag is pushed (v1.2.3). Never on a push to a branch.
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+permissions:
+  contents: read
+concurrency:
+  group: release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write # create the GitHub release
+      id-token: write # npm provenance
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+      - run: pnpm install --frozen-lockfile
+      - name: Versions agree with the tag
+        run: node scripts/release-check.mjs --tag "$GITHUB_REF_NAME" --notes "$RUNNER_TEMP/notes.md"
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      # The plugin ships a bundled server; it must match the sources.
+      - run: git diff --exit-code -- plugin/server
+      - name: Publish to npm with provenance
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file "$RUNNER_TEMP/notes.md" --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}

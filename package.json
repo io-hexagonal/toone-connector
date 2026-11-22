@@ -1,7 +1,18 @@
 {
   "name": "toone-connector",
   "version": "0.1.0",
-  "description": "See, start and decide on your Toone routines from Claude. An MCP server, a CLI and a Claude Code plugin.",
+  "description": "See, start and decide on your Toone routines from Claude: an MCP server and a command line for the Toone Mac app.",
+  "mcpName": "io.github.mattwebhub/toone-connector",
+  "keywords": [
+    "toone",
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "routines",
+    "automation"
+  ],
+  "author": "Toone (https://trytoone.com)",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
@@ -9,9 +20,9 @@
   },
   "files": [
     "dist",
-    "plugin",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=20"
@@ -22,7 +33,9 @@
     "test": "vitest run",
     "arch": "zoner check",
     "verify": "pnpm typecheck && pnpm test && pnpm arch && pnpm build",
-    "e2e": "node scripts/e2e-mcp.mjs"
+    "e2e": "node scripts/e2e-mcp.mjs",
+    "e2e:live": "node scripts/e2e-live.mjs",
+    "release:check": "node scripts/release-check.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
@@ -41,5 +54,12 @@
     "url": "git+https://github.com/mattwebhub/toone-connector.git"
   },
   "homepage": "https://trytoone.com",
-  "packageManager": "pnpm@12.14.0"
+  "packageManager": "pnpm@12.14.0",
+  "bugs": {
+    "url": "https://github.com/mattwebhub/toone-connector/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
 }
