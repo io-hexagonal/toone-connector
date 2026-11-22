@@ -6,11 +6,11 @@ Claude is where you talk. Toone is where repeating jobs run. This connector lets
 
 It is three things in one small package:
 
-- **A Claude Code plugin** (`plugin/`): 13 tools and two skills.
+- **A Claude Code plugin** (`plugin/`): 14 tools and two skills.
 - **A tool server** (`toone-connector mcp`) for any MCP client.
 - **A command line** (`toone-connector status`, `start`, …) for a terminal.
 
-> **Status: 0.1, works on one machine.** All 11 tools are tested against a running Toone app (Direct edition, macOS). The three actions are confirmed against live runs of a harmless test routine: start with a missing input, answer it, pause, continue, run to completion, start again and cancel, then read both results back (`pnpm e2e:live`). Not yet tested: routines with sub-routines, failed steps held for a fix, automatic (script) steps, several workspaces at once, and any client other than the test client and Claude Code. Nothing is published to npm or a plugin directory. Pairing is tested against a stand-in for the app, not yet against a released Toone.
+> **Status: 0.1, works on one machine.** All 11 tools are tested against a running Toone app (Direct edition, macOS). The three actions are confirmed against live runs of a harmless test routine: start with a missing input, answer it, pause, continue, run to completion, start again and cancel, then read both results back (`pnpm e2e:live`). Not yet tested: routines with sub-routines, failed steps held for a fix, automatic (script) steps, several workspaces at once, and any client other than the test client and Claude Code. Nothing is published to npm or a plugin directory. Pairing, making a routine and starting an Explore setup are tested against a stand-in for the app, not yet against a released Toone.
 
 ## What you need
 
@@ -43,6 +43,7 @@ node dist/main.js doctor     # check the connection
 node dist/main.js status     # running, waiting, last finished
 node dist/main.js run RUN_ID # one run, one line per step
 node dist/main.js start "reddit radar"   # asks before starting
+node dist/main.js make-routine "Every Monday, list this week's top launches"   # asks first
 node dist/main.js explore grants         # search Toone Explore
 ```
 
@@ -62,11 +63,16 @@ node dist/main.js explore grants         # search Toone Explore
 | `toone_start` | Run a routine | **yes** |
 | `toone_control` | Pause, continue or cancel a run; continue retries a failed step held for you | **yes** |
 | `toone_answer` | Give a waiting run its inputs | **yes** |
-| `toone_install` | Open an Explore listing in Toone, where you install it with Toone's setup | **yes** |
+| `toone_install` | Start Toone's setup for an Explore routine, or show a bundle in Toone | **yes** |
+| `toone_make_routine` | Hand Toone a description; Toone's assistant drafts the routine and you publish it in Toone | **yes** |
 
 Answers are short on purpose. A run that is 80,000 characters inside Toone comes back as about 2,000.
 
-`toone_explore` reads Toone's public Explore library (the one the app and trytoone.com show) over the internet; only your search words or a listing id are sent. Listings are written by other people, so read them as such. `toone_install` asks you first, naming the listing, the project open in Toone, whether it comes with code files and what setup will ask for. It then opens the listing in Toone; nothing is installed until you press "Use this routine" (or "Use this bundle") there and finish Toone's own setup.
+`toone_explore` reads Toone's public Explore library (the one the app and trytoone.com show) over the internet; only your search words or a listing id are sent. Listings are written by other people, so read them as such. `toone_install` asks you first, naming the listing, the project open in Toone, whether it comes with code files and what setup will ask for. For a routine, Toone then starts its own setup conversation and shows an "Open" notice; its assistant asks you there about code files and inputs, and nothing is installed until you finish. The connector never answers those questions. A bundle has no setup conversation, so Toone shows its Explore page instead and you press "Use this bundle" there. A Toone too old to start setup for the connector gets the listing page, as before; the answer says which of the two happened.
+
+When the connector is paired, Toone does not tell it where the app is installed, so for a bundle Toone shows an "Open" notice for the page rather than opening it. Where Toone cannot do that, the answer says where to find the listing in Explore.
+
+`toone_make_routine` asks you first, naming the project and quoting the start of the description. Toone's own assistant then drafts the routine in Toone and may ask you questions there; you review and publish it in Toone, and nothing runs until you do. If your Toone plan's routine limit is reached, Toone refuses and the connector says so.
 
 ## Pairing
 
@@ -76,7 +82,7 @@ Toone asks you before an outside program can use it.
 2. Toone shows a prompt with the connector's name and the same code. Check the codes match, choose **Read only** or **May start and control routines**, and click **Allow**.
 3. Toone hands the connector a key, once. The connector keeps it in `~/.toone/connector/credential.json`, readable only by your macOS user, and uses it for every later connection.
 
-From then on Toone checks the key on every connection, and the connector checks that it is talking to the same Toone: a program that only holds Toone's port gets nothing. A read-only connector can look but cannot start, pause, continue, cancel or answer runs; Toone refuses those itself. Settings › Connected Apps in Toone lists the connector with when it was paired and last used, and **Revoke** disconnects it at once.
+From then on Toone checks the key on every connection, and the connector checks that it is talking to the same Toone: a program that only holds Toone's port gets nothing. A read-only connector can look but cannot start, pause, continue, cancel or answer runs, make a routine or install from Explore; Toone refuses those itself, and the connector says how to pair again to allow them. Settings › Connected Apps in Toone lists the connector with when it was paired and last used, and **Revoke** disconnects it at once.
 
 From Claude, the first tool call answers "Toone is asking you to allow this connector … code 482913"; allow it in Toone and ask again. If you decline, the connector stops asking; run `toone-connector pair` to try again. `toone-connector pair --read-only` suggests read only; `toone-connector unpair` forgets the key on this Mac (revoke it in Toone too).
 
@@ -86,7 +92,7 @@ Against a Toone version from before pairing, the connector connects without pair
 
 A routine can send messages or publish as you. Text from the web can also end up in Claude's context. So Claude must not be able to start one by itself.
 
-The four tools that act ask **you** through the client's own prompt (MCP elicitation), not through the conversation. No answer, a "no", or an unticked box means nothing happens. A client that cannot show the prompt is refused. `TOONE_CONNECTOR_UNPROMPTED=allow` turns the question off; only set it where nothing untrusted reaches the model.
+The five tools that act ask **you** through the client's own prompt (MCP elicitation), not through the conversation. No answer, a "no", or an unticked box means nothing happens. A client that cannot show the prompt is refused. `TOONE_CONNECTOR_UNPROMPTED=allow` turns the question off; only set it where nothing untrusted reaches the model.
 
 This is the connector's own safeguard, on top of Toone's: Toone decides whether the connector may connect at all and whether it may act (pairing, above). Toone does not ask again for each action. See [SECURITY.md](SECURITY.md).
 
@@ -114,7 +120,7 @@ plugin/                      the Claude Code plugin (manifest, skills, bundled s
 
 ```sh
 pnpm verify   # types, unit tests, architecture check, build
-pnpm e2e      # 20 checks against the running Toone app; never confirms an action
+pnpm e2e      # 23 checks against the running Toone app; never confirms an action
 pnpm e2e:live "Connector E2E (safe to delete)" --workspace NAME
               # confirms real actions on ONE named routine; refuses to run without one
 ```
@@ -130,7 +136,7 @@ These are in the Toone app, not the connector:
 
 ## Not yet
 
-"Make this a routine" and notes for a routine (the Toone app does not offer them to connectors yet), the Continue or Finish question a routine can ask at the end of a run (answer it in Toone for now), triggers from other apps, phone notifications, and use from claude.ai or the phone (that needs a hosted connector).
+Notes for a routine (the Toone app does not offer them to connectors yet), answering the questions Toone asks while it drafts a routine or sets one up (answer them in Toone), the Continue or Finish question a routine can ask at the end of a run (answer it in Toone for now), triggers from other apps, phone notifications, and use from claude.ai or the phone (that needs a hosted connector).
 
 ## Licence
 

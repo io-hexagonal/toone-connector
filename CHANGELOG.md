@@ -2,6 +2,18 @@
 
 All notable changes to the Toone connector. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- `toone_make_routine` and `toone-connector make-routine`: after the person confirms, hand Toone a description; Toone's own assistant drafts the routine and the person publishes it in Toone. A plan limit and a read-only pairing are reported plainly.
+
+### Changed
+
+- `toone_install` starts Toone's own setup conversation for an Explore routine instead of only opening its page. Bundles, and Toone versions that cannot start setup for the connector, still get the listing page; the answer says which happened.
+- When paired, the connector has Toone offer an Explore page with an "Open" notice, because a paired connector may not read the app's details; if Toone cannot, the answer says where to find the listing.
+- A read-only pairing's refusal says how to pair again to allow the action.
+
 ## [0.1.0] - Unreleased
 
 First release: a Claude Code plugin, a tool server for any MCP client (`toone-connector mcp`) and a command line, for the Toone Mac app (Direct edition).
