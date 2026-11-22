@@ -174,3 +174,21 @@ export function toControlMessage(payload: unknown, fallback: string): string {
   const p = obj(payload);
   return clip(str(p.message) || str(p.state) || str(p.status) || fallback, 200);
 }
+
+/** Where a pause, continue or cancel stands. The app accepts it first and applies it moments later. */
+export interface ControlState {
+  operationId: string;
+  state: string;
+  error: string | null;
+}
+
+export function toControlState(payload: unknown): ControlState {
+  const p = obj(payload);
+  return { operationId: str(p.operationId), state: str(p.state), error: strOrNull(p.error) };
+}
+
+/** The same operation as it stands now, from the status snapshot; null when it is not listed. */
+export function findControlState(statusPayload: unknown, operationId: string): ControlState | null {
+  const found = list(obj(obj(statusPayload).routines).recentControls).find((c) => str(c.operationId) === operationId);
+  return found ? { operationId, state: str(found.state), error: strOrNull(found.error) } : null;
+}

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { TooneAppPort } from '../../../application/ports/out/toone-app.js';
+import { ConnectorError } from '../../../domain/errors.js';
 import type { RecordBook, RecordQuery, RecordResult } from '../../../domain/records.js';
 import type { Routine } from '../../../domain/routine.js';
 import type { RunControlAction, RunDetail, RunSummary, StartReceipt } from '../../../domain/run.js';
@@ -7,10 +8,12 @@ import type { LiveStatus } from '../../../domain/waiting.js';
 import type { Workspace } from '../../../domain/workspace.js';
 import type { BridgeClient, BridgeIdentity } from './bridge-client.js';
 import {
+  findControlState,
   toActiveRuns,
   toBlockedThreads,
   toByStatus,
   toControlMessage,
+  toControlState,
   toRecentRuns,
   toRecordBooks,
   toRecords,
@@ -23,6 +26,10 @@ import type { OperatorStore } from './operator-store.js';
 
 const LABEL = 'Toone Connector';
 const STATUS_PAGE = 50;
+const CONTROL_SETTLE_MS = 20_000;
+const CONTROL_POLL_MS = 1_000;
+const PENDING_CONTROL = new Set(['accepted', 'applying']);
+const DONE: Record<RunControlAction, string> = { pause: 'Paused.', continue: 'Continued.', cancel: 'Cancelled.' };
 
 /** Speaks the Toone app's loopback bridge on behalf of the connector. */
 export class TooneAppAdapter implements TooneAppPort {
@@ -84,7 +91,16 @@ export class TooneAppAdapter implements TooneAppPort {
 
   async control(workspace: Workspace, runId: string, action: RunControlAction): Promise<string> {
     const payload = await this.runtime(workspace, { op: action, runId, clientRequestId: randomUUID() });
-    return toControlMessage(payload, `${action} accepted`);
+    // "accepted" only means Toone took the request; wait briefly for it to be applied, so a failure is not reported as success.
+    let control = toControlState(payload);
+    for (let waited = 0; control.operationId && PENDING_CONTROL.has(control.state) && waited < CONTROL_SETTLE_MS; waited += CONTROL_POLL_MS) {
+      await new Promise((resolve) => setTimeout(resolve, CONTROL_POLL_MS));
+      control = findControlState(await this.agent(workspace, { op: 'status', limit: STATUS_PAGE, offset: 0, includeIdle: false }), control.operationId) ?? control;
+    }
+    if (control.state === 'failed') throw new ConnectorError('APP_ERROR', `Toone could not ${action} the run: ${control.error ?? 'no reason given'}`);
+    if (control.state === 'completed') return DONE[action];
+    if (control.state === 'superseded') return `Replaced by a later pause, continue or cancel before it applied.`;
+    return `Accepted. Toone is still applying the ${action}; check toone_overview in a moment.`;
   }
 
   async supplyInputs(workspace: Workspace, executionId: string, inputs: Record<string, string>): Promise<string> {
