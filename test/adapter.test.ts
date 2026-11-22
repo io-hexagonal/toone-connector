@@ -13,7 +13,7 @@ function bridge(settled: { state: string; error?: string }) {
     if (command === 'routine_runtime') return { operationId: 'op-1', state: 'accepted', runId: 'r' };
     return { routines: { runs: [], recentControls: [{ operationId: 'op-1', runId: 'r', state: settled.state, error: settled.error ?? null }] } };
   });
-  return { call, close: async () => {} } as unknown as BridgeClient & { call: typeof call };
+  return { call, close: async () => {}, connectionGeneration: () => 0 } as unknown as BridgeClient & { call: typeof call };
 }
 
 describe('run controls', () => {

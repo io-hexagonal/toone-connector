@@ -3878,7 +3878,7 @@ var require_fast_uri = __commonJS({
         normalizeString(uri, options);
       } else if (typeof uri === "object") {
         uri = /** @type {T} */
-        parse3(serialize(uri, options), options);
+        parse4(serialize(uri, options), options);
       }
       return uri;
     }
@@ -3921,8 +3921,8 @@ var require_fast_uri = __commonJS({
     function resolveComponent(base, relative, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
-        base = parse3(serialize(base, options), options);
-        relative = parse3(serialize(relative, options), options);
+        base = parse4(serialize(base, options), options);
+        relative = parse4(serialize(relative, options), options);
       }
       options = options || {};
       if (!options.tolerant && relative.scheme) {
@@ -4240,7 +4240,7 @@ var require_fast_uri = __commonJS({
       }
       return { parsed, malformedAuthorityOrPort, malformedPercentEncoding, malformedSchemeSpecific, malformedHost, malformedScheme };
     }
-    function parse3(uri, opts) {
+    function parse4(uri, opts) {
       return parseWithStatus(uri, opts).parsed;
     }
     function normalizeString(uri, opts) {
@@ -4277,7 +4277,7 @@ var require_fast_uri = __commonJS({
       resolveComponent,
       equal,
       serialize,
-      parse: parse3
+      parse: parse4
     };
     module.exports = fastUri;
     module.exports.default = fastUri;
@@ -9362,7 +9362,7 @@ var require_extension = __commonJS({
       if (dest[name] === void 0) dest[name] = [elem];
       else dest[name].push(elem);
     }
-    function parse3(header) {
+    function parse4(header) {
       const offers = /* @__PURE__ */ Object.create(null);
       let params = /* @__PURE__ */ Object.create(null);
       let mustUnescape = false;
@@ -9502,7 +9502,7 @@ var require_extension = __commonJS({
         }).join(", ");
       }).join(", ");
     }
-    module.exports = { format, parse: parse3 };
+    module.exports = { format, parse: parse4 };
   }
 });
 
@@ -9516,7 +9516,7 @@ var require_websocket = __commonJS({
     var net = __require("net");
     var querystring = __require("querystring");
     var tls = __require("tls");
-    var { randomBytes, createHash } = __require("crypto");
+    var { randomBytes: randomBytes2, createHash } = __require("crypto");
     var { Duplex, Readable } = __require("stream");
     var { URL: URL2 } = __require("url");
     var PerMessageDeflate2 = require_permessage_deflate();
@@ -9537,7 +9537,7 @@ var require_websocket = __commonJS({
     var {
       EventTarget: { addEventListener, removeEventListener }
     } = require_event_target();
-    var { format, parse: parse3 } = require_extension();
+    var { format, parse: parse4 } = require_extension();
     var { toBuffer } = require_buffer_util();
     var kAborted = /* @__PURE__ */ Symbol("kAborted");
     var protocolVersions = [8, 13];
@@ -10070,7 +10070,7 @@ var require_websocket = __commonJS({
         }
       }
       const defaultPort = isSecure ? 443 : 80;
-      const key = randomBytes(16).toString("base64");
+      const key = randomBytes2(16).toString("base64");
       const request = isSecure ? https.request : http.request;
       const protocolSet = /* @__PURE__ */ new Set();
       let perMessageDeflate;
@@ -10237,7 +10237,7 @@ var require_websocket = __commonJS({
           }
           let extensions;
           try {
-            extensions = parse3(secWebSocketExtensions);
+            extensions = parse4(secWebSocketExtensions);
           } catch (err) {
             const message = "Invalid Sec-WebSocket-Extensions header";
             abortHandshake(websocket, socket, message);
@@ -10545,7 +10545,7 @@ var require_subprotocol = __commonJS({
   "node_modules/.pnpm/ws@8.23.0/node_modules/ws/lib/subprotocol.js"(exports, module) {
     "use strict";
     var { tokenChars } = require_validation2();
-    function parse3(header) {
+    function parse4(header) {
       const protocols = /* @__PURE__ */ new Set();
       let start = -1;
       let end = -1;
@@ -10581,7 +10581,7 @@ var require_subprotocol = __commonJS({
       protocols.add(protocol);
       return protocols;
     }
-    module.exports = { parse: parse3 };
+    module.exports = { parse: parse4 };
   }
 });
 
@@ -10990,7 +10990,7 @@ var require_websocket_server = __commonJS({
 });
 
 // src/main.ts
-import { readFileSync as readFileSync2 } from "fs";
+import { readFileSync as readFileSync3 } from "fs";
 import { homedir } from "os";
 import { join } from "path";
 
@@ -11006,6 +11006,11 @@ var ConnectorError = class extends Error {
   }
   code;
 };
+
+// src/domain/pairing.ts
+function describeScope(scope) {
+  return scope === "read" ? "read only" : "read, and start and control routines";
+}
 
 // src/domain/text.ts
 function clip(value, max) {
@@ -11108,17 +11113,20 @@ var USAGE = `toone-connector: see, start and decide on your Toone routines.
   toone-connector explore WORDS [--kind routine|bundle]  search Toone Explore; explore ID shows one listing
   toone-connector install LISTING                    open a listing in Toone to install it (asks first)
   toone-connector doctor                             check the connection to Toone
+  toone-connector pair [--read-only]                 pair with Toone (you allow it in the app)
+  toone-connector unpair                             forget this connector's pairing on this Mac
   toone-connector mcp                                serve the tools to Claude (used by the plugin)
 
 Options: --workspace NAME, --json, --yes (skip the question; only on a terminal you control)
 `;
 function parseArgs(argv) {
-  const args = { command: argv[0] ?? "help", words: [], json: false, yes: false, inputs: {} };
+  const args = { command: argv[0] ?? "help", words: [], json: false, yes: false, readOnly: false, inputs: {} };
   for (let i = 1; i < argv.length; i += 1) {
     const a = argv[i] ?? "";
     const next = () => argv[i += 1] ?? "";
     if (a === "--json") args.json = true;
     else if (a === "--yes") args.yes = true;
+    else if (a === "--read-only") args.readOnly = true;
     else if (a === "--workspace") args.workspace = next();
     else if (a === "--status") args.status = next();
     else if (a === "--limit") args.limit = Number(next());
@@ -11131,8 +11139,9 @@ function parseArgs(argv) {
   }
   return args;
 }
-async function runCli(connector, argv, out, explore) {
+async function runCli(connector, argv, out, explore, pairing) {
   const args = parseArgs(argv);
+  if (pairing && (args.command === "pair" || args.command === "unpair")) return runPairing(pairing, args, out);
   const scope = { workspace: args.workspace };
   const now = /* @__PURE__ */ new Date();
   const first = args.words[0] ?? "";
@@ -11143,6 +11152,7 @@ async function runCli(connector, argv, out, explore) {
       case "doctor": {
         const all = await connector.workspaces();
         out(`Connected to Toone. ${all.length} workspace(s): ${all.map((w) => `${w.name}${w.selectedInApp ? " (open)" : ""}`).join(", ")}.`);
+        if (pairing) out(pairingLine(pairing));
         return 0;
       }
       case "status": {
@@ -11221,6 +11231,36 @@ async function runCli(connector, argv, out, explore) {
 function waitingLine(i) {
   const choices = i.choices ? Object.entries(i.choices).map(([c, how]) => `${c}: ${how}`).join("; ") : i.howToAnswer;
   return `${i.routineName}: ${i.what} \u2192 ${choices}`;
+}
+async function runPairing(pairing, args, out) {
+  try {
+    if (args.command === "unpair") {
+      out(pairing.unpair() ? "Forgot this connector's pairing on this Mac. Also revoke it in Toone: Settings \u203A Connected Apps." : "This connector was not paired.");
+      return 0;
+    }
+    const outcome = await pairing.pair(
+      args.readOnly ? "read" : "control",
+      (ticket) => out(`Toone is asking you to allow "Toone Connector". Check that Toone shows the code ${ticket.code}, choose what it may do, and click Allow. Waiting\u2026`)
+    );
+    if (outcome.status === "approved") {
+      out(`Paired. Toone allows this connector to ${describeScope(outcome.scope)}.`);
+      return 0;
+    }
+    out(PAIR_MESSAGES[outcome.status]);
+    return 1;
+  } catch (error62) {
+    out(error62 instanceof ConnectorError ? error62.message : `Unexpected failure: ${error62 instanceof Error ? error62.message : String(error62)}`);
+    return 1;
+  }
+}
+var PAIR_MESSAGES = {
+  denied: "You declined the pairing in Toone. Nothing was saved.",
+  expired: "Nobody answered in Toone in time. Run `toone-connector pair` again.",
+  unsupported: "This Toone app cannot pair yet. Update Toone; until then the connector connects without pairing."
+};
+function pairingLine(pairing) {
+  const state = pairing.state();
+  return state.paired && state.scope ? `Paired: Toone allows this connector to ${describeScope(state.scope)}.` : "Not paired. Run `toone-connector pair` to pair this connector with Toone.";
 }
 function terminalConfirm(yes, out) {
   return async (ask) => {
@@ -16729,18 +16769,18 @@ var validateAsync = async (schema, value, _ctx) => {
   return result.issues.length === 0;
 };
 var _encode = (_Err) => {
-  const parse3 = _parse(_Err);
+  const parse4 = _parse(_Err);
   const fn = (schema, value, _ctx, _params) => {
     const ctx = _ctx ? { ..._ctx, direction: "backward" } : { direction: "backward" };
-    return parse3(schema, value, ctx, finalizeParams(fn, _params));
+    return parse4(schema, value, ctx, finalizeParams(fn, _params));
   };
   return fn;
 };
 var encode = /* @__PURE__ */ _encode($ZodRealError);
 var _decode = (_Err) => {
-  const parse3 = _parse(_Err);
+  const parse4 = _parse(_Err);
   const fn = (schema, value, _ctx, _params) => {
-    return parse3(schema, value, _ctx, finalizeParams(fn, _params));
+    return parse4(schema, value, _ctx, finalizeParams(fn, _params));
   };
   return fn;
 };
@@ -18235,7 +18275,7 @@ function capSize(inst, size) {
   if (!caps.length)
     return;
   const cap = Math.min(...caps.map((c) => c[0]));
-  const parse3 = inst._zod.parse;
+  const parse4 = inst._zod.parse;
   inst._zod.parse = (payload, ctx) => {
     const n = size(payload.value);
     if (n > cap && !ctx?.skipChecks && ctx?.direction !== "backward") {
@@ -18249,7 +18289,7 @@ function capSize(inst, size) {
         }
       }
     }
-    return parse3(payload, ctx);
+    return parse4(payload, ctx);
   };
 }
 var arraySize = (input2) => Array.isArray(input2) ? input2.length : -1;
@@ -40670,10 +40710,12 @@ function registerExploreTools(server, explore, confirm, reply2) {
 }
 
 // src/adapters/in/mcp/server.ts
+var connectionNote = () => void 0;
 var workspace2 = external_exports.string().optional().describe("Workspace name. Omit for the current folder's workspace, else the one open in Toone.");
 var READ = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
 var ACT = { readOnlyHint: false, destructiveHint: true, openWorldHint: true };
 async function serveMcp(connector, options, explore) {
+  connectionNote = options.connectionNote ?? connectionNote;
   const server = new McpServer(
     { name: "toone", version: options.version },
     {
@@ -40756,11 +40798,17 @@ async function serveMcp(connector, options, explore) {
 }
 async function reply(work) {
   try {
-    return { content: [{ type: "text", text: JSON.stringify(await work()) }] };
+    return { content: [{ type: "text", text: withNote(JSON.stringify(await work())) }] };
   } catch (error62) {
     const text = error62 instanceof ConnectorError ? `${error62.message} [${error62.code}]` : `Unexpected failure: ${error62 instanceof Error ? error62.message : String(error62)}`;
-    return { content: [{ type: "text", text }], isError: true };
+    return { content: [{ type: "text", text: withNote(text) }], isError: true };
   }
+}
+function withNote(text) {
+  const note = connectionNote();
+  return note ? `${text}
+
+${note}` : text;
 }
 function confirmVia(server, withoutPrompt) {
   return async (ask) => {
@@ -40799,16 +40847,155 @@ var import_websocket = __toESM(require_websocket(), 1);
 var import_websocket_server = __toESM(require_websocket_server(), 1);
 var wrapper_default = import_websocket.default;
 
+// src/adapters/out/bridge/bridge-auth.ts
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
+var BRIDGE_SUBPROTOCOL = "toone.bridge.v1";
+var PAIR_SUBPROTOCOL = "toone.pair.v1";
+var NONCE_HEADER = "X-Toone-Bridge-Nonce";
+var PROOF_HEADER = "X-Toone-Bridge-Proof";
+var CLIENT_HEADER = "X-Toone-Bridge-Client";
+var SERVER_PROOF_HEADER = "x-toone-bridge-server-proof";
+var OPEN_TIMEOUT_MS = 5e3;
+var REPLY_TIMEOUT_MS = 1e4;
+function mac3(secret, message) {
+  return createHmac("sha256", Buffer.from(secret, "hex")).update(message, "utf8").digest("hex");
+}
+function pairedHandshake(credential, nonce = randomBytes(32).toString("hex")) {
+  return {
+    headers: { [NONCE_HEADER]: nonce, [PROOF_HEADER]: mac3(credential.secret, `client:${nonce}`), [CLIENT_HEADER]: credential.clientId },
+    expectedServerProof: mac3(credential.secret, `server:${nonce}`)
+  };
+}
+function verifiesServer(expectedServerProof, headers) {
+  const proof = headers[SERVER_PROOF_HEADER];
+  if (headers["sec-websocket-protocol"] !== BRIDGE_SUBPROTOCOL || typeof proof !== "string") return false;
+  const expected = Buffer.from(expectedServerProof, "utf8");
+  const presented = Buffer.from(proof.toLowerCase(), "utf8");
+  return expected.length === presented.length && timingSafeEqual(expected, presented);
+}
+var OpenFailure = class extends Error {
+  constructor(kind, message) {
+    super(message);
+    this.kind = kind;
+    this.name = "OpenFailure";
+  }
+  kind;
+};
+function classify(error62) {
+  if (error62.code === "ECONNREFUSED") return "not-running";
+  if (/Unexpected server response/i.test(error62.message)) return "rejected";
+  if (/subprotocol/i.test(error62.message)) return "no-subprotocol";
+  return "other";
+}
+function openSocket(url2, protocols, headers, verify) {
+  return new Promise((resolve, reject) => {
+    const socket = new wrapper_default(url2, protocols, { headers, handshakeTimeout: OPEN_TIMEOUT_MS });
+    let verified = verify === void 0;
+    socket.on("error", () => {
+    });
+    socket.once("upgrade", (response) => {
+      verified = verify ? verify(response.headers) : true;
+    });
+    socket.once("open", () => {
+      if (verified) return resolve(socket);
+      socket.terminate();
+      reject(new OpenFailure("not-verified", "The server did not prove it holds the pairing."));
+    });
+    socket.once("error", (error62) => reject(new OpenFailure(classify(error62), error62.message)));
+  });
+}
+async function startPairing(url2, name, scope) {
+  let socket;
+  try {
+    socket = await openSocket(url2, [PAIR_SUBPROTOCOL], {}, (headers) => headers["sec-websocket-protocol"] === PAIR_SUBPROTOCOL);
+  } catch (error62) {
+    if (error62 instanceof OpenFailure && error62.kind === "not-running") throw notRunning(url2);
+    return "unsupported";
+  }
+  const replies = /* @__PURE__ */ new Map();
+  socket.on("message", (raw) => {
+    const reply2 = decode3(raw.toString());
+    if (reply2?.id) replies.get(reply2.id)?.(reply2);
+  });
+  const first = await waitFor(socket, replies, "1", () => socket.send(JSON.stringify({ id: "1", pairing: { op: "request", name, scope } })));
+  const body = first.pairing;
+  if (!first.success || body?.status !== "pending" || !body.code || !body.requestId) {
+    socket.close();
+    throw refusal(first);
+  }
+  const decision = new Promise((resolve) => {
+    replies.set("2", (reply2) => resolve(toDecision(reply2)));
+    socket.once("close", () => resolve({ status: "failed", message: "The connection to Toone closed before you answered." }));
+  });
+  socket.send(JSON.stringify({ id: "2", pairing: { op: "await", requestId: body.requestId } }));
+  return { code: body.code, expiresAt: body.expiresAt ?? "", decision, close: () => socket.close() };
+}
+function waitFor(socket, replies, id, send) {
+  return new Promise((resolve, reject) => {
+    const fail = () => reject(new ConnectorError("APP_NOT_RUNNING", "The connection to Toone closed while asking to pair."));
+    const timer = setTimeout(() => {
+      socket.close();
+      reject(new ConnectorError("TIMEOUT", "Toone did not answer the pairing request."));
+    }, REPLY_TIMEOUT_MS);
+    socket.once("close", fail);
+    replies.set(id, (reply2) => {
+      clearTimeout(timer);
+      socket.off("close", fail);
+      resolve(reply2);
+    });
+    send();
+  });
+}
+function toDecision(reply2) {
+  const body = reply2.pairing;
+  if (!reply2.success) return { status: "failed", message: reply2.error ?? "Toone could not finish pairing." };
+  if (body?.status === "approved" && body.clientId && body.secret && /^[0-9a-f]{64}$/.test(body.secret)) {
+    return { status: "approved", clientId: body.clientId, secret: body.secret, scope: body.scope === "control" ? "control" : "read" };
+  }
+  return body?.status === "denied" ? { status: "denied" } : { status: "expired" };
+}
+function refusal(reply2) {
+  if (reply2.errorCode === "PAIRING_BUSY") {
+    return new ConnectorError("PAIRING_BUSY", "Toone is already asking about another app. Answer that in Toone, then try again.");
+  }
+  return new ConnectorError("APP_ERROR", `Toone: ${reply2.error ?? "the pairing request was refused."}${reply2.errorCode ? ` (${reply2.errorCode})` : ""}`);
+}
+function notRunning(url2) {
+  const port = url2.split(":").pop() ?? "";
+  return new ConnectorError(
+    "APP_NOT_RUNNING",
+    `Could not reach the Toone app on this Mac (port ${port}). Open Toone and try again. The App Store edition cannot be reached by connectors.`
+  );
+}
+function decode3(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 // src/adapters/out/bridge/bridge-client.ts
 var DEFAULT_TIMEOUT_MS = 3e4;
+var CLIENT_NAME = "Toone Connector";
 var BridgeClient = class {
-  constructor(port) {
+  constructor(port, options = {}) {
     this.port = port;
+    this.options = options;
   }
   port;
+  options;
   socket = null;
   opening = null;
   pending = /* @__PURE__ */ new Map();
+  link = null;
+  pairing = null;
+  declined = false;
+  /** Increases with every new connection; conversations opened on an older one must be opened again. */
+  generation = 0;
+  get url() {
+    return `ws://localhost:${this.port}`;
+  }
   /** Sends one command and returns its decoded payload. */
   async call(command, params, identity, timeoutMs = DEFAULT_TIMEOUT_MS) {
     const socket = await this.open();
@@ -40822,37 +41009,102 @@ var BridgeClient = class {
       socket.send(JSON.stringify({ id, ...identity ?? {}, command: { command, params } }));
     });
   }
+  /** Opens (or reuses) the connection and returns its generation. */
+  async connectionGeneration() {
+    await this.open();
+    return this.generation;
+  }
+  /** A sentence to add to answers given over an unpaired connection. */
+  connectionNote() {
+    if (this.link === "unpaired-old-app") {
+      return "Note: connected to Toone without pairing, because this Toone version cannot pair yet. Any program on this Mac can use the same connection. After updating Toone, the connector asks to pair.";
+    }
+    if (this.link === "unpaired") {
+      return "Note: this connector is not paired with Toone, so Toone cannot tell it apart from other programs on this Mac. Run `toone-connector pair` to pair it.";
+    }
+    return void 0;
+  }
   async close() {
+    this.pairing?.close();
+    this.pairing = null;
     this.socket?.close();
     this.socket = null;
     this.opening = null;
+    this.link = null;
   }
   open() {
     if (this.socket && this.socket.readyState === wrapper_default.OPEN) return Promise.resolve(this.socket);
     if (this.opening) return this.opening;
-    this.opening = new Promise((resolve, reject) => {
-      const socket = new wrapper_default(`ws://localhost:${this.port}`);
-      socket.once("open", () => {
-        this.socket = socket;
-        this.opening = null;
-        resolve(socket);
-      });
-      socket.once("error", () => {
-        this.opening = null;
-        reject(
-          new ConnectorError(
-            "APP_NOT_RUNNING",
-            `Could not reach the Toone app on this Mac (port ${this.port}). Open Toone and try again. The App Store edition cannot be reached by connectors.`
-          )
-        );
-      });
-      socket.on("message", (raw) => this.receive(raw.toString()));
-      socket.on("close", () => this.dropped());
-    });
-    return this.opening;
+    const opening = this.connect().then((socket) => this.adopt(socket));
+    this.opening = opening;
+    void opening.then(
+      () => this.forget(opening),
+      () => this.forget(opening)
+    );
+    return opening;
+  }
+  forget(opening) {
+    if (this.opening === opening) this.opening = null;
+  }
+  adopt(socket) {
+    this.socket = socket;
+    this.generation += 1;
+    socket.on("message", (raw) => this.receive(raw.toString()));
+    socket.on("close", () => this.dropped(socket));
+    return socket;
+  }
+  async connect() {
+    const credential = this.options.credentials?.load();
+    if (credential) return this.connectPaired(credential);
+    const oldApp = this.options.autoPair === true && await this.askToPair() === "unsupported";
+    return this.connectUnpaired(oldApp ? "unpaired-old-app" : "unpaired");
+  }
+  /** Starts pairing and throws the message to show; returns only when this Toone cannot pair. */
+  async askToPair() {
+    if (this.declined) {
+      throw new ConnectorError("PAIRING_DENIED", "You declined this connector in Toone. To try again, run `toone-connector pair` in a terminal.");
+    }
+    if (this.pairing) throw pendingError(this.pairing.code);
+    const session = await startPairing(this.url, this.options.clientName ?? CLIENT_NAME, "control");
+    if (session === "unsupported") return session;
+    this.pairing = session;
+    void session.decision.then((decision) => this.settle(session, decision));
+    throw pendingError(session.code);
+  }
+  settle(session, decision) {
+    if (this.pairing === session) this.pairing = null;
+    session.close();
+    if (decision.status === "denied") this.declined = true;
+    if (decision.status !== "approved") return;
+    try {
+      this.options.credentials?.save({ clientId: decision.clientId, secret: decision.secret, scope: decision.scope, pairedAt: (/* @__PURE__ */ new Date()).toISOString() });
+    } catch {
+    }
+  }
+  async connectPaired(credential) {
+    const handshake = pairedHandshake(credential);
+    try {
+      const socket = await openSocket(this.url, [BRIDGE_SUBPROTOCOL], handshake.headers, (headers) => verifiesServer(handshake.expectedServerProof, headers));
+      this.link = "paired";
+      return socket;
+    } catch (error62) {
+      throw pairedFailure(error62, this.url, this.port);
+    }
+  }
+  async connectUnpaired(link) {
+    try {
+      const socket = await openSocket(this.url, [], {});
+      this.link = link;
+      return socket;
+    } catch (error62) {
+      if (error62 instanceof OpenFailure && error62.kind === "rejected") {
+        throw new ConnectorError("PAIRING_REQUIRED", "Toone only lets paired apps connect. Run `toone-connector pair` in a terminal and allow it in Toone.");
+      }
+      throw notRunning(this.url);
+    }
   }
   receive(text) {
-    const parsed = decode3(text);
+    const parsed = decode4(text);
     if (!parsed || typeof parsed !== "object") return;
     const reply2 = parsed;
     const waiting = reply2.id ? this.pending.get(reply2.id) : void 0;
@@ -40864,15 +41116,17 @@ var BridgeClient = class {
       waiting.reject(new ConnectorError("APP_ERROR", appMessage(reply2.error, reply2.errorCode)));
       return;
     }
-    const payload = decode3(inner?.payload);
+    const payload = decode4(inner?.payload);
     if (inner?.status && inner.status !== "ok") {
       waiting.reject(new ConnectorError("APP_ERROR", appMessage(describe3(payload) ?? inner.message, void 0)));
       return;
     }
     waiting.resolve(payload);
   }
-  dropped() {
+  dropped(socket) {
+    if (this.socket !== socket) return;
     this.socket = null;
+    this.link = null;
     for (const [id, waiting] of this.pending) {
       clearTimeout(waiting.timer);
       waiting.reject(new ConnectorError("APP_NOT_RUNNING", "The connection to Toone closed. Is the app still open?"));
@@ -40880,7 +41134,27 @@ var BridgeClient = class {
     }
   }
 };
-function decode3(payload) {
+function pendingError(code) {
+  return new ConnectorError(
+    "PAIRING_PENDING",
+    `Toone is asking you to allow this connector. In the Toone app, check that the code is ${code}, choose what the connector may do, and click Allow. Then ask again.`
+  );
+}
+function pairedFailure(error62, url2, port) {
+  const kind = error62 instanceof OpenFailure ? error62.kind : "other";
+  if (kind === "not-running") return notRunning(url2);
+  if (kind === "rejected") {
+    return new ConnectorError(
+      "PAIRING_REJECTED",
+      "Toone did not accept this connector's pairing. It may have been revoked in Toone (Settings \u203A Connected Apps). Run `toone-connector pair` to pair again."
+    );
+  }
+  return new ConnectorError(
+    "APP_NOT_VERIFIED",
+    `The program on port ${port} could not prove it is the Toone app this connector is paired with, so the connector did not talk to it. If Toone was reinstalled or replaced by an older version, run \`toone-connector pair\` again.`
+  );
+}
+function decode4(payload) {
   if (typeof payload !== "string") return payload;
   try {
     return JSON.parse(payload);
@@ -40901,10 +41175,54 @@ function appMessage(message, code) {
   return code ? `Toone: ${text} (${code})` : `Toone: ${text}`;
 }
 
+// src/adapters/out/bridge/credential-store.ts
+import { chmodSync, existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "fs";
+import { dirname } from "path";
+var SECRET = /^[0-9a-f]{64}$/;
+var CredentialStore = class {
+  constructor(file2) {
+    this.file = file2;
+  }
+  file;
+  load() {
+    if (!existsSync(this.file)) return null;
+    if ((statSync(this.file).mode & 63) !== 0) chmodSync(this.file, 384);
+    const text = readFileSync(this.file, "utf8");
+    try {
+      return parse3(text);
+    } catch (error62) {
+      if (error62 instanceof SyntaxError) return null;
+      throw error62;
+    }
+  }
+  save(credential) {
+    const folder = dirname(this.file);
+    mkdirSync(folder, { recursive: true, mode: 448 });
+    chmodSync(folder, 448);
+    const temporary = `${this.file}.${process.pid}.tmp`;
+    writeFileSync(temporary, `${JSON.stringify({ version: 1, ...credential }, null, 2)}
+`, { mode: 384 });
+    chmodSync(temporary, 384);
+    renameSync(temporary, this.file);
+  }
+  remove() {
+    if (!existsSync(this.file)) return false;
+    rmSync(this.file, { force: true });
+    return true;
+  }
+};
+function parse3(text) {
+  const value = JSON.parse(text);
+  if (value.version !== 1 || typeof value.clientId !== "string" || !value.clientId) return null;
+  if (typeof value.secret !== "string" || !SECRET.test(value.secret)) return null;
+  const scope = value.scope === "control" ? "control" : "read";
+  return { clientId: value.clientId, secret: value.secret, scope, pairedAt: typeof value.pairedAt === "string" ? value.pairedAt : "" };
+}
+
 // src/adapters/out/bridge/operator-store.ts
 import { randomUUID as randomUUID2 } from "crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { dirname } from "path";
+import { existsSync as existsSync2, mkdirSync as mkdirSync2, readFileSync as readFileSync2, writeFileSync as writeFileSync2 } from "fs";
+import { dirname as dirname2 } from "path";
 var OperatorStore = class {
   constructor(file2) {
     this.file = file2;
@@ -40918,8 +41236,8 @@ var OperatorStore = class {
     const fresh = randomUUID2();
     ids[workspaceId] = fresh;
     try {
-      mkdirSync(dirname(this.file), { recursive: true });
-      writeFileSync(this.file, `${JSON.stringify({ operators: ids }, null, 2)}
+      mkdirSync2(dirname2(this.file), { recursive: true });
+      writeFileSync2(this.file, `${JSON.stringify({ operators: ids }, null, 2)}
 `, { mode: 384 });
     } catch {
     }
@@ -40927,7 +41245,7 @@ var OperatorStore = class {
   }
   load() {
     if (this.ids) return this.ids;
-    this.ids = existsSync(this.file) ? parseOperators(readFileSync(this.file, "utf8")) : {};
+    this.ids = existsSync2(this.file) ? parseOperators(readFileSync2(this.file, "utf8")) : {};
     return this.ids;
   }
 };
@@ -40938,6 +41256,37 @@ function parseOperators(text) {
     return {};
   }
 }
+
+// src/adapters/out/bridge/pairing-adapter.ts
+var TooneAppPairingAdapter = class {
+  constructor(bridge, credentials, name = CLIENT_NAME) {
+    this.bridge = bridge;
+    this.credentials = credentials;
+    this.name = name;
+  }
+  bridge;
+  credentials;
+  name;
+  async pair(scope, onCode) {
+    const session = await startPairing(this.bridge.url, this.name, scope);
+    if (session === "unsupported") return { status: "unsupported" };
+    onCode({ code: session.code, expiresAt: session.expiresAt });
+    const decision = await session.decision;
+    session.close();
+    if (decision.status === "failed") throw new ConnectorError("APP_ERROR", `Toone: ${decision.message}`);
+    if (decision.status !== "approved") return { status: decision.status };
+    this.credentials.save({ clientId: decision.clientId, secret: decision.secret, scope: decision.scope, pairedAt: (/* @__PURE__ */ new Date()).toISOString() });
+    await this.bridge.close();
+    return { status: "approved", scope: decision.scope };
+  }
+  forget() {
+    return this.credentials.remove();
+  }
+  state() {
+    const credential = this.credentials.load();
+    return credential ? { paired: true, scope: credential.scope, pairedAt: credential.pairedAt } : { paired: false };
+  }
+};
 
 // src/adapters/out/bridge/toone-app-adapter.ts
 import { randomUUID as randomUUID3 } from "crypto";
@@ -41169,6 +41518,7 @@ var TooneAppAdapter = class {
   bridge;
   operators;
   identities = /* @__PURE__ */ new Map();
+  generation = -1;
   async workspaces() {
     return toWorkspaces(await this.bridge.call("agent", { op: "desktop_workspaces", desktop: {} }));
   }
@@ -41237,6 +41587,11 @@ var TooneAppAdapter = class {
   }
   /** Toone only answers routine calls from a known conversation; this opens (or reuses) the connector's. */
   async identity(workspace3) {
+    const generation = await this.bridge.connectionGeneration();
+    if (generation !== this.generation) {
+      this.identities.clear();
+      this.generation = generation;
+    }
     const known = this.identities.get(workspace3.id);
     if (known) return known;
     const payload = await this.bridge.call("agent", {
@@ -41645,6 +42000,23 @@ var ExploreService = class {
   }
 };
 
+// src/application/pairing-service.ts
+var PairingService = class {
+  constructor(app) {
+    this.app = app;
+  }
+  app;
+  pair(scope, onCode) {
+    return this.app.pair(scope, onCode);
+  }
+  unpair() {
+    return this.app.forget();
+  }
+  state() {
+    return this.app.state();
+  }
+};
+
 // src/main.ts
 var VERSION = "0.1.0";
 var DEFAULT_PORT = 9876;
@@ -41653,7 +42025,7 @@ function bridgePort() {
   const fromEnv = Number(process.env.TOONE_BRIDGE_PORT);
   if (Number.isInteger(fromEnv) && fromEnv > 0) return fromEnv;
   try {
-    const file2 = JSON.parse(readFileSync2(join(homedir(), ".toone", "mcp-server", "bridge.json"), "utf8"));
+    const file2 = JSON.parse(readFileSync3(join(homedir(), ".toone", "mcp-server", "bridge.json"), "utf8"));
     if (typeof file2.port === "number") return file2.port;
   } catch {
   }
@@ -41661,15 +42033,28 @@ function bridgePort() {
 }
 async function main() {
   const argv = process.argv.slice(2);
-  const bridge = new BridgeClient(bridgePort());
-  const app = new TooneAppAdapter(bridge, new OperatorStore(join(homedir(), ".toone", "connector", "state.json")));
+  const folder = join(homedir(), ".toone", "connector");
+  const credentials = new CredentialStore(join(folder, "credential.json"));
+  const bridge = new BridgeClient(bridgePort(), { credentials, autoPair: argv[0] === "mcp" });
+  const app = new TooneAppAdapter(bridge, new OperatorStore(join(folder, "state.json")));
   const connector = new ConnectorService(app, process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
   const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
   if (argv[0] === "mcp") {
-    await serveMcp(connector, { version: VERSION, withoutPrompt: process.env.TOONE_CONNECTOR_UNPROMPTED === "allow" ? "allow" : "refuse" }, explore);
+    await serveMcp(
+      connector,
+      {
+        version: VERSION,
+        withoutPrompt: process.env.TOONE_CONNECTOR_UNPROMPTED === "allow" ? "allow" : "refuse",
+        connectionNote: () => bridge.connectionNote()
+      },
+      explore
+    );
     return;
   }
-  const code = await runCli(connector, argv, (line2) => console.log(line2), explore);
+  const pairing = new PairingService(new TooneAppPairingAdapter(bridge, credentials));
+  const code = await runCli(connector, argv, (line2) => console.log(line2), explore, pairing);
+  const note = bridge.connectionNote();
+  if (note) console.error(note);
   await app.close();
   process.exitCode = code;
 }

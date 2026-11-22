@@ -34,6 +34,7 @@ const DONE: Record<RunControlAction, string> = { pause: 'Paused.', continue: 'Co
 /** Speaks the Toone app's loopback bridge on behalf of the connector. */
 export class TooneAppAdapter implements TooneAppPort {
   private readonly identities = new Map<string, BridgeIdentity>();
+  private generation = -1;
 
   constructor(
     private readonly bridge: BridgeClient,
@@ -122,6 +123,12 @@ export class TooneAppAdapter implements TooneAppPort {
 
   /** Toone only answers routine calls from a known conversation; this opens (or reuses) the connector's. */
   private async identity(workspace: Workspace): Promise<BridgeIdentity> {
+    // A new connection (Toone restarted, or the connector just paired) must open its conversation again.
+    const generation = await this.bridge.connectionGeneration();
+    if (generation !== this.generation) {
+      this.identities.clear();
+      this.generation = generation;
+    }
     const known = this.identities.get(workspace.id);
     if (known) return known;
     const payload = (await this.bridge.call('agent', {

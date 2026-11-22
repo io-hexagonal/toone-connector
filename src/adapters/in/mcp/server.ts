@@ -10,7 +10,11 @@ export interface McpOptions {
   version: string;
   /** When the client cannot ask the person: 'refuse' (default) or 'allow' (the person opted in). */
   withoutPrompt: 'refuse' | 'allow';
+  /** A sentence added to every answer, such as "this connection is not paired". */
+  connectionNote?: () => string | undefined;
 }
+
+let connectionNote: () => string | undefined = () => undefined;
 
 type ToolResult = { content: { type: 'text'; text: string }[]; isError?: boolean };
 
@@ -20,6 +24,7 @@ const ACT = { readOnlyHint: false, destructiveHint: true, openWorldHint: true } 
 
 /** Serves the connector's tools to an MCP client over stdio. */
 export async function serveMcp(connector: Connector, options: McpOptions, explore?: ExploreConnector): Promise<void> {
+  connectionNote = options.connectionNote ?? connectionNote;
   const server = new McpServer(
     { name: 'toone', version: options.version },
     {
@@ -106,11 +111,16 @@ export async function serveMcp(connector: Connector, options: McpOptions, explor
 
 async function reply(work: () => Promise<unknown>): Promise<ToolResult> {
   try {
-    return { content: [{ type: 'text', text: JSON.stringify(await work()) }] };
+    return { content: [{ type: 'text', text: withNote(JSON.stringify(await work())) }] };
   } catch (error) {
     const text = error instanceof ConnectorError ? `${error.message} [${error.code}]` : `Unexpected failure: ${error instanceof Error ? error.message : String(error)}`;
-    return { content: [{ type: 'text', text }], isError: true };
+    return { content: [{ type: 'text', text: withNote(text) }], isError: true };
   }
+}
+
+function withNote(text: string): string {
+  const note = connectionNote();
+  return note ? `${text}\n\n${note}` : text;
 }
 
 /** Asks through the client's own prompt, so the answer comes from the person and not from the model. */
