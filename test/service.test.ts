@@ -51,6 +51,11 @@ describe('bridge mappers', () => {
       invocations: [{ currentSteps: [{ executionId: 'e', title: 'Pick', missingInputIds: ['topic'] }] }] }] } });
     expect(runs[0]).toMatchObject({ canContinue: true, canPause: false, heldSteps: ['Send'], awaiting: [{ executionId: 'e', missingInputIds: ['topic'] }] });
   });
+  it('takes the waiting execution id from the invocation, as the app reports it', () => {
+    const runs = toActiveRuns({ routines: { runs: [{ runId: 'r', routineId: 'a/b', status: 'awaitingInput', awaitingExecutionIds: ['t1'],
+      invocations: [{ threadId: 't1', awaitingExecutionId: 't1', phase: 'awaitingInput', currentSteps: [{ stepId: 's1', title: 'Pick', phase: 'awaitingInput', missingInputIds: ['topic'] }] }] }] } });
+    expect(runs[0]?.awaiting).toEqual([{ executionId: 't1', stepTitle: 'Pick', missingInputIds: ['topic'] }]);
+  });
   it('turns a large run snapshot into one short line per step, in order', () => {
     const detail = toRunDetail({ run: { runId: 'r', name: 'B', status: 'completed' }, codeSteps: [{ stepId: 's1', title: 'Read' }],
       invocationSnapshots: [{ snapshot: { stages: [

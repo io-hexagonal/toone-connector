@@ -63,7 +63,8 @@ function toAwaiting(run: Raw): AwaitingInput[] {
       const missing = strings(step.missingInputIds);
       if (missing.length === 0) continue;
       out.push({
-        executionId: str(step.executionId) || str(invocation.executionId) || str(invocation.invocationId),
+        // The app names the waiting execution on the invocation, not on its steps.
+        executionId: str(step.executionId) || str(invocation.awaitingExecutionId) || str(invocation.executionId) || strings(run.awaitingExecutionIds)[0] || '',
         stepTitle: strOrNull(step.title) ?? strOrNull(step.stepId),
         missingInputIds: missing,
       });
