@@ -108,7 +108,7 @@ var require_code = __commonJS({
     }
     exports._ = _;
     var plus = new _Code("+");
-    function str2(strs, ...args) {
+    function str4(strs, ...args) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
       while (i < args.length) {
@@ -119,7 +119,7 @@ var require_code = __commonJS({
       optimize(expr);
       return new _Code(expr);
     }
-    exports.str = str2;
+    exports.str = str4;
     function addCodeArg(code, arg) {
       if (arg instanceof _Code)
         code.push(...arg._items);
@@ -162,7 +162,7 @@ var require_code = __commonJS({
       return;
     }
     function strConcat(c1, c2) {
-      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str2`${c1}${c2}`;
+      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str4`${c1}${c2}`;
     }
     exports.strConcat = strConcat;
     function interpolate(x) {
@@ -253,13 +253,13 @@ var require_scope = __commonJS({
       }
     };
     exports.ValueScopeName = ValueScopeName;
-    var line = (0, code_1._)`\n`;
+    var line2 = (0, code_1._)`\n`;
     var ValueScope = class extends Scope {
       constructor(opts) {
         super(opts);
         this._values = {};
         this._scope = opts.scope;
-        this.opts = { ...opts, _n: opts.lines ? line : code_1.nil };
+        this.opts = { ...opts, _n: opts.lines ? line2 : code_1.nil };
       }
       get() {
         return this._scope;
@@ -876,12 +876,12 @@ var require_codegen = __commonJS({
       }
       // `for-in` statement.
       // With option `ownProperties` replaced with a `for-of` loop for object keys
-      forIn(nameOrPrefix, obj2, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
+      forIn(nameOrPrefix, obj4, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
         if (this.opts.ownProperties) {
-          return this.forOf(nameOrPrefix, (0, code_1._)`Object.keys(${obj2})`, forBody);
+          return this.forOf(nameOrPrefix, (0, code_1._)`Object.keys(${obj4})`, forBody);
         }
         const name = this._scope.toName(nameOrPrefix);
-        return this._for(new ForIter("in", varKind, name, obj2), () => forBody(name));
+        return this._for(new ForIter("in", varKind, name, obj4), () => forBody(name));
       }
       // end `for` loop
       endFor() {
@@ -1124,22 +1124,22 @@ var require_util = __commonJS({
       return (0, codegen_1._)`${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
     }
     exports.schemaRefOrVal = schemaRefOrVal;
-    function unescapeFragment(str2) {
-      return unescapeJsonPointer(decodeURIComponent(str2));
+    function unescapeFragment(str4) {
+      return unescapeJsonPointer(decodeURIComponent(str4));
     }
     exports.unescapeFragment = unescapeFragment;
-    function escapeFragment(str2) {
-      return encodeURIComponent(escapeJsonPointer(str2));
+    function escapeFragment(str4) {
+      return encodeURIComponent(escapeJsonPointer(str4));
     }
     exports.escapeFragment = escapeFragment;
-    function escapeJsonPointer(str2) {
-      if (typeof str2 == "number")
-        return `${str2}`;
-      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPointer(str4) {
+      if (typeof str4 == "number")
+        return `${str4}`;
+      return str4.replace(/~/g, "~0").replace(/\//g, "~1");
     }
     exports.escapeJsonPointer = escapeJsonPointer;
-    function unescapeJsonPointer(str2) {
-      return str2.replace(/~1/g, "/").replace(/~0/g, "~");
+    function unescapeJsonPointer(str4) {
+      return str4.replace(/~1/g, "/").replace(/~0/g, "~");
     }
     exports.unescapeJsonPointer = unescapeJsonPointer;
     function eachItem(xs, f) {
@@ -2164,8 +2164,8 @@ var require_json_schema_traverse = __commonJS({
         post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
       }
     }
-    function escapeJsonPtr(str2) {
-      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPtr(str4) {
+      return str4.replace(/~/g, "~0").replace(/\//g, "~1");
     }
   }
 });
@@ -2701,11 +2701,11 @@ var require_validate = __commonJS({
         if (!this.allErrors)
           this.gen.if(cond);
       }
-      setParams(obj2, assign) {
+      setParams(obj4, assign) {
         if (assign)
-          Object.assign(this.params, obj2);
+          Object.assign(this.params, obj4);
         else
-          this.params = obj2;
+          this.params = obj4;
       }
       block$data(valid, codeBlock, $dataValid = codegen_1.nil) {
         this.gen.block(() => {
@@ -3262,10 +3262,10 @@ var require_utils = __commonJS({
         isIPV6: true
       };
     }
-    function findToken(str2, token) {
+    function findToken(str4, token) {
       let ind = 0;
-      for (let i = 0; i < str2.length; i++) {
-        if (str2[i] === token) ind++;
+      for (let i = 0; i < str4.length; i++) {
+        if (str4[i] === token) ind++;
       }
       return ind;
     }
@@ -4335,7 +4335,7 @@ var require_core = __commonJS({
     var util_1 = require_util();
     var $dataRefSchema = require_data();
     var uri_1 = require_uri();
-    var defaultRegExp = (str2, flags) => new RegExp(str2, flags);
+    var defaultRegExp = (str4, flags) => new RegExp(str4, flags);
     defaultRegExp.code = "new RegExp";
     var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
     var EXT_SCOPE_NAMES = /* @__PURE__ */ new Set([
@@ -5130,16 +5130,16 @@ var require_ucs2length = __commonJS({
   "node_modules/.pnpm/ajv@8.20.0/node_modules/ajv/dist/runtime/ucs2length.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function ucs2length(str2) {
-      const len = str2.length;
+    function ucs2length(str4) {
+      const len = str4.length;
       let length = 0;
       let pos = 0;
       let value;
       while (pos < len) {
         length++;
-        value = str2.charCodeAt(pos++);
+        value = str4.charCodeAt(pos++);
         if (value >= 55296 && value <= 56319 && pos < len) {
-          value = str2.charCodeAt(pos);
+          value = str4.charCodeAt(pos);
           if ((value & 64512) === 56320)
             pos++;
         }
@@ -7022,8 +7022,8 @@ var require_formats = __commonJS({
     }
     var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
     var DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    function date5(str2) {
-      const matches = DATE.exec(str2);
+    function date5(str4) {
+      const matches = DATE.exec(str4);
       if (!matches)
         return false;
       const year = +matches[1];
@@ -7042,8 +7042,8 @@ var require_formats = __commonJS({
     }
     var TIME = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i;
     function getTime(strictTimeZone) {
-      return function time3(str2) {
-        const matches = TIME.exec(str2);
+      return function time3(str4) {
+        const matches = TIME.exec(str4);
         if (!matches)
           return false;
         const hr = +matches[1];
@@ -7089,8 +7089,8 @@ var require_formats = __commonJS({
     var DATE_TIME_SEPARATOR = /t|\s/i;
     function getDateTime(strictTimeZone) {
       const time3 = getTime(strictTimeZone);
-      return function date_time(str2) {
-        const dateTime = str2.split(DATE_TIME_SEPARATOR);
+      return function date_time(str4) {
+        const dateTime = str4.split(DATE_TIME_SEPARATOR);
         return dateTime.length === 2 && date5(dateTime[0]) && time3(dateTime[1]);
       };
     }
@@ -7115,13 +7115,13 @@ var require_formats = __commonJS({
     }
     var NOT_URI_FRAGMENT = /\/|:/;
     var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-    function uri(str2) {
-      return NOT_URI_FRAGMENT.test(str2) && URI.test(str2);
+    function uri(str4) {
+      return NOT_URI_FRAGMENT.test(str4) && URI.test(str4);
     }
     var BYTE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gm;
-    function byte(str2) {
+    function byte(str4) {
       BYTE.lastIndex = 0;
-      return BYTE.test(str2);
+      return BYTE.test(str4);
     }
     var MIN_INT32 = -(2 ** 31);
     var MAX_INT32 = 2 ** 31 - 1;
@@ -7135,11 +7135,11 @@ var require_formats = __commonJS({
       return true;
     }
     var Z_ANCHOR = /[^\\]\\Z/;
-    function regex(str2) {
-      if (Z_ANCHOR.test(str2))
+    function regex(str4) {
+      if (Z_ANCHOR.test(str4))
         return false;
       try {
-        new RegExp(str2);
+        new RegExp(str4);
         return true;
       } catch (e) {
         return false;
@@ -7236,8 +7236,8 @@ var require_dist = __commonJS({
         return ajv;
       }
       const [formats, exportName] = opts.mode === "fast" ? [formats_1.fastFormats, fastName] : [formats_1.fullFormats, fullName];
-      const list2 = opts.formats || formats_1.formatNames;
-      addFormats(ajv, list2, formats, exportName);
+      const list4 = opts.formats || formats_1.formatNames;
+      addFormats(ajv, list4, formats, exportName);
       if (opts.keywords)
         (0, limit_1.default)(ajv);
       return ajv;
@@ -7249,11 +7249,11 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list2, fs, exportName) {
+    function addFormats(ajv, list4, fs, exportName) {
       var _a3;
       var _b;
       (_a3 = (_b = ajv.opts.code).formats) !== null && _a3 !== void 0 ? _a3 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
-      for (const f of list2)
+      for (const f of list4)
         ajv.addFormat(f, fs[f]);
     }
     module.exports = exports = formatsPlugin;
@@ -7292,13 +7292,13 @@ var require_buffer_util = __commonJS({
     var { websocketMask, websocketUnmask } = __require("http");
     var { EMPTY_BUFFER } = require_constants();
     var FastBuffer = Buffer[Symbol.species];
-    function concat(list2, totalLength) {
-      if (list2.length === 0) return EMPTY_BUFFER;
-      if (list2.length === 1) return list2[0];
+    function concat(list4, totalLength) {
+      if (list4.length === 0) return EMPTY_BUFFER;
+      if (list4.length === 1) return list4[0];
       const target = Buffer.allocUnsafe(totalLength);
       let offset = 0;
-      for (let i = 0; i < list2.length; i++) {
-        const buf = list2[i];
+      for (let i = 0; i < list4.length; i++) {
+        const buf = list4[i];
         target.set(buf, offset);
         offset += buf.length;
       }
@@ -9097,14 +9097,14 @@ var require_sender = __commonJS({
        * @param {Function} [cb] Callback
        * @private
        */
-      sendFrame(list2, cb) {
-        if (list2.length === 2) {
+      sendFrame(list4, cb) {
+        if (list4.length === 2) {
           this._socket.cork();
-          this._socket.write(list2[0]);
-          this._socket.write(list2[1], cb);
+          this._socket.write(list4[0]);
+          this._socket.write(list4[1], cb);
           this._socket.uncork();
         } else {
-          this._socket.write(list2[0], cb);
+          this._socket.write(list4[0], cb);
         }
       }
     };
@@ -11024,6 +11024,75 @@ function ago(iso, now) {
   return `${Math.round(hours / 24)} days ago`;
 }
 
+// src/domain/explore.ts
+var ID_PATTERN = /^(wfl|wfb)_[a-z0-9]{8,32}$/;
+function parseListingRef(text) {
+  const id = text.trim();
+  const match = ID_PATTERN.exec(id);
+  if (!match) return null;
+  return { kind: match[1] === "wfl" ? "routine" : "bundle", id };
+}
+function pickListing(found, wanted) {
+  const needle = wanted.trim().toLowerCase();
+  const exact = found.filter((l) => l.title.toLowerCase() === needle);
+  const hits = exact.length > 0 ? exact : found;
+  if (hits.length === 1 && hits[0]) return hits[0];
+  if (hits.length === 0) throw new ConnectorError("LISTING_NOT_FOUND", `Nothing in Explore matches "${wanted}".`);
+  throw new ConnectorError(
+    "LISTING_AMBIGUOUS",
+    `"${wanted}" matches ${hits.length} listings: ${hits.slice(0, 6).map((l) => `${l.title} (${l.id})`).join("; ")}. Use the id.`
+  );
+}
+function priceLabel(amount, currency) {
+  if (!(amount > 0)) return "Free";
+  const digits = /^(JPY|KRW|VND|CLP|ISK)$/i.test(currency) ? 0 : 2;
+  return `${currency.toUpperCase()} ${(amount / 10 ** digits).toFixed(digits)}`;
+}
+function installAsk(detail, project) {
+  const what = detail.kind === "bundle" ? `bundle of ${detail.routines.length} routines` : "routine";
+  const button = detail.kind === "bundle" ? "Use this bundle" : "Use this routine";
+  const parts = [
+    `Shared ${what} by ${detail.by}. ${detail.price === "Free" ? "Free." : `Price: ${detail.price}.`}`,
+    detail.codeFiles ? "It comes with code files; Toone setup shows them and asks before installing them." : "It comes with no code files.",
+    detail.youProvide.length > 0 ? `Setup will ask you for: ${clip(detail.youProvide.join("; "), 300)}.` : "Setup lists nothing you must provide.",
+    detail.thirdParties.length > 0 ? `It uses: ${clip(detail.thirdParties.join(", "), 160)}.` : "",
+    `Toone opens its Explore page in ${project}. Nothing is installed until you press "${button}" there and finish Toone's setup.`
+  ];
+  return { title: `Install "${detail.title}" into ${project}?`, detail: parts.filter(Boolean).join(" ") };
+}
+
+// src/adapters/in/cli/explore-commands.ts
+var line = (l) => `  ${l.title}  [${l.id}]  ${l.price}${l.codeFiles ? ", code files" : ""}${l.routines.length ? `, ${l.routines.length} routines` : ""}. ${l.summary}`;
+async function runExploreCommand(explore, args, out, confirm) {
+  const text = args.words.join(" ");
+  const show = (value, human) => args.json ? out(JSON.stringify(value, null, 2)) : human();
+  if (args.command === "install") {
+    const done = await explore.install({ workspace: args.workspace, listing: text }, confirm);
+    show(done, () => out(done.next));
+    return 0;
+  }
+  if (parseListingRef(text)) {
+    const d = await explore.listing({ listing: text });
+    show(d, () => {
+      out(line(d));
+      if (d.routines.length) out(`  Routines: ${d.routines.join(", ")}`);
+      out(d.youProvide.length ? `  Setup asks for: ${d.youProvide.join("; ")}` : "  Setup asks for nothing up front.");
+      if (d.prepare) out(`  Have ready: ${d.prepare}`);
+    });
+    return 0;
+  }
+  const kind = args.kind === "routine" || args.kind === "bundle" ? args.kind : void 0;
+  const found = await explore.search({ search: text, kind, limit: args.limit });
+  show(found, () => {
+    if (!found.routines.length && !found.bundles.length) out("Nothing in Explore matches.");
+    if (found.routines.length) out("Routines:");
+    found.routines.forEach((l) => out(line(l)));
+    if (found.bundles.length) out("Bundles:");
+    found.bundles.forEach((l) => out(line(l)));
+  });
+  return 0;
+}
+
 // src/adapters/in/cli/cli.ts
 var USAGE = `toone-connector: see, start and decide on your Toone routines.
 
@@ -11035,7 +11104,9 @@ var USAGE = `toone-connector: see, start and decide on your Toone routines.
   toone-connector books                              record books
   toone-connector handled BOOK [WORDS] [--status S]  who or what was already handled
   toone-connector start ROUTINE [--input id=value]   run a routine (asks first)
-  toone-connector pause|continue|cancel RUN_ID       change a run (asks first)
+  toone-connector pause|continue|cancel RUN_ID       change a run (asks first); continue retries a held failed step
+  toone-connector explore WORDS [--kind routine|bundle]  search Toone Explore; explore ID shows one listing
+  toone-connector install LISTING                    open a listing in Toone to install it (asks first)
   toone-connector doctor                             check the connection to Toone
   toone-connector mcp                                serve the tools to Claude (used by the plugin)
 
@@ -11051,6 +11122,7 @@ function parseArgs(argv) {
     else if (a === "--workspace") args.workspace = next();
     else if (a === "--status") args.status = next();
     else if (a === "--limit") args.limit = Number(next());
+    else if (a === "--kind") args.kind = next();
     else if (a === "--input") {
       const pair = next();
       const cut = pair.indexOf("=");
@@ -11059,7 +11131,7 @@ function parseArgs(argv) {
   }
   return args;
 }
-async function runCli(connector, argv, out) {
+async function runCli(connector, argv, out, explore) {
   const args = parseArgs(argv);
   const scope = { workspace: args.workspace };
   const now = /* @__PURE__ */ new Date();
@@ -11080,7 +11152,7 @@ async function runCli(connector, argv, out) {
           out(o.running.length ? "Running or paused:" : "Nothing is running.");
           o.running.forEach((r) => out(runLine(r)));
           out(o.waiting.length ? "Waiting for you:" : "Nothing is waiting for you.");
-          o.waiting.forEach((w) => out(`  ${w.routineName}: ${w.what} \u2192 ${w.howToAnswer}`));
+          o.waiting.forEach((w) => out(`  ${waitingLine(w)}`));
           if (o.lastFinished.length) out("Last finished:");
           o.lastFinished.forEach((r) => out(runLine(r)));
         });
@@ -11088,7 +11160,7 @@ async function runCli(connector, argv, out) {
       }
       case "waiting": {
         const w = await connector.waiting(scope);
-        show(w, () => w.waiting.length ? w.waiting.forEach((i) => out(`${i.routineName}: ${i.what} \u2192 ${i.howToAnswer}`)) : out("Nothing is waiting for you."));
+        show(w, () => w.waiting.length ? w.waiting.forEach((i) => out(waitingLine(i))) : out("Nothing is waiting for you."));
         return 0;
       }
       case "routines": {
@@ -11133,6 +11205,10 @@ async function runCli(connector, argv, out) {
         out(await connector.control({ ...scope, runId: first, action: args.command }, terminalConfirm(args.yes, out)));
         return 0;
       }
+      case "explore":
+      case "install":
+        if (!explore) throw new ConnectorError("CATALOG_UNAVAILABLE", "Explore is not available here.");
+        return await runExploreCommand(explore, { ...args, command: args.command }, out, terminalConfirm(args.yes, out));
       default:
         out(USAGE);
         return args.command === "help" || args.command === "--help" ? 0 : 2;
@@ -11141,6 +11217,10 @@ async function runCli(connector, argv, out) {
     out(error62 instanceof ConnectorError ? error62.message : `Unexpected failure: ${error62 instanceof Error ? error62.message : String(error62)}`);
     return 1;
   }
+}
+function waitingLine(i) {
+  const choices = i.choices ? Object.entries(i.choices).map(([c, how]) => `${c}: ${how}`).join("; ") : i.howToAnswer;
+  return `${i.routineName}: ${i.what} \u2192 ${choices}`;
 }
 function terminalConfirm(yes, out) {
   return async (ask) => {
@@ -11172,26 +11252,26 @@ var util;
   }
   util2.assertNever = assertNever2;
   util2.arrayToEnum = (items) => {
-    const obj2 = {};
+    const obj4 = {};
     for (const item of items) {
-      obj2[item] = item;
+      obj4[item] = item;
     }
-    return obj2;
+    return obj4;
   };
-  util2.getValidEnumValues = (obj2) => {
-    const validKeys = util2.objectKeys(obj2).filter((k) => typeof obj2[obj2[k]] !== "number");
+  util2.getValidEnumValues = (obj4) => {
+    const validKeys = util2.objectKeys(obj4).filter((k) => typeof obj4[obj4[k]] !== "number");
     const filtered = {};
     for (const k of validKeys) {
-      filtered[k] = obj2[k];
+      filtered[k] = obj4[k];
     }
     return util2.objectValues(filtered);
   };
-  util2.objectValues = (obj2) => {
-    return util2.objectKeys(obj2).map(function(e) {
-      return obj2[e];
+  util2.objectValues = (obj4) => {
+    return util2.objectKeys(obj4).map(function(e) {
+      return obj4[e];
     });
   };
-  util2.objectKeys = typeof Object.keys === "function" ? (obj2) => Object.keys(obj2) : (object3) => {
+  util2.objectKeys = typeof Object.keys === "function" ? (obj4) => Object.keys(obj4) : (object3) => {
     const keys = [];
     for (const key in object3) {
       if (Object.prototype.hasOwnProperty.call(object3, key)) {
@@ -15536,8 +15616,8 @@ function defineLazy(object3, key, getter) {
     configurable: true
   });
 }
-function objectClone(obj2) {
-  return Object.create(Object.getPrototypeOf(obj2), Object.getOwnPropertyDescriptors(obj2));
+function objectClone(obj4) {
+  return Object.create(Object.getPrototypeOf(obj4), Object.getOwnPropertyDescriptors(obj4));
 }
 function assignProp(target, prop, value) {
   Object.defineProperty(target, prop, {
@@ -15608,10 +15688,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj2, path) {
+function getElementAtPath(obj4, path) {
   if (!path)
-    return obj2;
-  return path.reduce((acc, key) => acc?.[key], obj2);
+    return obj4;
+  return path.reduce((acc, key) => acc?.[key], obj4);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -15626,14 +15706,14 @@ function promiseAllObject(promisesObj) {
 }
 function randomString(length = 10) {
   const chars = "abcdefghijklmnopqrstuvwxyz";
-  let str2 = "";
+  let str4 = "";
   for (let i = 0; i < length; i++) {
-    str2 += chars[Math.floor(Math.random() * chars.length)];
+    str4 += chars[Math.floor(Math.random() * chars.length)];
   }
-  return str2;
+  return str4;
 }
-function esc(str2) {
-  return JSON.stringify(str2);
+function esc(str4) {
+  return JSON.stringify(str4);
 }
 function slugify(input2) {
   return input2.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
@@ -15747,8 +15827,8 @@ var primitiveTypes = /* @__PURE__ */ new Set([
   "symbol",
   "undefined"
 ]);
-function escapeRegex(str2) {
-  return str2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function escapeRegex(str4) {
+  return str4.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function clone(inst, def, params) {
   const cl = new inst._zod.constr(def ?? inst._zod.def);
@@ -16014,13 +16094,13 @@ function getSizableOrigin(input2) {
   return "unknown";
 }
 var highSurrogate = /[\uD800-\uDBFF]/;
-function codePointLength(str2) {
-  const units = str2.length;
-  if (!highSurrogate.test(str2))
+function codePointLength(str4) {
+  const units = str4.length;
+  if (!highSurrogate.test(str4))
     return units;
   let count = units;
   for (let i = 0; i < units - 1; i++) {
-    if ((str2.charCodeAt(i) & 64512) === 55296 && (str2.charCodeAt(i + 1) & 64512) === 56320) {
+    if ((str4.charCodeAt(i) & 64512) === 55296 && (str4.charCodeAt(i + 1) & 64512) === 56320) {
       count--;
       i++;
     }
@@ -16047,9 +16127,9 @@ function parsedType(data) {
       if (Array.isArray(data)) {
         return "array";
       }
-      const obj2 = data;
-      if (obj2 && Object.getPrototypeOf(obj2) !== Object.prototype && "constructor" in obj2 && obj2.constructor) {
-        return obj2.constructor.name;
+      const obj4 = data;
+      if (obj4 && Object.getPrototypeOf(obj4) !== Object.prototype && "constructor" in obj4 && obj4.constructor) {
+        return obj4.constructor.name;
       }
     }
   }
@@ -16067,8 +16147,8 @@ function issue(...args) {
   }
   return { ...iss };
 }
-function cleanEnum(obj2) {
-  return Object.entries(obj2).filter(([k, _]) => {
+function cleanEnum(obj4) {
+  return Object.entries(obj4).filter(([k, _]) => {
     return Number.isNaN(Number.parseInt(k, 10));
   }).map((el) => el[1]);
 }
@@ -16393,15 +16473,15 @@ var $ZodError = $constructor("$ZodError", initializer);
 var $ZodRealError = $constructor("$ZodError", initializer, void 0, {
   Parent: Error
 });
-function node(obj2, key, make) {
-  if (!Object.prototype.hasOwnProperty.call(obj2, key)) {
+function node(obj4, key, make) {
+  if (!Object.prototype.hasOwnProperty.call(obj4, key)) {
     if (key === "__proto__") {
-      Object.defineProperty(obj2, key, { value: make(), writable: true, enumerable: true, configurable: true });
+      Object.defineProperty(obj4, key, { value: make(), writable: true, enumerable: true, configurable: true });
     } else {
-      obj2[key] = make();
+      obj4[key] = make();
     }
   }
-  return obj2[key];
+  return obj4[key];
 }
 function flattenError(error62, mapper = (issue2) => issue2.message) {
   const fieldErrors = {};
@@ -17376,8 +17456,8 @@ var Doc = class {
     const lines = content.split("\n").filter((x) => x);
     const minIndent = Math.min(...lines.map((x) => x.length - x.trimStart().length));
     const dedented = lines.map((x) => x.slice(minIndent)).map((x) => " ".repeat(this.indent * 2) + x);
-    for (const line of dedented) {
-      this.content.push(line);
+    for (const line2 of dedented) {
+      this.content.push(line2);
     }
   }
   compile() {
@@ -30996,8 +31076,8 @@ var contributors = {
 function aggregateChecks(schema) {
   const agg = {};
   const def = schema._zod.def;
-  const list2 = schema._zod.traits.has("$ZodCheck") ? [schema, ...def.checks ?? []] : def.checks ?? [];
-  for (const ch of list2)
+  const list4 = schema._zod.traits.has("$ZodCheck") ? [schema, ...def.checks ?? []] : def.checks ?? [];
+  for (const ch of list4)
     contributors[ch._zod.def.check]?.(agg, ch._zod.def);
   const bag = schema._zod.bag;
   if (bag.minimum !== void 0)
@@ -39716,8 +39796,8 @@ var McpServer = class {
           title: tool.title,
           description: tool.description,
           inputSchema: (() => {
-            const obj2 = normalizeObjectSchema(tool.inputSchema);
-            return obj2 ? toJsonSchemaCompat(obj2, {
+            const obj4 = normalizeObjectSchema(tool.inputSchema);
+            return obj4 ? toJsonSchemaCompat(obj4, {
               strictUnions: true,
               pipeStrategy: "input"
             }) : EMPTY_OBJECT_JSON_SCHEMA;
@@ -39727,9 +39807,9 @@ var McpServer = class {
           _meta: tool._meta
         };
         if (tool.outputSchema) {
-          const obj2 = normalizeObjectSchema(tool.outputSchema);
-          if (obj2) {
-            toolDefinition.outputSchema = toJsonSchemaCompat(obj2, {
+          const obj4 = normalizeObjectSchema(tool.outputSchema);
+          if (obj4) {
+            toolDefinition.outputSchema = toJsonSchemaCompat(obj4, {
               strictUnions: true,
               pipeStrategy: "output"
             });
@@ -40382,20 +40462,20 @@ var EMPTY_OBJECT_JSON_SCHEMA = {
 function isZodTypeLike(value) {
   return value !== null && typeof value === "object" && "parse" in value && typeof value.parse === "function" && "safeParse" in value && typeof value.safeParse === "function";
 }
-function isZodSchemaInstance(obj2) {
-  return "_def" in obj2 || "_zod" in obj2 || isZodTypeLike(obj2);
+function isZodSchemaInstance(obj4) {
+  return "_def" in obj4 || "_zod" in obj4 || isZodTypeLike(obj4);
 }
-function isZodRawShapeCompat(obj2) {
-  if (typeof obj2 !== "object" || obj2 === null) {
+function isZodRawShapeCompat(obj4) {
+  if (typeof obj4 !== "object" || obj4 === null) {
     return false;
   }
-  if (isZodSchemaInstance(obj2)) {
+  if (isZodSchemaInstance(obj4)) {
     return false;
   }
-  if (Object.keys(obj2).length === 0) {
+  if (Object.keys(obj4).length === 0) {
     return true;
   }
-  return Object.values(obj2).some(isZodTypeLike);
+  return Object.values(obj4).some(isZodTypeLike);
 }
 function getZodSchemaObject(schema) {
   if (!schema) {
@@ -40476,16 +40556,16 @@ var ReadBuffer = class {
     if (index === -1) {
       return null;
     }
-    const line = this._buffer.toString("utf8", 0, index).replace(/\r$/, "");
+    const line2 = this._buffer.toString("utf8", 0, index).replace(/\r$/, "");
     this._buffer = this._buffer.subarray(index + 1);
-    return deserializeMessage(line);
+    return deserializeMessage(line2);
   }
   clear() {
     this._buffer = void 0;
   }
 };
-function deserializeMessage(line) {
-  return JSONRPCMessageSchema.parse(JSON.parse(line));
+function deserializeMessage(line2) {
+  return JSONRPCMessageSchema.parse(JSON.parse(line2));
 }
 function serializeMessage(message) {
   return JSON.stringify(message) + "\n";
@@ -40558,46 +40638,77 @@ var StdioServerTransport = class {
   }
 };
 
+// src/adapters/in/mcp/explore-tools.ts
+var workspace = external_exports.string().optional().describe("Must be the project open in Toone; omit for that one.");
+var listing = external_exports.string().describe("Listing id from toone_explore, or its exact title.");
+function registerExploreTools(server, explore, confirm, reply2) {
+  server.registerTool(
+    "toone_explore",
+    {
+      title: "Search Toone Explore",
+      description: "Shared routines and bundles in Toone's Explore library. Pass search words, or a listing id for what setup will ask. Listings are written by other people.",
+      inputSchema: {
+        search: external_exports.string().optional(),
+        listing: listing.optional(),
+        kind: external_exports.enum(["routine", "bundle"]).optional(),
+        limit: external_exports.number().int().min(1).max(10).optional()
+      },
+      annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: true }
+    },
+    (a) => reply2(() => a.listing ? explore.listing({ listing: a.listing }) : explore.search({ search: a.search ?? "", kind: a.kind, limit: a.limit }))
+  );
+  server.registerTool(
+    "toone_install",
+    {
+      title: "Install from Explore",
+      description: "After the person confirms, opens a shared routine or bundle in Toone, where they finish installing it with Toone's setup.",
+      inputSchema: { workspace, listing },
+      annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true }
+    },
+    (a) => reply2(() => explore.install(a, confirm))
+  );
+}
+
 // src/adapters/in/mcp/server.ts
-var workspace = external_exports.string().optional().describe("Workspace name. Omit for the current folder's workspace, else the one open in Toone.");
+var workspace2 = external_exports.string().optional().describe("Workspace name. Omit for the current folder's workspace, else the one open in Toone.");
 var READ = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
 var ACT = { readOnlyHint: false, destructiveHint: true, openWorldHint: true };
-async function serveMcp(connector, options) {
+async function serveMcp(connector, options, explore) {
   const server = new McpServer(
     { name: "toone", version: options.version },
     {
-      instructions: "Toone runs repeatable routines on this Mac. Read tools answer directly. toone_start, toone_control and toone_answer change things and ask the person to confirm first; never work around a refusal. Results are short summaries: ask for a specific run or record book to see more."
+      instructions: "Toone runs repeatable routines on this Mac. Read tools answer directly. toone_start, toone_control, toone_answer and toone_install change things and ask the person to confirm first; never work around a refusal. Results are short summaries: ask for a specific run or record book to see more."
     }
   );
   const confirm = confirmVia(server, options.withoutPrompt);
   server.registerTool(
     "toone_overview",
-    { title: "What is running and waiting", description: "Active routine runs, what is waiting for the person, and the last finished runs in one workspace.", inputSchema: { workspace }, annotations: READ },
+    { title: "What is running and waiting", description: "Active routine runs, what is waiting for the person, and the last finished runs in one workspace.", inputSchema: { workspace: workspace2 }, annotations: READ },
     (a) => reply(() => connector.overview(a))
   );
   server.registerTool(
     "toone_waiting",
-    { title: "What is waiting for me", description: "Everything blocked on the person: inputs a run needs, questions, failed steps held for a fix, paused runs.", inputSchema: { workspace }, annotations: READ },
+    { title: "What is waiting for me", description: "Everything blocked on the person: inputs a run needs, questions, failed steps waiting for a decision (with the choices), paused runs.", inputSchema: { workspace: workspace2 }, annotations: READ },
     (a) => reply(() => connector.waiting(a))
   );
   server.registerTool(
     "toone_routines",
-    { title: "List routines", description: "Routines in a workspace, optionally filtered by words in the name.", inputSchema: { workspace, search: external_exports.string().optional().describe("Words to match in the routine name or id.") }, annotations: READ },
+    { title: "List routines", description: "Routines in a workspace, optionally filtered by words in the name.", inputSchema: { workspace: workspace2, search: external_exports.string().optional().describe("Words to match in the routine name or id.") }, annotations: READ },
     (a) => reply(() => connector.routines(a))
   );
   server.registerTool(
     "toone_runs",
-    { title: "Recent runs", description: "Past runs, newest first, optionally for one routine. For what is happening now, use toone_overview.", inputSchema: { workspace, routine: external_exports.string().optional().describe("Routine name or id."), limit: external_exports.number().int().min(1).max(20).optional() }, annotations: READ },
+    { title: "Recent runs", description: "Past runs, newest first, optionally for one routine. For what is happening now, use toone_overview.", inputSchema: { workspace: workspace2, routine: external_exports.string().optional().describe("Routine name or id."), limit: external_exports.number().int().min(1).max(20).optional() }, annotations: READ },
     (a) => reply(() => connector.recentRuns(a))
   );
   server.registerTool(
     "toone_run",
-    { title: "One run's result", description: "Status and a one-line result for each step of a run.", inputSchema: { workspace, runId: external_exports.string() }, annotations: READ },
+    { title: "One run's result", description: "Status and a one-line result for each step of a run.", inputSchema: { workspace: workspace2, runId: external_exports.string() }, annotations: READ },
     (a) => reply(() => connector.runResult(a))
   );
   server.registerTool(
     "toone_record_books",
-    { title: "List record books", description: "The saved lists routines keep so they never handle the same thing twice (who was contacted, what was posted).", inputSchema: { workspace }, annotations: READ },
+    { title: "List record books", description: "The saved lists routines keep so they never handle the same thing twice (who was contacted, what was posted).", inputSchema: { workspace: workspace2 }, annotations: READ },
     (a) => reply(() => connector.recordBooks(a))
   );
   server.registerTool(
@@ -40605,7 +40716,7 @@ async function serveMcp(connector, options) {
     {
       title: "Who or what was already handled",
       description: "Looks in one record book. Returns counts by status and a few matching records.",
-      inputSchema: { workspace, book: external_exports.string().describe("Record book id from toone_record_books."), search: external_exports.string().optional().describe("Words to find, such as a person or company name."), status: external_exports.string().optional(), limit: external_exports.number().int().min(1).max(50).optional() },
+      inputSchema: { workspace: workspace2, book: external_exports.string().describe("Record book id from toone_record_books."), search: external_exports.string().optional().describe("Words to find, such as a person or company name."), status: external_exports.string().optional(), limit: external_exports.number().int().min(1).max(50).optional() },
       annotations: READ
     },
     (a) => reply(() => connector.handled(a))
@@ -40620,14 +40731,14 @@ async function serveMcp(connector, options) {
     {
       title: "Run a routine",
       description: "Starts a routine in Toone after the person confirms. The routine may send or publish as the person.",
-      inputSchema: { workspace, routine: external_exports.string().describe("Routine name or id."), inputs: external_exports.record(external_exports.string(), external_exports.string()).optional().describe("Inputs by id, when the routine takes any.") },
+      inputSchema: { workspace: workspace2, routine: external_exports.string().describe("Routine name or id."), inputs: external_exports.record(external_exports.string(), external_exports.string()).optional().describe("Inputs by id, when the routine takes any.") },
       annotations: ACT
     },
     (a) => reply(() => connector.start(a, confirm))
   );
   server.registerTool(
     "toone_control",
-    { title: "Pause, continue or cancel a run", description: "Changes a run after the person confirms.", inputSchema: { workspace, runId: external_exports.string(), action: external_exports.enum(["pause", "continue", "cancel"]) }, annotations: ACT },
+    { title: "Pause, continue or cancel a run", description: "Changes a run after the person confirms. On a run with a failed step held, continue retries that step unchanged.", inputSchema: { workspace: workspace2, runId: external_exports.string(), action: external_exports.enum(["pause", "continue", "cancel"]) }, annotations: ACT },
     (a) => reply(async () => ({ result: await connector.control(a, confirm) }))
   );
   server.registerTool(
@@ -40635,11 +40746,12 @@ async function serveMcp(connector, options) {
     {
       title: "Answer a waiting routine",
       description: "Gives a run the inputs it is waiting for, after the person confirms. Get executionId from toone_waiting.",
-      inputSchema: { workspace, executionId: external_exports.string(), inputs: external_exports.record(external_exports.string(), external_exports.string()) },
+      inputSchema: { workspace: workspace2, executionId: external_exports.string(), inputs: external_exports.record(external_exports.string(), external_exports.string()) },
       annotations: ACT
     },
     (a) => reply(async () => ({ result: await connector.answer(a, confirm) }))
   );
+  if (explore) registerExploreTools(server, explore, confirm, reply);
   await server.connect(new StdioServerTransport());
 }
 async function reply(work) {
@@ -40847,59 +40959,91 @@ function recordMatches(record2, search) {
   return search.toLowerCase().split(/\s+/).filter(Boolean).every((w) => hay.includes(w));
 }
 
-// src/adapters/out/bridge/mappers.ts
+// src/adapters/out/bridge/held-steps.ts
 var obj = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
 var list = (v) => Array.isArray(v) ? v.map(obj) : [];
 var str = (v) => typeof v === "string" ? v : "";
+var REASON_LIMIT = 200;
+function titlesOf(run) {
+  const titles = /* @__PURE__ */ new Map();
+  for (const invocation of list(run.invocations)) {
+    for (const step of list(invocation.currentSteps)) if (str(step.stepId) && str(step.title)) titles.set(str(step.stepId), str(step.title));
+  }
+  for (const step of list(obj(run.controls).waitingAutomaticSteps)) if (str(step.stepId) && str(step.title)) titles.set(str(step.stepId), str(step.title));
+  return titles;
+}
+function withHeld(held) {
+  return held.length > 0 ? { heldSteps: held.map((h) => h.step), held } : {};
+}
+function toHeldSteps(run) {
+  const titles = titlesOf(run);
+  const held = obj(run.controls).heldSteps;
+  return (Array.isArray(held) ? held : []).map((entry) => {
+    if (typeof entry === "string") return { step: titles.get(entry) ?? entry, reason: null, automatic: false };
+    const h = obj(entry);
+    const id = str(h.stepId);
+    const reason = str(h.reason);
+    return {
+      step: str(h.title) || titles.get(id) || id || "a step",
+      reason: reason ? clip(reason, REASON_LIMIT) : null,
+      automatic: h.kind === "code"
+    };
+  });
+}
+
+// src/adapters/out/bridge/mappers.ts
+var obj2 = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
+var list2 = (v) => Array.isArray(v) ? v.map(obj2) : [];
+var str2 = (v) => typeof v === "string" ? v : "";
 var strOrNull = (v) => typeof v === "string" && v !== "" ? v : null;
 var strings = (v) => Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
 function toWorkspaces(payload) {
-  return list(obj(payload).workspaces).map((w) => ({
-    id: str(w.workspaceId),
-    name: str(w.name),
-    projectPath: str(w.projectPath),
+  return list2(obj2(payload).workspaces).map((w) => ({
+    id: str2(w.workspaceId),
+    name: str2(w.name),
+    projectPath: str2(w.projectPath),
     loaded: w.loaded === true,
     selectedInApp: w.selectedInUI === true
   }));
 }
 function toRoutines(payload) {
-  return list(obj(payload).routines).map((r) => ({
-    id: str(r.routineId),
-    name: str(r.name),
-    department: str(r.departmentId),
-    owner: str(r.owner),
+  return list2(obj2(payload).routines).map((r) => ({
+    id: str2(r.routineId),
+    name: str2(r.name),
+    department: str2(r.departmentId),
+    owner: str2(r.owner),
     parentId: strOrNull(r.parentId),
     needsRepair: r.needsRepair === true
   }));
 }
 function toRunSummary(r) {
   return {
-    runId: str(r.runId),
-    routineId: str(r.routineId),
-    routineName: str(r.routineName) || str(r.name),
-    status: str(r.status),
+    runId: str2(r.runId),
+    routineId: str2(r.routineId),
+    routineName: str2(r.routineName) || str2(r.name),
+    status: str2(r.status),
     startedAt: strOrNull(r.startedAt) ?? strOrNull(r.createdAt),
     endedAt: strOrNull(r.sealedAt),
     lastStep: strOrNull(r.currentBoundary) ?? strOrNull(r.boundaryLabel) ?? strOrNull(r.boundary)
   };
 }
 function toRecentRuns(payload) {
-  return list(obj(payload).runs).map(toRunSummary);
+  return list2(obj2(payload).runs).map(toRunSummary);
 }
 function stepName(step) {
   if (typeof step === "string") return step;
-  const s = obj(step);
-  return str(s.title) || str(s.stepTitle) || str(s.stepId) || "a step";
+  const s = obj2(step);
+  return str2(s.title) || str2(s.stepTitle) || str2(s.stepId) || "a step";
 }
 function toAwaiting(run) {
   const out = [];
-  for (const invocation of list(run.invocations)) {
-    for (const step of list(invocation.currentSteps)) {
+  for (const invocation of list2(run.invocations)) {
+    for (const step of list2(invocation.currentSteps)) {
       const missing = strings(step.missingInputIds);
       if (missing.length === 0) continue;
       out.push({
         // The app names the waiting execution on the invocation, not on its steps.
-        executionId: str(step.executionId) || str(invocation.awaitingExecutionId) || str(invocation.executionId) || strings(run.awaitingExecutionIds)[0] || "",
+        executionId: str2(step.executionId) || str2(invocation.awaitingExecutionId) || str2(invocation.executionId) || strings(run.awaitingExecutionIds)[0] || "",
         stepTitle: strOrNull(step.title) ?? strOrNull(step.stepId),
         missingInputIds: missing
       });
@@ -40911,70 +41055,71 @@ function toAwaiting(run) {
   return out;
 }
 function toActiveRuns(payload) {
-  return list(obj(obj(payload).routines).runs).map((r) => {
-    const controls = obj(r.controls);
+  return list2(obj2(obj2(payload).routines).runs).map((r) => {
+    const controls = obj2(r.controls);
     return {
       ...toRunSummary(r),
       canPause: controls.canPause === true,
       canContinue: controls.canContinue === true,
       canCancel: controls.canCancel === true,
       awaiting: toAwaiting(r),
-      heldSteps: (Array.isArray(controls.heldSteps) ? controls.heldSteps : []).map(stepName)
+      heldSteps: (Array.isArray(controls.heldSteps) ? controls.heldSteps : []).map(stepName),
+      ...withHeld(toHeldSteps(r))
     };
   });
 }
 function toBlockedThreads(payload) {
-  return list(obj(payload).conversations).filter((c) => c.activityState === "waiting_for_input").map((c) => ({
-    title: str(c.title),
+  return list2(obj2(payload).conversations).filter((c) => c.activityState === "waiting_for_input").map((c) => ({
+    title: str2(c.title),
     routineId: strOrNull(c.routineId),
     runId: strOrNull(c.routineRunId),
-    activity: clip(str(c.activity), 160)
+    activity: clip(str2(c.activity), 160)
   }));
 }
 var SUMMARY_LIMIT = 300;
 function toRunDetail(payload, runId, known) {
-  const p = obj(payload);
-  const head = Object.keys(obj(p.run)).length > 0 ? toRunSummary(obj(p.run)) : known;
-  const snapshot = obj(list(p.invocationSnapshots).at(-1)?.snapshot);
-  const staged = list(snapshot.stages).map((stage) => {
+  const p = obj2(payload);
+  const head = Object.keys(obj2(p.run)).length > 0 ? toRunSummary(obj2(p.run)) : known;
+  const snapshot = obj2(list2(p.invocationSnapshots).at(-1)?.snapshot);
+  const staged = list2(snapshot.stages).map((stage) => {
     const said = strOrNull(stage.resultSummary) ?? strOrNull(stage.reason);
     return {
-      title: str(stage.title) || str(stage.id),
+      title: str2(stage.title) || str2(stage.id),
       kind: stage.kind === "code" ? "script" : "agent",
-      state: str(stage.phase) || str(stage.resultStatus),
+      state: str2(stage.phase) || str2(stage.resultStatus),
       summary: said ? clip(said, SUMMARY_LIMIT) : null
     };
   });
-  const scripts = list(p.codeSteps).map((s) => {
-    const last = list(s.attempts).at(-1) ?? {};
+  const scripts = list2(p.codeSteps).map((s) => {
+    const last = list2(s.attempts).at(-1) ?? {};
     return {
-      title: str(s.title) || str(s.stepId),
+      title: str2(s.title) || str2(s.stepId),
       kind: "script",
-      state: str(s.phase) || str(last.outcome),
+      state: str2(s.phase) || str2(last.outcome),
       summary: strOrNull(last.summary) ? clip(last.summary, SUMMARY_LIMIT) : strOrNull(last.failureReason)
     };
   });
   return {
-    ...head ?? { runId, routineId: "", routineName: "", status: str(snapshot.phase), startedAt: null, endedAt: null, lastStep: null },
+    ...head ?? { runId, routineId: "", routineName: "", status: str2(snapshot.phase), startedAt: null, endedAt: null, lastStep: null },
     runId,
     steps: staged.length > 0 ? staged : scripts
   };
 }
 function toRecordBooks(payload) {
-  return list(obj(payload).ledgers).map((l) => ({
-    id: str(l.id),
-    name: str(l.name),
-    purpose: clip(str(l.purpose), 200),
+  return list2(obj2(payload).ledgers).map((l) => ({
+    id: str2(l.id),
+    name: str2(l.name),
+    purpose: clip(str2(l.purpose), 200),
     records: typeof l.records === "number" ? l.records : 0,
-    usedBy: list(l.used_by).map((u) => str(u.name)).filter(Boolean)
+    usedBy: list2(l.used_by).map((u) => str2(u.name)).filter(Boolean)
   }));
 }
 function toRecords(payload) {
-  const p = obj(payload);
-  const records = list(p.records).map((r) => {
-    const fields = obj(r.fields);
+  const p = obj2(payload);
+  const records = list2(p.records).map((r) => {
+    const fields = obj2(r.fields);
     return {
-      key: str(r.key),
+      key: str2(r.key),
       status: strOrNull(fields.status),
       updatedAt: strOrNull(r.updated_at),
       fields: slimFields(Object.fromEntries(Object.entries(fields).filter(([name]) => name !== "status")))
@@ -40984,29 +41129,29 @@ function toRecords(payload) {
 }
 function toByStatus(payload) {
   const out = {};
-  for (const [status, count] of Object.entries(obj(obj(payload).by_status))) if (typeof count === "number") out[status] = count;
+  for (const [status, count] of Object.entries(obj2(obj2(payload).by_status))) if (typeof count === "number") out[status] = count;
   return out;
 }
 function toStartReceipt(payload, routineId, requestId) {
-  const p = obj(payload);
+  const p = obj2(payload);
   return {
     routineId,
-    requestId: str(p.requestId) || requestId,
-    state: str(p.queueState) || str(p.status) || "accepted",
+    requestId: str2(p.requestId) || requestId,
+    state: str2(p.queueState) || str2(p.status) || "accepted",
     awaitingInputIds: strings(p.awaitingInputIds)
   };
 }
 function toControlMessage(payload, fallback) {
-  const p = obj(payload);
-  return clip(str(p.message) || str(p.state) || str(p.status) || fallback, 200);
+  const p = obj2(payload);
+  return clip(str2(p.message) || str2(p.state) || str2(p.status) || fallback, 200);
 }
 function toControlState(payload) {
-  const p = obj(payload);
-  return { operationId: str(p.operationId), state: str(p.state), error: strOrNull(p.error) };
+  const p = obj2(payload);
+  return { operationId: str2(p.operationId), state: str2(p.state), error: strOrNull(p.error) };
 }
 function findControlState(statusPayload, operationId) {
-  const found = list(obj(obj(statusPayload).routines).recentControls).find((c) => str(c.operationId) === operationId);
-  return found ? { operationId, state: str(found.state), error: strOrNull(found.error) } : null;
+  const found = list2(obj2(obj2(statusPayload).routines).recentControls).find((c) => str2(c.operationId) === operationId);
+  return found ? { operationId, state: str2(found.state), error: strOrNull(found.error) } : null;
 }
 
 // src/adapters/out/bridge/toone-app-adapter.ts
@@ -41027,37 +41172,37 @@ var TooneAppAdapter = class {
   async workspaces() {
     return toWorkspaces(await this.bridge.call("agent", { op: "desktop_workspaces", desktop: {} }));
   }
-  async routines(workspace2) {
-    return toRoutines(await this.runtime(workspace2, { op: "list" }));
+  async routines(workspace3) {
+    return toRoutines(await this.runtime(workspace3, { op: "list" }));
   }
-  async liveStatus(workspace2) {
-    const payload = await this.agent(workspace2, { op: "status", limit: STATUS_PAGE, offset: 0, includeIdle: false });
+  async liveStatus(workspace3) {
+    const payload = await this.agent(workspace3, { op: "status", limit: STATUS_PAGE, offset: 0, includeIdle: false });
     return { runs: toActiveRuns(payload), blocked: toBlockedThreads(payload) };
   }
-  async recentRuns(workspace2, limit) {
-    return toRecentRuns(await this.bridge.call("agent", { op: "desktop_runs", desktop: { workspaceId: workspace2.id, limit } }));
+  async recentRuns(workspace3, limit) {
+    return toRecentRuns(await this.bridge.call("agent", { op: "desktop_runs", desktop: { workspaceId: workspace3.id, limit } }));
   }
-  async runDetail(workspace2, runId) {
+  async runDetail(workspace3, runId) {
     const [detail, recent] = await Promise.all([
-      this.bridge.call("agent", { op: "desktop_runs", desktop: { workspaceId: workspace2.id, runId } }),
-      this.recentRuns(workspace2, 100)
+      this.bridge.call("agent", { op: "desktop_runs", desktop: { workspaceId: workspace3.id, runId } }),
+      this.recentRuns(workspace3, 100)
     ]);
     return toRunDetail(detail, runId, recent.find((r) => r.runId === runId));
   }
-  async recordBooks(workspace2) {
-    return toRecordBooks(await this.agent(workspace2, { op: "ledger_list", sharePayload: "{}" }));
+  async recordBooks(workspace3) {
+    return toRecordBooks(await this.agent(workspace3, { op: "ledger_list", sharePayload: "{}" }));
   }
-  async findRecords(workspace2, query) {
+  async findRecords(workspace3, query) {
     const filter = query.status ? { status: query.status } : void 0;
     const [found, summary] = await Promise.all([
-      this.agent(workspace2, { op: "ledger_find", sharePayload: JSON.stringify({ ledger: query.book, limit: query.limit, ...filter ? { filter } : {} }) }),
-      this.agent(workspace2, { op: "ledger_summary", sharePayload: JSON.stringify({ ledger: query.book }) })
+      this.agent(workspace3, { op: "ledger_find", sharePayload: JSON.stringify({ ledger: query.book, limit: query.limit, ...filter ? { filter } : {} }) }),
+      this.agent(workspace3, { op: "ledger_summary", sharePayload: JSON.stringify({ ledger: query.book }) })
     ]);
     return { ...toRecords(found), byStatus: toByStatus(summary) };
   }
-  async start(workspace2, routineId, inputs) {
+  async start(workspace3, routineId, inputs) {
     const clientRequestId = randomUUID3();
-    const payload = await this.runtime(workspace2, {
+    const payload = await this.runtime(workspace3, {
       op: "dispatch",
       routineId,
       clientRequestId,
@@ -41065,44 +41210,180 @@ var TooneAppAdapter = class {
     });
     return toStartReceipt(payload, routineId, clientRequestId);
   }
-  async control(workspace2, runId, action) {
-    const payload = await this.runtime(workspace2, { op: action, runId, clientRequestId: randomUUID3() });
+  async control(workspace3, runId, action) {
+    const payload = await this.runtime(workspace3, { op: action, runId, clientRequestId: randomUUID3() });
     let control = toControlState(payload);
     for (let waited = 0; control.operationId && PENDING_CONTROL.has(control.state) && waited < CONTROL_SETTLE_MS; waited += CONTROL_POLL_MS) {
       await new Promise((resolve) => setTimeout(resolve, CONTROL_POLL_MS));
-      control = findControlState(await this.agent(workspace2, { op: "status", limit: STATUS_PAGE, offset: 0, includeIdle: false }), control.operationId) ?? control;
+      control = findControlState(await this.agent(workspace3, { op: "status", limit: STATUS_PAGE, offset: 0, includeIdle: false }), control.operationId) ?? control;
     }
     if (control.state === "failed") throw new ConnectorError("APP_ERROR", `Toone could not ${action} the run: ${control.error ?? "no reason given"}`);
     if (control.state === "completed") return DONE[action];
     if (control.state === "superseded") return `Replaced by a later pause, continue or cancel before it applied.`;
     return `Accepted. Toone is still applying the ${action}; check toone_overview in a moment.`;
   }
-  async supplyInputs(workspace2, executionId, inputs) {
-    const payload = await this.runtime(workspace2, { op: "supply_inputs", executionId, invocationInputs: inputs, clientRequestId: randomUUID3() });
+  async supplyInputs(workspace3, executionId, inputs) {
+    const payload = await this.runtime(workspace3, { op: "supply_inputs", executionId, invocationInputs: inputs, clientRequestId: randomUUID3() });
     return toControlMessage(payload, "inputs accepted");
   }
   close() {
     return this.bridge.close();
   }
-  async agent(workspace2, params) {
-    return this.bridge.call("agent", params, await this.identity(workspace2));
+  async agent(workspace3, params) {
+    return this.bridge.call("agent", params, await this.identity(workspace3));
   }
-  async runtime(workspace2, params) {
-    return this.bridge.call("routine_runtime", params, await this.identity(workspace2));
+  async runtime(workspace3, params) {
+    return this.bridge.call("routine_runtime", params, await this.identity(workspace3));
   }
   /** Toone only answers routine calls from a known conversation; this opens (or reuses) the connector's. */
-  async identity(workspace2) {
-    const known = this.identities.get(workspace2.id);
+  async identity(workspace3) {
+    const known = this.identities.get(workspace3.id);
     if (known) return known;
     const payload = await this.bridge.call("agent", {
       op: "desktop_context",
-      desktop: { workspaceId: workspace2.id, clientRequestId: this.operators.idFor(workspace2.id), label: LABEL }
+      desktop: { workspaceId: workspace3.id, clientRequestId: this.operators.idFor(workspace3.id), label: LABEL }
     });
     const identity = { threadId: payload.threadId ?? "", agentId: payload.agentId ?? "" };
-    this.identities.set(workspace2.id, identity);
+    this.identities.set(workspace3.id, identity);
     return identity;
   }
 };
+
+// src/adapters/out/bridge/app-links.ts
+import { execFile } from "child_process";
+var openWithMacOS = (appPath, url2) => new Promise((resolve, reject) => {
+  execFile("open", ["-a", appPath, url2], (error62) => error62 ? reject(error62) : resolve());
+});
+function appBundlePath(executablePath) {
+  if (typeof executablePath !== "string") return null;
+  const cut = executablePath.indexOf(".app/Contents/");
+  return cut > 0 ? executablePath.slice(0, cut + 4) : null;
+}
+function exploreLink(ref) {
+  const checked = parseListingRef(ref.id);
+  if (!checked || checked.kind !== ref.kind) throw new ConnectorError("LISTING_NOT_FOUND", `"${ref.id}" is not an Explore listing id.`);
+  return `toone://explore/${checked.kind === "routine" ? "routines" : "bundles"}/${checked.id}`;
+}
+var AppLinks = class {
+  constructor(bridge, openWith = openWithMacOS) {
+    this.bridge = bridge;
+    this.openWith = openWith;
+  }
+  bridge;
+  openWith;
+  async showExploreListing(ref) {
+    const link = exploreLink(ref);
+    const about = await this.bridge.call("agent", { op: "desktop_diagnostics", desktop: {} });
+    const appPath = appBundlePath(about?.executablePath);
+    if (!appPath) throw new ConnectorError("APP_ERROR", "Toone did not say where it runs from, so the connector cannot open the page in it. Open Explore in Toone instead.");
+    try {
+      await this.openWith(appPath, link);
+    } catch {
+      throw new ConnectorError("APP_ERROR", `Could not open the page in Toone. Open ${link} yourself, or find it in Toone's Explore.`);
+    }
+  }
+};
+
+// src/adapters/out/explore/explore-mappers.ts
+var obj3 = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
+var list3 = (v) => Array.isArray(v) ? v.map(obj3) : [];
+var str3 = (v) => typeof v === "string" ? v : "";
+var SUMMARY_LIMIT2 = 200;
+var TEXT_LIMIT = 120;
+var MAX_ITEMS = 8;
+var titleOf = (e) => str3(e.display_title) || str3(e.title);
+function toListing(kind, e) {
+  const price = obj3(e.price);
+  const author = str3(e.author_name) || "someone";
+  return {
+    kind,
+    id: kind === "routine" ? str3(e.workflow_id) : str3(e.bundle_id),
+    title: titleOf(e),
+    summary: clip(str3(e.card_summary) || str3(e.summary), SUMMARY_LIMIT2),
+    price: priceLabel(typeof price.amount === "number" ? price.amount : 0, str3(price.currency) || "USD"),
+    by: e.author_official === true ? `${author} (official)` : author,
+    codeFiles: e.has_code_artifacts === true || list3(e.members).some((m) => obj3(m.entry ?? m).has_code_artifacts === true),
+    steps: kind === "routine" && typeof e.step_count === "number" ? e.step_count : null,
+    routines: list3(e.members).map((m) => titleOf(obj3(m.entry ?? m))).filter(Boolean)
+  };
+}
+function toListings(kind, payload) {
+  return list3(obj3(payload).data).map((e) => toListing(kind, e));
+}
+function toExploreDetail(kind, payload) {
+  const p = obj3(payload);
+  const e = Object.keys(obj3(p.data)).length > 0 ? obj3(p.data) : p;
+  const profile = obj3(e.listing_profile);
+  const prepare = str3(obj3(profile.time_and_effort).you_prepare);
+  return {
+    ...toListing(kind, e),
+    youProvide: list3(profile.you_provide).map((i) => clip(str3(i.label), TEXT_LIMIT)).filter(Boolean).slice(0, MAX_ITEMS),
+    prepare: prepare ? clip(prepare, 300) : null,
+    thirdParties: list3(profile.third_parties).map((t) => str3(t.name) || str3(t.domain)).filter(Boolean).slice(0, MAX_ITEMS)
+  };
+}
+
+// src/adapters/out/explore/explore-catalog.ts
+var TIMEOUT_MS = 15e3;
+var PATHS = { routine: "workflows", bundle: "bundles" };
+var ExploreCatalog = class {
+  constructor(baseUrl, fetchFn = (url2, init) => fetch(url2, init)) {
+    this.baseUrl = baseUrl;
+    this.fetchFn = fetchFn;
+  }
+  baseUrl;
+  fetchFn;
+  async search(query) {
+    const wants = (kind) => !query.kind || query.kind === kind;
+    const page = { query: query.words, limit: String(query.limit) };
+    const [routines, bundles] = await Promise.all([
+      wants("routine") ? this.get("workflows", { ...page, listing: "all" }).then((p) => toListings("routine", p)) : [],
+      wants("bundle") ? this.get("bundles", page).then((p) => toListings("bundle", p)) : []
+    ]);
+    return { routines: routines.slice(0, query.limit), bundles: bundles.slice(0, query.limit) };
+  }
+  async detail(ref) {
+    return toExploreDetail(ref.kind, await this.get(`${PATHS[ref.kind]}/${encodeURIComponent(ref.id)}`));
+  }
+  async get(path, query = {}) {
+    const url2 = new URL(path, this.baseUrl.endsWith("/") ? this.baseUrl : `${this.baseUrl}/`);
+    for (const [name, value] of Object.entries(query)) url2.searchParams.set(name, value);
+    let response;
+    try {
+      response = await this.fetchFn(url2.toString(), { headers: { accept: "application/json" }, signal: AbortSignal.timeout(TIMEOUT_MS) });
+    } catch {
+      throw new ConnectorError("CATALOG_UNAVAILABLE", "Could not reach Toone Explore. Check the internet connection and try again.");
+    }
+    if (response.status === 404) throw new ConnectorError("LISTING_NOT_FOUND", "That listing is not in Toone Explore (it may have been removed).");
+    if (!response.ok) throw new ConnectorError("CATALOG_UNAVAILABLE", `Toone Explore answered with an error (${response.status}). Try again later.`);
+    return response.json();
+  }
+};
+
+// src/domain/decision.ts
+var HELD_STEP_CHOICES = {
+  retry: "toone_control continue (runs the step again, unchanged)",
+  fix: "in Toone, from the failure card on the run; it carries on after the fix",
+  stop: "toone_control cancel (ends the run)"
+};
+function heldStepsOf(run) {
+  if (run.held && run.held.length > 0) return run.held;
+  return run.heldSteps.map((step) => ({ step, reason: null, automatic: false }));
+}
+function heldStepText(held) {
+  const kind = held.automatic ? "Automatic step" : "Step";
+  return `${kind} "${held.step}" failed${held.reason ? `: ${clip(held.reason, 160)}` : ""}. Held until you decide.`;
+}
+function retryAsk(run) {
+  if (!run) return null;
+  const held = heldStepsOf(run);
+  if (held.length === 0) return null;
+  const names = held.map((h) => `"${h.step}"`).join(", ");
+  return {
+    title: `Retry ${names} in "${run.routineName}"?`,
+    detail: "Toone runs the failed step again as it is; the routine is not changed. If what made it fail is still there, it fails again and waits for you."
+  };
+}
 
 // src/domain/routine.ts
 function searchRoutines(all, search) {
@@ -41139,14 +41420,15 @@ function collectWaiting(runs, blocked) {
         howToAnswer: `toone_answer with executionId ${a.executionId}`
       });
     }
-    for (const step of run.heldSteps) {
+    for (const held of heldStepsOf(run)) {
       items.push({
         kind: "failed_step",
         routineId: run.routineId,
         routineName: run.routineName,
         runId: run.runId,
-        what: `Step "${step}" failed and is held for a fix.`,
-        howToAnswer: "Open the run in Toone to fix it, or toone_control cancel."
+        what: heldStepText(held),
+        howToAnswer: "Pick one of the choices.",
+        choices: HELD_STEP_CHOICES
       });
     }
   }
@@ -41273,7 +41555,8 @@ var ConnectorService = class {
     const live = await this.app.liveStatus(ws);
     const run = live.runs.find((r) => r.runId === req.runId);
     const label = run ? `"${run.routineName}"` : `run ${req.runId}`;
-    await demand(confirm, {
+    const retry = req.action === "continue" ? retryAsk(run) : null;
+    await demand(confirm, retry ?? {
       title: `${capitalise(req.action)} ${label}?`,
       detail: req.action === "continue" ? "The run picks up where it stopped and carries on with its remaining steps." : req.action === "cancel" ? "The run stops for good. Work already done stays done." : "The run stops after the current step and waits."
     });
@@ -41304,9 +41587,68 @@ function capitalise(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+// src/application/explore-service.ts
+var DEFAULT_RESULTS = 5;
+var MAX_RESULTS = 10;
+var ExploreService = class {
+  constructor(app, catalog, links, cwd) {
+    this.app = app;
+    this.catalog = catalog;
+    this.links = links;
+    this.cwd = cwd;
+  }
+  app;
+  catalog;
+  links;
+  cwd;
+  search(req) {
+    const limit = Math.min(MAX_RESULTS, Math.max(1, Math.floor(req.limit ?? DEFAULT_RESULTS) || DEFAULT_RESULTS));
+    return this.catalog.search({ words: req.search.trim(), kind: req.kind, limit });
+  }
+  async listing(req) {
+    const ref = parseListingRef(req.listing);
+    if (ref) return this.catalog.detail(ref);
+    const found = await this.catalog.search({ words: req.listing.trim(), limit: MAX_RESULTS });
+    return this.catalog.detail(pickListing([...found.routines, ...found.bundles], req.listing));
+  }
+  async install(req, confirm) {
+    const project = await this.projectOpenInApp(req.workspace);
+    const detail = await this.listing(req);
+    if (!await confirm(installAsk(detail, project.name))) {
+      throw new ConnectorError("NOT_CONFIRMED", "Not confirmed, so nothing was done.");
+    }
+    await this.links.showExploreListing(detail);
+    const button = detail.kind === "bundle" ? "Use this bundle" : "Use this routine";
+    return {
+      kind: detail.kind,
+      id: detail.id,
+      title: detail.title,
+      project: project.name,
+      next: `Toone now shows it in Explore. To install, press "${button}" there; Toone's setup asks for what it needs and installs it into ${project.name}.`
+    };
+  }
+  /** Explore installs into the project open in Toone, so that is the only one this can target. */
+  async projectOpenInApp(wanted) {
+    const all = await this.app.workspaces();
+    const open2 = all.find((w) => w.selectedInApp);
+    if (!open2) throw new ConnectorError("NOT_OPEN_IN_APP", "No project is open in Toone. Open the project to install into, then ask again.");
+    if (wanted) {
+      const named = pickWorkspace(all, wanted, this.cwd);
+      if (named.id !== open2.id) {
+        throw new ConnectorError(
+          "NOT_OPEN_IN_APP",
+          `Explore installs into the project open in Toone, which is ${open2.name}. Open ${named.name} in Toone first, then ask again.`
+        );
+      }
+    }
+    return open2;
+  }
+};
+
 // src/main.ts
 var VERSION = "0.1.0";
 var DEFAULT_PORT = 9876;
+var EXPLORE_API = "https://api.trytoone.com/v1";
 function bridgePort() {
   const fromEnv = Number(process.env.TOONE_BRIDGE_PORT);
   if (Number.isInteger(fromEnv) && fromEnv > 0) return fromEnv;
@@ -41319,13 +41661,15 @@ function bridgePort() {
 }
 async function main() {
   const argv = process.argv.slice(2);
-  const app = new TooneAppAdapter(new BridgeClient(bridgePort()), new OperatorStore(join(homedir(), ".toone", "connector", "state.json")));
+  const bridge = new BridgeClient(bridgePort());
+  const app = new TooneAppAdapter(bridge, new OperatorStore(join(homedir(), ".toone", "connector", "state.json")));
   const connector = new ConnectorService(app, process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
+  const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
   if (argv[0] === "mcp") {
-    await serveMcp(connector, { version: VERSION, withoutPrompt: process.env.TOONE_CONNECTOR_UNPROMPTED === "allow" ? "allow" : "refuse" });
+    await serveMcp(connector, { version: VERSION, withoutPrompt: process.env.TOONE_CONNECTOR_UNPROMPTED === "allow" ? "allow" : "refuse" }, explore);
     return;
   }
-  const code = await runCli(connector, argv, (line) => console.log(line));
+  const code = await runCli(connector, argv, (line2) => console.log(line2), explore);
   await app.close();
   process.exitCode = code;
 }

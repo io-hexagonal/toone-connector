@@ -2,7 +2,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { Confirm, Connector } from '../../../application/ports/in/connector.js';
+import type { ExploreConnector } from '../../../application/ports/in/explore.js';
 import { ConnectorError } from '../../../domain/errors.js';
+import { registerExploreTools } from './explore-tools.js';
 
 export interface McpOptions {
   version: string;
@@ -17,12 +19,12 @@ const READ = { readOnlyHint: true, destructiveHint: false, openWorldHint: false 
 const ACT = { readOnlyHint: false, destructiveHint: true, openWorldHint: true } as const;
 
 /** Serves the connector's tools to an MCP client over stdio. */
-export async function serveMcp(connector: Connector, options: McpOptions): Promise<void> {
+export async function serveMcp(connector: Connector, options: McpOptions, explore?: ExploreConnector): Promise<void> {
   const server = new McpServer(
     { name: 'toone', version: options.version },
     {
       instructions:
-        'Toone runs repeatable routines on this Mac. Read tools answer directly. toone_start, toone_control and toone_answer change things and ask the person to confirm first; never work around a refusal. Results are short summaries: ask for a specific run or record book to see more.',
+        'Toone runs repeatable routines on this Mac. Read tools answer directly. toone_start, toone_control, toone_answer and toone_install change things and ask the person to confirm first; never work around a refusal. Results are short summaries: ask for a specific run or record book to see more.',
     },
   );
   const confirm = confirmVia(server, options.withoutPrompt);
@@ -34,7 +36,7 @@ export async function serveMcp(connector: Connector, options: McpOptions): Promi
   );
   server.registerTool(
     'toone_waiting',
-    { title: 'What is waiting for me', description: 'Everything blocked on the person: inputs a run needs, questions, failed steps held for a fix, paused runs.', inputSchema: { workspace }, annotations: READ },
+    { title: 'What is waiting for me', description: 'Everything blocked on the person: inputs a run needs, questions, failed steps waiting for a decision (with the choices), paused runs.', inputSchema: { workspace }, annotations: READ },
     (a) => reply(() => connector.waiting(a)),
   );
   server.registerTool(
@@ -84,7 +86,7 @@ export async function serveMcp(connector: Connector, options: McpOptions): Promi
   );
   server.registerTool(
     'toone_control',
-    { title: 'Pause, continue or cancel a run', description: 'Changes a run after the person confirms.', inputSchema: { workspace, runId: z.string(), action: z.enum(['pause', 'continue', 'cancel']) }, annotations: ACT },
+    { title: 'Pause, continue or cancel a run', description: 'Changes a run after the person confirms. On a run with a failed step held, continue retries that step unchanged.', inputSchema: { workspace, runId: z.string(), action: z.enum(['pause', 'continue', 'cancel']) }, annotations: ACT },
     (a) => reply(async () => ({ result: await connector.control(a, confirm) })),
   );
   server.registerTool(
@@ -97,6 +99,7 @@ export async function serveMcp(connector: Connector, options: McpOptions): Promi
     },
     (a) => reply(async () => ({ result: await connector.answer(a, confirm) })),
   );
+  if (explore) registerExploreTools(server, explore, confirm, reply);
 
   await server.connect(new StdioServerTransport());
 }

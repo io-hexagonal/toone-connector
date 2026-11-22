@@ -1,3 +1,4 @@
+import { HELD_STEP_CHOICES, heldStepText, heldStepsOf } from './decision.js';
 import type { ActiveRun } from './run.js';
 
 export type WaitingKind = 'needs_input' | 'question' | 'failed_step' | 'paused';
@@ -11,6 +12,8 @@ export interface WaitingItem {
   what: string;
   /** How to act on it from the connector, when that is possible. */
   howToAnswer: string;
+  /** For a decision: each choice and how to make it. */
+  choices?: Readonly<Record<string, string>>;
 }
 
 /** A conversation in the app that is blocked on the person. */
@@ -41,14 +44,15 @@ export function collectWaiting(runs: ActiveRun[], blocked: BlockedThread[]): Wai
         howToAnswer: `toone_answer with executionId ${a.executionId}`,
       });
     }
-    for (const step of run.heldSteps) {
+    for (const held of heldStepsOf(run)) {
       items.push({
         kind: 'failed_step',
         routineId: run.routineId,
         routineName: run.routineName,
         runId: run.runId,
-        what: `Step "${step}" failed and is held for a fix.`,
-        howToAnswer: 'Open the run in Toone to fix it, or toone_control cancel.',
+        what: heldStepText(held),
+        howToAnswer: 'Pick one of the choices.',
+        choices: HELD_STEP_CHOICES,
       });
     }
   }

@@ -7,10 +7,15 @@ import { serveMcp } from './adapters/in/mcp/server.js';
 import { BridgeClient } from './adapters/out/bridge/bridge-client.js';
 import { OperatorStore } from './adapters/out/bridge/operator-store.js';
 import { TooneAppAdapter } from './adapters/out/bridge/toone-app-adapter.js';
+import { AppLinks } from './adapters/out/bridge/app-links.js';
+import { ExploreCatalog } from './adapters/out/explore/explore-catalog.js';
 import { ConnectorService } from './application/connector-service.js';
+import { ExploreService } from './application/explore-service.js';
 
 const VERSION = '0.1.0';
 const DEFAULT_PORT = 9876;
+/** Toone's public Explore catalog, the one the app and the website read. */
+const EXPLORE_API = 'https://api.trytoone.com/v1';
 
 /** The port the Toone app wrote for its tool servers, else the default. */
 function bridgePort(): number {
@@ -27,13 +32,15 @@ function bridgePort(): number {
 
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
-  const app = new TooneAppAdapter(new BridgeClient(bridgePort()), new OperatorStore(join(homedir(), '.toone', 'connector', 'state.json')));
+  const bridge = new BridgeClient(bridgePort());
+  const app = new TooneAppAdapter(bridge, new OperatorStore(join(homedir(), '.toone', 'connector', 'state.json')));
   const connector = new ConnectorService(app, process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
+  const explore = new ExploreService(app, new ExploreCatalog(process.env.TOONE_EXPLORE_API ?? EXPLORE_API), new AppLinks(bridge), process.env.CLAUDE_PROJECT_DIR ?? process.cwd());
   if (argv[0] === 'mcp') {
-    await serveMcp(connector, { version: VERSION, withoutPrompt: process.env.TOONE_CONNECTOR_UNPROMPTED === 'allow' ? 'allow' : 'refuse' });
+    await serveMcp(connector, { version: VERSION, withoutPrompt: process.env.TOONE_CONNECTOR_UNPROMPTED === 'allow' ? 'allow' : 'refuse' }, explore);
     return;
   }
-  const code = await runCli(connector, argv, (line) => console.log(line));
+  const code = await runCli(connector, argv, (line) => console.log(line), explore);
   await app.close();
   process.exitCode = code;
 }

@@ -1,5 +1,5 @@
 // End-to-end check over real stdio: starts the bundled server, lists tools, reads, and proves actions need a yes.
-// Never confirms anything, so it starts no routine.
+// Never confirms anything, so it starts no routine and opens nothing in Toone.
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { ElicitRequestSchema } from '@modelcontextprotocol/sdk/types.js';
@@ -18,9 +18,9 @@ async function connect(capabilities, onAsk) {
 
 const plain = await connect({});
 const tools = (await plain.listTools()).tools;
-check('lists 11 tools', tools.length === 11, tools.map((t) => t.name).join(' '));
+check('lists 13 tools', tools.length === 13, tools.map((t) => t.name).join(' '));
 check('every tool is marked read-only or destructive', tools.every((t) => t.annotations?.readOnlyHint === true || t.annotations?.destructiveHint === true));
-check('3 tools act', tools.filter((t) => t.annotations?.destructiveHint).length === 3);
+check('4 tools act', tools.filter((t) => t.annotations?.destructiveHint).length === 4);
 const defs = JSON.stringify(tools).length;
 check('tool definitions stay small', defs < 8000, `${defs} chars`);
 
@@ -41,6 +41,16 @@ if (withRecords) {
   const handled = await plain.callTool({ name: 'toone_handled', arguments: { book: withRecords.id, limit: 3 } });
   check('handled lookup answers', !handled.isError && JSON.parse(text(handled)).returned <= 3, `${text(handled).length} chars`);
 }
+const explored = await plain.callTool({ name: 'toone_explore', arguments: { search: 'grants', limit: 3 } });
+const found = explored.isError ? { routines: [], bundles: [] } : JSON.parse(text(explored));
+check('Explore search answers, short', !explored.isError && found.routines.length + found.bundles.length > 0 && text(explored).length < 4000, `${text(explored).length} chars`);
+const pick = found.routines[0] ?? found.bundles[0];
+if (pick) {
+  const page = await plain.callTool({ name: 'toone_explore', arguments: { listing: pick.id } });
+  check('one Explore listing says what setup asks', !page.isError && Array.isArray(JSON.parse(text(page)).youProvide), `${text(page).length} chars`);
+  const noAsk = await plain.callTool({ name: 'toone_install', arguments: { listing: pick.id } });
+  check('install is refused when the client cannot ask', noAsk.isError === true && text(noAsk).includes('CONFIRMATION_UNAVAILABLE'));
+}
 const target = routines[0].id;
 const refused = await plain.callTool({ name: 'toone_start', arguments: { routine: target } });
 check('start is refused when the client cannot ask', refused.isError === true && text(refused).includes('CONFIRMATION_UNAVAILABLE'));
@@ -56,6 +66,12 @@ check('a no starts nothing', declined.isError === true && text(declined).include
 const unticked = await connect({ elicitation: {} }, async () => ({ action: 'accept', content: { confirm: false } }));
 const stillNo = await unticked.callTool({ name: 'toone_control', arguments: { runId: 'x', action: 'cancel' } });
 check('an unticked box changes nothing', stillNo.isError === true && text(stillNo).includes('NOT_CONFIRMED'));
+if (pick) {
+  asked = null;
+  const notInstalled = await asking.callTool({ name: 'toone_install', arguments: { listing: pick.id } });
+  check('install asks, naming the listing and the project', typeof asked === 'string' && asked.includes(pick.title) && asked.includes(' into '), asked?.split('\n')[0]);
+  check('a no opens nothing', notInstalled.isError === true && text(notInstalled).includes('NOT_CONFIRMED'));
+}
 await asking.close(); await unticked.close();
 
 console.log(failed ? `\n${failed} check(s) failed` : '\nAll checks passed');

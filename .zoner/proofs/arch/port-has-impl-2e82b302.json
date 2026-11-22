@@ -22,7 +22,7 @@
     "overrides": [],
     "max_status": null,
     "deps": {
-      "archspec_selectors_hash": "04c419faaea61e0f4e516ab8e24c1fed",
+      "archspec_selectors_hash": "bbe33e3a65865c0288af8b6d53ce59ee",
       "extract_rules": [],
       "metric_thresholds_hash": null
     }
@@ -118,15 +118,11 @@
       "gate": "G7",
       "status": "Passed",
       "metrics": {
-        "hits": 3,
-        "baselined": 3,
+        "hits": 0,
+        "baselined": 0,
         "fp_wilson_upper_permille": null,
-        "g7_evidence": "low",
-        "concentration": {
-          "from_unit": "src/application/ports/out/**",
-          "to_unit": "src/application/ports/out/**",
-          "share_permille": 1000
-        }
+        "g7_evidence": "vacuous",
+        "concentration": null
       }
     },
     {

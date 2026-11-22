@@ -19,6 +19,16 @@ export interface ActiveRun extends RunSummary {
   awaiting: AwaitingInput[];
   /** Steps that failed and are held for a fix. */
   heldSteps: string[];
+  /** The same held steps with why they failed, when the app says. */
+  held?: HeldStep[];
+}
+
+/** A failed step the run holds until the person decides: retry, fix or stop. */
+export interface HeldStep {
+  step: string;
+  reason: string | null;
+  /** True for a step that runs a script rather than an agent. */
+  automatic: boolean;
 }
 
 export interface AwaitingInput {

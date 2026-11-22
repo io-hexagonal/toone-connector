@@ -6,6 +6,8 @@ Report a vulnerability privately with GitHub's "Report a vulnerability" button o
 
 It connects to the Toone app on the same Mac over a loopback WebSocket. Through it, it can read routine and run summaries and records, and, after the person confirms, start or control a run. It does not drive the browser, read files, or edit records.
 
+To search Explore it also reads Toone's public catalog over HTTPS (`api.trytoone.com`, or `TOONE_EXPLORE_API`). Only the search words or a listing id are sent, with no account. Listings are written by other people and reach the model as untrusted text. Installing never happens in the connector: after the person confirms, it opens the listing in the running Toone app, and the app's own setup asks about code files and inputs before anything is installed.
+
 ## What is tested
 
 - **Confirmation before every action.** Starting, pausing, continuing, cancelling and answering each ask the person through the MCP client's own prompt. A "no", an unticked box or a client that cannot ask means nothing is sent to Toone (`pnpm e2e`, every release).
