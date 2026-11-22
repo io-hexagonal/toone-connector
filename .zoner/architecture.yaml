@@ -21,7 +21,7 @@ roles:
     select: ["path:src/adapters/in/**"]
     vocabulary: [adapters, in, inbound, driving, http, cli]
   - name: adapter.out
-    select: ["path:src/adapters/out/bridge/**"]
+    select: ["path:src/adapters/out/bridge/**", "path:src/adapters/out/explore/**"]
     vocabulary: [adapters, out, outbound, driven, db, persistence, infrastructure]
   - name: application
     select: ["path:src/application/*"]

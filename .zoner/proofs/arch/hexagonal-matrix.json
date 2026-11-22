@@ -28,7 +28,7 @@
     ],
     "max_status": null,
     "deps": {
-      "archspec_selectors_hash": "04c419faaea61e0f4e516ab8e24c1fed",
+      "archspec_selectors_hash": "bbe33e3a65865c0288af8b6d53ce59ee",
       "extract_rules": [],
       "metric_thresholds_hash": null
     }
