@@ -40898,7 +40898,8 @@ function toAwaiting(run) {
       const missing = strings(step.missingInputIds);
       if (missing.length === 0) continue;
       out.push({
-        executionId: str(step.executionId) || str(invocation.executionId) || str(invocation.invocationId),
+        // The app names the waiting execution on the invocation, not on its steps.
+        executionId: str(step.executionId) || str(invocation.awaitingExecutionId) || str(invocation.executionId) || strings(run.awaitingExecutionIds)[0] || "",
         stepTitle: strOrNull(step.title) ?? strOrNull(step.stepId),
         missingInputIds: missing
       });
@@ -40935,12 +40936,15 @@ function toRunDetail(payload, runId, known) {
   const p = obj(payload);
   const head = Object.keys(obj(p.run)).length > 0 ? toRunSummary(obj(p.run)) : known;
   const snapshot = obj(list(p.invocationSnapshots).at(-1)?.snapshot);
-  const staged = list(snapshot.stages).map((stage) => ({
-    title: str(stage.title) || str(stage.id),
-    kind: stage.kind === "code" ? "script" : "agent",
-    state: str(stage.phase) || str(stage.resultStatus),
-    summary: strOrNull(stage.resultSummary) ? clip(stage.resultSummary, SUMMARY_LIMIT) : null
-  }));
+  const staged = list(snapshot.stages).map((stage) => {
+    const said = strOrNull(stage.resultSummary) ?? strOrNull(stage.reason);
+    return {
+      title: str(stage.title) || str(stage.id),
+      kind: stage.kind === "code" ? "script" : "agent",
+      state: str(stage.phase) || str(stage.resultStatus),
+      summary: said ? clip(said, SUMMARY_LIMIT) : null
+    };
+  });
   const scripts = list(p.codeSteps).map((s) => {
     const last = list(s.attempts).at(-1) ?? {};
     return {
@@ -40996,10 +41000,22 @@ function toControlMessage(payload, fallback) {
   const p = obj(payload);
   return clip(str(p.message) || str(p.state) || str(p.status) || fallback, 200);
 }
+function toControlState(payload) {
+  const p = obj(payload);
+  return { operationId: str(p.operationId), state: str(p.state), error: strOrNull(p.error) };
+}
+function findControlState(statusPayload, operationId) {
+  const found = list(obj(obj(statusPayload).routines).recentControls).find((c) => str(c.operationId) === operationId);
+  return found ? { operationId, state: str(found.state), error: strOrNull(found.error) } : null;
+}
 
 // src/adapters/out/bridge/toone-app-adapter.ts
 var LABEL = "Toone Connector";
 var STATUS_PAGE = 50;
+var CONTROL_SETTLE_MS = 2e4;
+var CONTROL_POLL_MS = 1e3;
+var PENDING_CONTROL = /* @__PURE__ */ new Set(["accepted", "applying"]);
+var DONE = { pause: "Paused.", continue: "Continued.", cancel: "Cancelled." };
 var TooneAppAdapter = class {
   constructor(bridge, operators) {
     this.bridge = bridge;
@@ -41051,7 +41067,15 @@ var TooneAppAdapter = class {
   }
   async control(workspace2, runId, action) {
     const payload = await this.runtime(workspace2, { op: action, runId, clientRequestId: randomUUID3() });
-    return toControlMessage(payload, `${action} accepted`);
+    let control = toControlState(payload);
+    for (let waited = 0; control.operationId && PENDING_CONTROL.has(control.state) && waited < CONTROL_SETTLE_MS; waited += CONTROL_POLL_MS) {
+      await new Promise((resolve) => setTimeout(resolve, CONTROL_POLL_MS));
+      control = findControlState(await this.agent(workspace2, { op: "status", limit: STATUS_PAGE, offset: 0, includeIdle: false }), control.operationId) ?? control;
+    }
+    if (control.state === "failed") throw new ConnectorError("APP_ERROR", `Toone could not ${action} the run: ${control.error ?? "no reason given"}`);
+    if (control.state === "completed") return DONE[action];
+    if (control.state === "superseded") return `Replaced by a later pause, continue or cancel before it applied.`;
+    return `Accepted. Toone is still applying the ${action}; check toone_overview in a moment.`;
   }
   async supplyInputs(workspace2, executionId, inputs) {
     const payload = await this.runtime(workspace2, { op: "supply_inputs", executionId, invocationInputs: inputs, clientRequestId: randomUUID3() });
@@ -41257,8 +41281,10 @@ var ConnectorService = class {
   }
   async answer(req, confirm) {
     const ws = await this.workspace(req);
+    const live = await this.app.liveStatus(ws);
+    const run = live.runs.find((r) => r.runId === req.executionId || r.awaiting.some((a) => a.executionId === req.executionId));
     await demand(confirm, {
-      title: "Send this answer to the waiting routine?",
+      title: run ? `Send this answer to "${run.routineName}"?` : "Send this answer to the waiting routine?",
       detail: `Inputs: ${clip(req.inputs, 400)}. The routine continues with them.`
     });
     return this.app.supplyInputs(ws, req.executionId, req.inputs);

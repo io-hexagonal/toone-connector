@@ -74,4 +74,9 @@ describe('bridge mappers', () => {
     expect(detail.steps[1]?.summary?.length).toBe(300);
     expect(detail.routineName).toBe('B');
   });
+  it('says why a step failed when it has no result summary', () => {
+    const detail = toRunDetail({ run: { runId: 'r', status: 'failed' }, invocationSnapshots: [{ snapshot: { stages: [
+      { id: 's1', title: 'Read', phase: 'failed', resultStatus: 'failed', reason: 'Could not start.' }] } }] }, 'r', undefined);
+    expect(detail.steps[0]).toMatchObject({ state: 'failed', summary: 'Could not start.' });
+  });
 });

@@ -108,12 +108,16 @@ export function toRunDetail(payload: unknown, runId: string, known: RunSummary |
   const head = Object.keys(obj(p.run)).length > 0 ? toRunSummary(obj(p.run)) : known;
   const snapshot = obj(list(p.invocationSnapshots).at(-1)?.snapshot);
   // The latest snapshot lists every step in order; older app versions only report script steps.
-  const staged: RunStep[] = list(snapshot.stages).map((stage) => ({
-    title: str(stage.title) || str(stage.id),
-    kind: stage.kind === 'code' ? ('script' as const) : ('agent' as const),
-    state: str(stage.phase) || str(stage.resultStatus),
-    summary: strOrNull(stage.resultSummary) ? clip(stage.resultSummary, SUMMARY_LIMIT) : null,
-  }));
+  const staged: RunStep[] = list(snapshot.stages).map((stage) => {
+    // A failed step has no result summary; its reason says why it failed.
+    const said = strOrNull(stage.resultSummary) ?? strOrNull(stage.reason);
+    return {
+      title: str(stage.title) || str(stage.id),
+      kind: stage.kind === 'code' ? ('script' as const) : ('agent' as const),
+      state: str(stage.phase) || str(stage.resultStatus),
+      summary: said ? clip(said, SUMMARY_LIMIT) : null,
+    };
+  });
   const scripts: RunStep[] = list(p.codeSteps).map((s) => {
     const last = list(s.attempts).at(-1) ?? {};
     return {
