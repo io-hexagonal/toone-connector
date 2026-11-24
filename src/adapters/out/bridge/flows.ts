@@ -9,6 +9,14 @@ const str = (v: unknown): string => (typeof v === 'string' ? v : '');
 /** Toone's answers when it does not know an operation: it is older than the connector. */
 export const UNKNOWN_OPERATION = new Set(['UNKNOWN_AGENT_OPERATION', 'UNKNOWN_DESKTOP_OPERATION', 'UNKNOWN_OPERATION']);
 
+/** Toone's answer when it does not let a paired connector use an operation at all. */
+export const PAIRED_NOT_ALLOWED = 'PAIRED_SCOPE_UNSUPPORTED';
+
+/** True when Toone turned an operation down because this version does not offer it to the connector. */
+export function notOffered(code: string | undefined): boolean {
+  return code !== undefined && (UNKNOWN_OPERATION.has(code) || code === PAIRED_NOT_ALLOWED);
+}
+
 function toFlowStart(payload: Raw): FlowStart {
   return {
     status: payload.status === 'reused' ? 'reused' : 'started',
@@ -31,7 +39,7 @@ export function toSetupStart(payload: unknown): SetupStart {
 export function flowRefusal(error: unknown, flow: 'draft' | 'setup'): unknown {
   if (!(error instanceof ConnectorError) || !error.appCode) return error;
   const code = error.appCode;
-  if (UNKNOWN_OPERATION.has(code) || code === 'SETUP_NOT_AVAILABLE_FOR_BUNDLES') {
+  if (notOffered(code) || code === 'SETUP_NOT_AVAILABLE_FOR_BUNDLES') {
     const what = flow === 'draft' ? 'take a routine description from the connector' : 'start setup from the connector';
     const instead = flow === 'draft' ? ' Update Toone, or describe the routine to Toone\'s assistant in the app.' : '';
     return new ConnectorError('NOT_SUPPORTED_BY_APP', `This Toone version cannot ${what} yet.${instead}`, code);

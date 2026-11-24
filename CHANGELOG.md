@@ -2,21 +2,33 @@
 
 All notable changes to the Toone connector. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.2.0] - 2026-11-24
+
+The first version published to npm. It adds pairing, Toone Explore, failed-step decisions and making a routine. Pairing, making a routine and starting an Explore setup need a Toone app newer than 1.0.82; with 1.0.82 the connector still works as 0.1 did and says what the app cannot do yet.
 
 ### Added
 
-- `toone_make_routine` and `toone-connector make-routine`: after the person confirms, hand Toone a description; Toone's own assistant drafts the routine and the person publishes it in Toone. A plan limit and a read-only pairing are reported plainly.
+- **Pairing.** Toone asks you once to allow the connector, after you compare a six-digit code, and you choose read only or start-and-control. The connector then proves who it is on every connection and checks it is talking to the same Toone. `toone-connector pair`, `pair --read-only` and `unpair`. Against a Toone that cannot pair, it connects as before and every answer says the connection is not paired.
+- **Toone Explore.** `toone_explore` and `toone-connector explore` search shared routines and bundles, or show what one listing's setup asks for.
+- **Install from Explore.** `toone_install` and `toone-connector install`: after you confirm, Toone starts its own setup conversation for a routine and you finish it there. For a bundle, or a Toone that cannot start setup for the connector, Toone shows the listing page instead; the answer says which happened.
+- **Make a routine.** `toone_make_routine` and `toone-connector make-routine`: after you confirm, Toone's own assistant drafts a routine from a description, and you review and publish it in Toone. A plan limit is reported plainly.
+- **Failed steps.** `toone_waiting` shows why a step failed and the choices: retry, fix in Toone, or stop. `toone_control` continue retries it unchanged.
 
 ### Changed
 
-- `toone_install` starts Toone's own setup conversation for an Explore routine instead of only opening its page. Bundles, and Toone versions that cannot start setup for the connector, still get the listing page; the answer says which happened.
-- When paired, the connector has Toone offer an Explore page with an "Open" notice, because a paired connector may not read the app's details; if Toone cannot, the answer says where to find the listing.
+- 14 tools instead of 11; five of them act, and each asks you first.
 - A read-only pairing's refusal says how to pair again to allow the action.
+- When Toone will not tell the connector where the app is installed (it does not tell a paired connector), Toone offers the Explore page with an "Open" notice. If Toone cannot do that either, the answer says where to find the listing in Explore.
+- Errors keep Toone's own refusal code, so the reason is not lost.
+- An answer stays valid JSON when a note about the connection is added; the note is a separate item.
 
-## [0.1.0] - Unreleased
+### Fixed
 
-First release: a Claude Code plugin, a tool server for any MCP client (`toone-connector mcp`) and a command line, for the Toone Mac app (Direct edition).
+- The tool server ends when its client goes away, also while a connection to Toone is open.
+
+## [0.1.0] - 2026-11-22
+
+Published on GitHub only, never on npm. A Claude Code plugin, a tool server for any MCP client (`toone-connector mcp`) and a command line, for the Toone Mac app (Direct edition).
 
 ### Added
 

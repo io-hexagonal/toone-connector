@@ -1,6 +1,6 @@
 {
   "name": "toone-connector",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "See, start and decide on your Toone routines from Claude: an MCP server and a command line for the Toone Mac app.",
   "mcpName": "io.github.mattwebhub/toone-connector",
   "keywords": [

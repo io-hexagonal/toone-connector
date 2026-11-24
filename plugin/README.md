@@ -4,7 +4,7 @@ See, start and decide on your [Toone](https://trytoone.com) routines from Claude
 
 ## What you need
 
-- macOS with the Toone app open (Direct edition; the App Store edition does not accept outside connections).
+- macOS with the Toone app open (Direct edition; the App Store edition does not accept outside connections). Pairing, making a routine and starting an Explore setup need a Toone newer than 1.0.82; with 1.0.82 the plugin says what the app cannot do yet.
 - Node.js 20 or newer on your PATH.
 - Claude Code, or Cowork running on your computer. It does not work in web or phone chat.
 
@@ -13,7 +13,8 @@ See, start and decide on your [Toone](https://trytoone.com) routines from Claude
 In Claude Code:
 
 ```
-/plugin install toone --marketplace mattwebhub/toone-connector
+/plugin marketplace add mattwebhub/toone-connector
+/plugin install toone@toone
 ```
 
 ## Try these
@@ -36,7 +37,7 @@ In Claude Code:
 - **Connects to:** only `ws://localhost` on the port the Toone app listens on (9876 unless Toone wrote another to `~/.toone/mcp-server/bridge.json`). For Explore searches it also reads Toone's public catalog (`api.trytoone.com`), sending only the search words or a listing id. It sends no data to the plugin's author or anyone else.
 - **Reads:** `~/.toone/mcp-server/bridge.json` for the port.
 - **Writes:** `~/.toone/connector/state.json`, one random id per workspace so it reuses a single conversation in Toone; and `~/.toone/connector/credential.json` (permissions 0600), the key Toone gives the connector when you allow it. No conversation content is stored or logged.
-- **Pairing:** the first time, Toone asks you to allow the connector and shows a six-digit code the connector also shows. You choose read only or start-and-control; Toone enforces it.
+- **Pairing:** the first time, a Toone that can pair asks you to allow the connector and shows a six-digit code the connector also shows. You choose read only or start-and-control; Toone enforces it.
 - **Through Toone it can:** read routine names, run summaries and records; and, only after you confirm in Claude's prompt, start a routine, pause, continue or cancel a run, give a waiting run its inputs, hand Toone a description to draft a routine (you publish it in Toone), or start Toone's setup for an Explore routine (you finish it in Toone). A routine you start does whatever you built it to do, which can include sending or publishing as you.
 
 ## Tools

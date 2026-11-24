@@ -15,7 +15,7 @@ import { ConnectorService } from './application/connector-service.js';
 import { ExploreService } from './application/explore-service.js';
 import { PairingService } from './application/pairing-service.js';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 const DEFAULT_PORT = 9876;
 /** Toone's public Explore catalog, the one the app and the website read. */
 const EXPLORE_API = 'https://api.trytoone.com/v1';
@@ -35,6 +35,10 @@ function bridgePort(): number {
 
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
+  if (argv[0] === '--version' || argv[0] === '-v' || argv[0] === 'version') {
+    console.log(VERSION);
+    return;
+  }
   const folder = join(homedir(), '.toone', 'connector');
   const credentials = new CredentialStore(join(folder, 'credential.json'));
   // The tool server asks Toone to pair on first use; the command line has `pair` for that.

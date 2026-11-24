@@ -100,8 +100,8 @@ export async function serveMcp(connector: Connector, options: McpOptions, explor
     'toone_answer',
     {
       title: 'Answer a waiting routine',
-      description: 'Gives a waiting run its inputs after the person confirms. executionId is from toone_waiting.',
-      inputSchema: { workspace, executionId: z.string(), inputs: z.record(z.string(), z.string()) },
+      description: 'Gives a waiting run its inputs after the person confirms.',
+      inputSchema: { workspace, executionId: z.string().describe('From the waiting item.'), inputs: z.record(z.string(), z.string()) },
       annotations: ACT,
     },
     (a) => reply(async () => ({ result: await connector.answer(a, confirm) })),

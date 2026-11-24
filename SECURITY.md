@@ -1,6 +1,8 @@
 # Security
 
-Report a vulnerability privately with GitHub's "Report a vulnerability" button on this repository's Security tab. Please do not open a public issue.
+## Reporting a vulnerability
+
+Report it privately: use the "Report a vulnerability" button on [this repository's Security tab](https://github.com/mattwebhub/toone-connector/security/advisories/new), or write to hello@trytoone.com with "Security" in the subject. Please do not open a public issue. Say which version you used (`toone-connector --version`, and Toone's own version) and how to reproduce it. Fixes go into the latest release; older versions are not patched.
 
 ## What this connector can reach
 
@@ -16,8 +18,8 @@ To search Explore it also reads Toone's public catalog over HTTPS (`api.trytoone
 
 - **Confirmation before every action.** Starting, pausing, continuing, cancelling, answering, making a routine and installing each ask the person through the MCP client's own prompt. A "no", an unticked box or a client that cannot ask means nothing is sent to Toone (`pnpm e2e`, every release).
 - **Actions against live runs.** With a "yes", each action was confirmed end to end against live runs of a harmless test routine on one Mac: start, answer a waiting input, pause, continue, cancel, and read the final states back (`pnpm e2e:live`). The confirmation names the routine for start, pause, continue, cancel and answer.
-- **Making a routine and starting setup** are tested against a stand-in for the app (started, already started, plan limit, read-only refusal, bundle and older-app fallbacks), not against a running Toone.
-- **Not tested:** routines with sub-routines, steps held after a failure, automatic (script) steps, several workspaces at once, and MCP clients other than the test client and Claude Code. Treat those as unverified.
+- **Pairing, making a routine and starting setup** are tested against a stand-in for the app (started, already started, plan limit, read-only refusal, bundle and older-app fallbacks) and were tried by hand against a development build of Toone. They need a Toone newer than 1.0.82, which is not released yet.
+- **Not tested:** an approved pairing end to end against a released Toone, routines with sub-routines, steps held after a failure, automatic (script) steps, several workspaces at once, and MCP clients other than the test client and Claude Code. Treat those as unverified.
 
 ## Known limits
 

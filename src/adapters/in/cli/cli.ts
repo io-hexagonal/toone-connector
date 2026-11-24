@@ -27,6 +27,7 @@ export const USAGE = `toone-connector: see, start and decide on your Toone routi
   toone-connector pair [--read-only]                 pair with Toone (you allow it in the app)
   toone-connector unpair                             forget this connector's pairing on this Mac
   toone-connector mcp                                serve the tools to Claude (used by the plugin)
+  toone-connector --version                          this connector's version
 
 Options: --workspace NAME, --json, --yes (skip the question; only on a terminal you control)
 `;

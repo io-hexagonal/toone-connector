@@ -11135,6 +11135,7 @@ var USAGE = `toone-connector: see, start and decide on your Toone routines.
   toone-connector pair [--read-only]                 pair with Toone (you allow it in the app)
   toone-connector unpair                             forget this connector's pairing on this Mac
   toone-connector mcp                                serve the tools to Claude (used by the plugin)
+  toone-connector --version                          this connector's version
 
 Options: --workspace NAME, --json, --yes (skip the question; only on a terminal you control)
 `;
@@ -40815,8 +40816,8 @@ async function serveMcp(connector, options, explore) {
     "toone_answer",
     {
       title: "Answer a waiting routine",
-      description: "Gives a waiting run its inputs after the person confirms. executionId is from toone_waiting.",
-      inputSchema: { workspace: workspace2, executionId: external_exports.string(), inputs: external_exports.record(external_exports.string(), external_exports.string()) },
+      description: "Gives a waiting run its inputs after the person confirms.",
+      inputSchema: { workspace: workspace2, executionId: external_exports.string().describe("From the waiting item."), inputs: external_exports.record(external_exports.string(), external_exports.string()) },
       annotations: ACT
     },
     (a) => reply(async () => ({ result: await connector.answer(a, confirm) }))
@@ -41345,6 +41346,10 @@ import { randomUUID as randomUUID3 } from "crypto";
 // src/adapters/out/bridge/flows.ts
 var str = (v) => typeof v === "string" ? v : "";
 var UNKNOWN_OPERATION = /* @__PURE__ */ new Set(["UNKNOWN_AGENT_OPERATION", "UNKNOWN_DESKTOP_OPERATION", "UNKNOWN_OPERATION"]);
+var PAIRED_NOT_ALLOWED = "PAIRED_SCOPE_UNSUPPORTED";
+function notOffered(code) {
+  return code !== void 0 && (UNKNOWN_OPERATION.has(code) || code === PAIRED_NOT_ALLOWED);
+}
 function toFlowStart(payload) {
   return {
     status: payload.status === "reused" ? "reused" : "started",
@@ -41363,7 +41368,7 @@ function toSetupStart(payload) {
 function flowRefusal(error62, flow) {
   if (!(error62 instanceof ConnectorError) || !error62.appCode) return error62;
   const code = error62.appCode;
-  if (UNKNOWN_OPERATION.has(code) || code === "SETUP_NOT_AVAILABLE_FOR_BUNDLES") {
+  if (notOffered(code) || code === "SETUP_NOT_AVAILABLE_FOR_BUNDLES") {
     const what = flow === "draft" ? "take a routine description from the connector" : "start setup from the connector";
     const instead = flow === "draft" ? " Update Toone, or describe the routine to Toone's assistant in the app." : "";
     return new ConnectorError("NOT_SUPPORTED_BY_APP", `This Toone version cannot ${what} yet.${instead}`, code);
@@ -41753,9 +41758,11 @@ var AppLinks = class {
       await this.offer(ref, workspace3);
       return "offered";
     }
-    const about = await this.bridge.call("agent", { op: "desktop_diagnostics", desktop: {} });
-    const appPath = appBundlePath(about?.executablePath);
-    if (!appPath) throw new ConnectorError("APP_ERROR", "Toone did not say where it runs from, so the connector cannot open the page in it. Open Explore in Toone instead.");
+    const appPath = await this.runningAppPath();
+    if (!appPath) {
+      await this.offer(ref, workspace3);
+      return "offered";
+    }
     try {
       await this.openWith(appPath, link);
     } catch {
@@ -41763,14 +41770,24 @@ var AppLinks = class {
     }
     return "opened";
   }
+  /** Where the running Toone is on disk, or null when Toone refuses to say or does not say. */
+  async runningAppPath() {
+    try {
+      const about = await this.bridge.call("agent", { op: "desktop_diagnostics", desktop: {} });
+      return appBundlePath(about?.executablePath);
+    } catch (error62) {
+      if (error62 instanceof ConnectorError && error62.code === "APP_ERROR") return null;
+      throw error62;
+    }
+  }
   async offer(ref, workspace3) {
     const params = { op: "desktop_navigate", desktop: { workspaceId: workspace3.id, target: "explore", listingKind: ref.kind, listingId: ref.id } };
     try {
       await this.bridge.call("agent", params, await this.identityFor(workspace3));
     } catch (error62) {
       const code = error62 instanceof ConnectorError ? error62.appCode : void 0;
-      if (code === "INVALID_NAVIGATION_TARGET" || code && UNKNOWN_OPERATION.has(code)) {
-        throw new ConnectorError("NOT_SUPPORTED_BY_APP", "This Toone version cannot show an Explore page to a paired connector.", code);
+      if (code === "INVALID_NAVIGATION_TARGET" || notOffered(code)) {
+        throw new ConnectorError("NOT_SUPPORTED_BY_APP", "This Toone version cannot show an Explore page for the connector.", code);
       }
       throw error62;
     }
@@ -42200,7 +42217,7 @@ var PairingService = class {
 };
 
 // src/main.ts
-var VERSION = "0.1.0";
+var VERSION = "0.2.0";
 var DEFAULT_PORT = 9876;
 var EXPLORE_API = "https://api.trytoone.com/v1";
 function bridgePort() {
@@ -42215,6 +42232,10 @@ function bridgePort() {
 }
 async function main() {
   const argv = process.argv.slice(2);
+  if (argv[0] === "--version" || argv[0] === "-v" || argv[0] === "version") {
+    console.log(VERSION);
+    return;
+  }
   const folder = join(homedir(), ".toone", "connector");
   const credentials = new CredentialStore(join(folder, "credential.json"));
   const bridge = new BridgeClient(bridgePort(), { credentials, autoPair: argv[0] === "mcp" });

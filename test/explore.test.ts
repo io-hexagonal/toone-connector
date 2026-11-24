@@ -105,13 +105,35 @@ describe('AppLinks', () => {
     await expect(new AppLinks(bridge, noIdentity, openWith).showExploreListing({ kind: 'bundle', id: 'wfb_mq35pytutf7lj72j' }, ws)).resolves.toBe('opened');
     expect(openWith).toHaveBeenCalledWith('/Apps/Toone.app', 'toone://explore/bundles/wfb_mq35pytutf7lj72j');
   });
-  it('refuses ids that are not Explore ids, and an app that does not say where it is', async () => {
+  it('refuses ids that are not Explore ids', () => {
     expect(() => exploreLink({ kind: 'routine', id: 'wfb_mq35pytutf7lj72j' })).toThrowError(ConnectorError);
     expect(appBundlePath('/usr/bin/node')).toBeNull();
-    const bridge = unpairedBridge(async () => ({}));
-    const openWith = vi.fn(async () => {});
-    await expect(new AppLinks(bridge, noIdentity, openWith).showExploreListing({ kind: 'routine', id: 'wfl_abcdefgh12' }, ws)).rejects.toThrowError(ConnectorError);
-    expect(openWith).not.toHaveBeenCalled();
+  });
+  it('has Toone offer the page when Toone does not say, or refuses to say, where it runs from', async () => {
+    const answers: Array<() => Promise<unknown>> = [
+      async () => ({}),
+      async () => { throw new ConnectorError('APP_ERROR', 'Toone: Connected apps cannot use agent desktop_diagnostics. (PAIRED_SCOPE_UNSUPPORTED)', 'PAIRED_SCOPE_UNSUPPORTED'); },
+    ];
+    for (const diagnostics of answers) {
+      const ops: string[] = [];
+      const bridge = unpairedBridge(async () => undefined);
+      (bridge.call as ReturnType<typeof vi.fn>).mockImplementation(async (_c: string, params: { op: string }) => {
+        ops.push(params.op);
+        return params.op === 'desktop_diagnostics' ? diagnostics() : { ok: true };
+      });
+      const openWith = vi.fn(async () => {});
+      await expect(new AppLinks(bridge, noIdentity, openWith).showExploreListing({ kind: 'routine', id: 'wfl_abcdefgh12' }, ws)).resolves.toBe('offered');
+      expect(ops).toEqual(['desktop_diagnostics', 'desktop_navigate']);
+      expect(openWith).not.toHaveBeenCalled();
+    }
+  });
+  it('says so plainly when Toone can neither say where it runs nor offer the page', async () => {
+    const bridge = unpairedBridge(async () => { throw new ConnectorError('APP_ERROR', 'Toone: no (PAIRED_SCOPE_UNSUPPORTED)', 'PAIRED_SCOPE_UNSUPPORTED'); });
+    await expect(new AppLinks(bridge, noIdentity, vi.fn(async () => {})).showExploreListing({ kind: 'bundle', id: 'wfb_mq35pytutf7lj72j' }, ws)).rejects.toMatchObject({ code: 'NOT_SUPPORTED_BY_APP' });
+  });
+  it('does not hide a lost connection behind an offer', async () => {
+    const bridge = unpairedBridge(async () => { throw new ConnectorError('APP_NOT_RUNNING', 'closed'); });
+    await expect(new AppLinks(bridge, noIdentity, vi.fn(async () => {})).showExploreListing({ kind: 'bundle', id: 'wfb_mq35pytutf7lj72j' }, ws)).rejects.toMatchObject({ code: 'APP_NOT_RUNNING' });
   });
 });
 
