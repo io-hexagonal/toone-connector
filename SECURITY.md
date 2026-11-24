@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-Report it privately: use the "Report a vulnerability" button on [this repository's Security tab](https://github.com/mattwebhub/toone-connector/security/advisories/new), or write to hello@trytoone.com with "Security" in the subject. Please do not open a public issue. Say which version you used (`toone-connector --version`, and Toone's own version) and how to reproduce it. Fixes go into the latest release; older versions are not patched.
+Report it privately: use the "Report a vulnerability" button on [this repository's Security tab](https://github.com/io-hexagonal/toone-connector/security/advisories/new), or write to hello@trytoone.com with "Security" in the subject. Please do not open a public issue. Say which version you used (`toone-connector --version`, and Toone's own version) and how to reproduce it. Fixes go into the latest release; older versions are not patched.
 
 ## What this connector can reach
 

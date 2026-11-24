@@ -13,7 +13,7 @@ See, start and decide on your [Toone](https://trytoone.com) routines from Claude
 In Claude Code:
 
 ```
-/plugin marketplace add mattwebhub/toone-connector
+/plugin marketplace add io-hexagonal/toone-connector
 /plugin install toone@toone
 ```
 
@@ -28,7 +28,7 @@ In Claude Code:
 
 ## What it contains
 
-- **Tool server** `server/toone-connector.mjs`, started with `node`. It is the bundled, unminified build of the TypeScript in `src/` of [the repository](https://github.com/mattwebhub/toone-connector); CI fails if the two differ.
+- **Tool server** `server/toone-connector.mjs`, started with `node`. It is the bundled, unminified build of the TypeScript in `src/` of [the repository](https://github.com/io-hexagonal/toone-connector); CI fails if the two differ.
 - **Skills** `toone-status` and `toone-run`.
 
 ## Everything it runs, sends and fetches
@@ -55,4 +55,4 @@ Act (always asks you): `toone_start`, `toone_control`, `toone_answer`, `toone_in
 - **"This connector is paired read only":** run `node <plugin>/server/toone-connector.mjs pair` in a terminal and choose "May start and control routines" in Toone.
 - **Wrong workspace:** say the workspace name, or start Claude in that project's folder.
 
-Support: [GitHub issues](https://github.com/mattwebhub/toone-connector/issues). Security reports: the repository's Security tab.
+Support: [GitHub issues](https://github.com/io-hexagonal/toone-connector/issues). Security reports: the repository's Security tab.

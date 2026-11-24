@@ -1,6 +1,6 @@
 {
   "name": "toone",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "See, start and decide on your Toone routines from Claude. Needs the Toone app (Direct edition) open on this Mac.",
   "license": "Apache-2.0",
   "keywords": [
@@ -12,10 +12,10 @@
     "name": "Toone",
     "url": "https://trytoone.com"
   },
-  "repository": "https://github.com/mattwebhub/toone-connector",
+  "repository": "https://github.com/io-hexagonal/toone-connector",
   "homepage": "https://trytoone.com",
-  "documentationUrl": "https://github.com/mattwebhub/toone-connector#readme",
-  "supportUrl": "https://github.com/mattwebhub/toone-connector/issues",
+  "documentationUrl": "https://github.com/io-hexagonal/toone-connector#readme",
+  "supportUrl": "https://github.com/io-hexagonal/toone-connector/issues",
   "privacyPolicyUrl": "https://trytoone.com/en/privacy",
   "termsOfServiceUrl": "https://trytoone.com/en/terms"
 }

@@ -2,6 +2,15 @@
 
 All notable changes to the Toone connector. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [semantic versioning](https://semver.org/).
 
+## [0.2.1] - 2026-11-24
+
+The repository moved to the Hexagonal organisation.
+
+### Changed
+
+- **New home.** The repository is now `io-hexagonal/toone-connector`. In Claude Code, add it with `/plugin marketplace add io-hexagonal/toone-connector`. The old address still redirects.
+- The package's links (repository, issues, security reports) and its MCP Registry name (`io.github.io-hexagonal/toone-connector`) point to the new home. Nothing changes in how the connector works.
+
 ## [0.2.0] - 2026-11-24
 
 The first version published to npm. It adds pairing, Toone Explore, failed-step decisions and making a routine. Pairing, making a routine and starting an Explore setup need a Toone app newer than 1.0.82; with 1.0.82 the connector still works as 0.1 did and says what the app cannot do yet.

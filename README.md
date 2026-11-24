@@ -25,7 +25,7 @@ Everything goes through the Toone app on the same Mac. Nothing works with the ap
 Inside Claude Code:
 
 ```
-/plugin marketplace add mattwebhub/toone-connector
+/plugin marketplace add io-hexagonal/toone-connector
 /plugin install toone@toone
 ```
 
@@ -34,7 +34,7 @@ Then ask: "what are my Toone routines doing?", "what's waiting for me?", "did we
 To try it from a checkout without installing:
 
 ```sh
-git clone https://github.com/mattwebhub/toone-connector && cd toone-connector
+git clone https://github.com/io-hexagonal/toone-connector && cd toone-connector
 claude --plugin-dir ./plugin
 ```
 

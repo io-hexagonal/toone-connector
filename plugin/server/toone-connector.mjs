@@ -42217,7 +42217,7 @@ var PairingService = class {
 };
 
 // src/main.ts
-var VERSION = "0.2.0";
+var VERSION = "0.2.1";
 var DEFAULT_PORT = 9876;
 var EXPLORE_API = "https://api.trytoone.com/v1";
 function bridgePort() {

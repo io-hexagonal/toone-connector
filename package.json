@@ -1,8 +1,8 @@
 {
   "name": "toone-connector",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "See, start and decide on your Toone routines from Claude: an MCP server and a command line for the Toone Mac app.",
-  "mcpName": "io.github.mattwebhub/toone-connector",
+  "mcpName": "io.github.io-hexagonal/toone-connector",
   "keywords": [
     "toone",
     "mcp",
@@ -51,12 +51,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mattwebhub/toone-connector.git"
+    "url": "git+https://github.com/io-hexagonal/toone-connector.git"
   },
   "homepage": "https://trytoone.com",
   "packageManager": "pnpm@12.14.0",
   "bugs": {
-    "url": "https://github.com/mattwebhub/toone-connector/issues"
+    "url": "https://github.com/io-hexagonal/toone-connector/issues"
   },
   "publishConfig": {
     "access": "public",

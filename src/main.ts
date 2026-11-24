@@ -15,7 +15,7 @@ import { ConnectorService } from './application/connector-service.js';
 import { ExploreService } from './application/explore-service.js';
 import { PairingService } from './application/pairing-service.js';
 
-const VERSION = '0.2.0';
+const VERSION = '0.2.1';
 const DEFAULT_PORT = 9876;
 /** Toone's public Explore catalog, the one the app and the website read. */
 const EXPLORE_API = 'https://api.trytoone.com/v1';

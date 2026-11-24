@@ -1,20 +1,20 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.mattwebhub/toone-connector",
+  "name": "io.github.io-hexagonal/toone-connector",
   "title": "Toone",
   "description": "See, start and decide on your Toone routines. Needs the Toone Mac app (Direct edition) open.",
   "websiteUrl": "https://trytoone.com",
   "repository": {
-    "url": "https://github.com/mattwebhub/toone-connector",
+    "url": "https://github.com/io-hexagonal/toone-connector",
     "source": "github"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "toone-connector",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "runtimeHint": "npx",
       "transport": { "type": "stdio" },
       "packageArguments": [

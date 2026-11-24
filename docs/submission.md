@@ -9,15 +9,15 @@ Sources:
 
 ## Order of work
 
-1. Release `v0.2.0` (see "Releasing" below): this publishes `toone-connector` to npm and creates the GitHub release and the tag the directory listing points at.
+1. Release `v0.2.1` (see "Releasing" below): this publishes `toone-connector` to npm and creates the GitHub release and the tag the directory listing points at.
 2. Publish `server.json` to the MCP Registry (it only stores metadata, so the npm package must exist first).
-3. Submit `plugin/` to the Claude plugin directory from the developer portal, at tag `v0.2.0`.
+3. Submit `plugin/` to the Claude plugin directory from the developer portal, at tag `v0.2.1`.
 
 ## Releasing
 
-The release workflow (`.github/workflows/release.yml`) runs only when a tag like `v0.2.0` is pushed. It checks that `package.json`, `plugin/.claude-plugin/plugin.json`, `server.json`, the CLI's version and `CHANGELOG.md` agree with the tag (`pnpm release:check`), runs the type check, tests and build, checks the bundled plugin server matches the sources, publishes to npm with provenance, and creates a GitHub release with that version's changelog section as notes.
+The release workflow (`.github/workflows/release.yml`) runs only when a tag like `v0.2.1` is pushed. It checks that `package.json`, `plugin/.claude-plugin/plugin.json`, `server.json`, the CLI's version and `CHANGELOG.md` agree with the tag (`pnpm release:check`), runs the type check, tests and build, checks the bundled plugin server matches the sources, publishes to npm with provenance, and creates a GitHub release with that version's changelog section as notes.
 
-State on 2026-11-24: versions are 0.2.0 everywhere, the changelog section is dated, `pnpm verify` and `pnpm release:check --tag v0.2.0` pass, and `main` holds the release commit. No tag exists and nothing is on npm.
+State on 2026-11-24: versions are 0.2.1 everywhere, the changelog section is dated, `pnpm verify` and `pnpm release:check --tag v0.2.1` pass, and `main` holds the release commit. No tag exists and nothing is on npm.
 
 **What the workflow needs:**
 
@@ -27,25 +27,25 @@ State on 2026-11-24: versions are 0.2.0 everywhere, the changelog section is dat
 **Release through the workflow** (from a clean checkout of `main`):
 
 ```sh
-gh secret set NPM_TOKEN -R mattwebhub/toone-connector      # paste the token; once
+gh secret set NPM_TOKEN -R io-hexagonal/toone-connector      # paste the token; once
 git checkout main && git pull --ff-only
-pnpm install --frozen-lockfile && pnpm verify && pnpm release:check --tag v0.2.0
-git tag v0.2.0
-git push origin v0.2.0
-gh run watch -R mattwebhub/toone-connector                  # the "release" run
-npm view toone-connector version                            # 0.2.0
+pnpm install --frozen-lockfile && pnpm verify && pnpm release:check --tag v0.2.1
+git tag v0.2.1
+git push origin v0.2.1
+gh run watch -R io-hexagonal/toone-connector                  # the "release" run
+npm view toone-connector version                            # 0.2.1
 ```
 
 **Or by hand, without the workflow** (no provenance, since that needs GitHub's runner):
 
 ```sh
-git clone https://github.com/mattwebhub/toone-connector && cd toone-connector
-pnpm install --frozen-lockfile && pnpm verify && pnpm release:check --tag v0.2.0 --notes /tmp/notes.md
+git clone https://github.com/io-hexagonal/toone-connector && cd toone-connector
+pnpm install --frozen-lockfile && pnpm verify && pnpm release:check --tag v0.2.1 --notes /tmp/notes.md
 git diff --exit-code -- plugin/server
 npm login
 npm publish --access public --provenance=false
-git tag v0.2.0 && git push origin v0.2.0
-gh release create v0.2.0 --title v0.2.0 --notes-file /tmp/notes.md --verify-tag
+git tag v0.2.1 && git push origin v0.2.1
+gh release create v0.2.1 --title v0.2.1 --notes-file /tmp/notes.md --verify-tag
 ```
 
 Use one of the two, not both. On the hand route the tag push still starts the workflow; its publish step then fails (no token, or "version already published"), which is harmless, and the release is the one created by hand.
@@ -54,11 +54,11 @@ Use one of the two, not both. On the hand route the tag push still starts the wo
 
 ## MCP Registry
 
-**Name:** `io.github.mattwebhub/toone-connector` (GitHub login namespace, so `mcp-publisher login github` must be done as `mattwebhub`).
+**Name:** `io.github.io-hexagonal/toone-connector` (GitHub login namespace, so `mcp-publisher login github` must be done by a public member of the `io-hexagonal` organisation).
 
 **server.json** (in the repository root):
 
-- `name`: `io.github.mattwebhub/toone-connector`
+- `name`: `io.github.io-hexagonal/toone-connector`
 - `title`: Toone
 - `description` (100 characters at most): "See, start and decide on your Toone routines. Needs the Toone Mac app (Direct edition) open."
 - `packages[0]`: npm `toone-connector`, `version` pinned, transport `stdio`, positional argument `mcp`.
@@ -66,36 +66,36 @@ Use one of the two, not both. On the hand route the tag push still starts the wo
 **Steps** (owner, after the npm release):
 
 ```sh
-npm view toone-connector@0.2.0 mcpName     # must print io.github.mattwebhub/toone-connector
+npm view toone-connector@0.2.1 mcpName     # must print io.github.io-hexagonal/toone-connector
 brew install mcp-publisher
-cd toone-connector                          # the checkout at v0.2.0; server.json is read from here
-mcp-publisher login github                  # as mattwebhub
+cd toone-connector                          # the checkout at v0.2.1; server.json is read from here
+mcp-publisher login github                  # as a public member of io-hexagonal
 mcp-publisher publish
-curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.mattwebhub/toone-connector"
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.io-hexagonal/toone-connector"
 ```
 
 The registry checks that the npm package's `mcpName` equals the `server.json` name, so this only works after npm has 0.2.0. Each later release needs `mcp-publisher publish` again with the new version.
 
 | Requirement | Status |
 |---|---|
-| Package published on the public npm registry | Not yet: needs the `v0.2.0` release |
+| Package published on the public npm registry | Not yet: needs the `v0.2.1` release |
 | `package.json` has `mcpName` equal to the `server.json` name | Met |
 | `server.json` validates against the 2025-12-11 schema | Met (checked with a JSON Schema validator) |
 | `description` at most 100 characters | Met (92) |
 | `version` is exact, not a range or `latest`, and matches npm | Met for 0.2.0; `release:check` keeps them in step |
 | Name in the `io.github.<login>/` namespace, published by that GitHub account | Met for the name; the login is the owner's step |
-| Name free on npm and in the registry | `toone-connector` was free on npm on 2026-11-24 (`npm view` answers 404); no `io.github.mattwebhub/*` entry in the registry on 2026-11-22 |
+| Name free on npm and in the registry | `toone-connector` was free on npm on 2026-11-24 (`npm view` answers 404); no `io.github.io-hexagonal/*` entry in the registry on 2026-11-22 |
 
 Optional later: publish to the registry from the release workflow with GitHub OIDC (`mcp-publisher login github-oidc`), which needs `id-token: write` (already granted to the job).
 
 ## Claude plugin directory
 
-**Where:** the developer portal at claude.ai/directory/manage → **Submit new** → **Plugin bundle**. Needs a paid Claude plan, a role that can submit, and the GitHub account connected on claude.ai with push access to `mattwebhub/toone-connector`.
+**Where:** the developer portal at claude.ai/directory/manage → **Submit new** → **Plugin bundle**. Needs a paid Claude plan, a role that can submit, and the GitHub account connected on claude.ai with push access to `io-hexagonal/toone-connector`.
 
 **Portal steps, in order:**
 
 1. Open claude.ai/directory/manage and choose **Submit new**, then **Plugin bundle**.
-2. Source: repository `mattwebhub/toone-connector`, plugin path `plugin`, tag `v0.2.0` (the tag must exist, so release first).
+2. Source: repository `io-hexagonal/toone-connector`, plugin path `plugin`, tag `v0.2.1` (the tag must exist, so release first).
 3. Add the icon before the first save (the first icon saved sticks).
 4. Let the portal validate; fix anything marked **Blocking**.
 5. Fill in the listing text, example prompts and data handling answers below.
@@ -112,7 +112,7 @@ Optional later: publish to the registry from the release workflow with GitHub OI
   Toone is a Mac app that runs repeatable, multi-step routines. This plugin lets Claude ask the Toone app on the same Mac what is running, what is waiting for you, what a run did, and who or what a routine already handled. After you confirm in Claude's own prompt, it can start a routine, pause, continue or cancel a run, give a waiting run its inputs, hand Toone a description to draft a new routine, or start Toone's setup for a shared routine from Toone Explore. It never does a routine's work itself, and nothing that changes anything happens without your confirmation. Toone asks you once to allow the plugin, and you choose whether it may only read or also start and control routines. It needs the Toone app (Direct edition, downloaded from trytoone.com) open on the Mac and Node.js 20 or newer. It does not work with the Mac App Store edition, or from Claude on the web or a phone.
 
 - Category: productivity / automation.
-- Links: documentation `https://github.com/mattwebhub/toone-connector#readme`, support `https://github.com/mattwebhub/toone-connector/issues`, privacy `https://trytoone.com/en/privacy`, terms `https://trytoone.com/en/terms`.
+- Links: documentation `https://github.com/io-hexagonal/toone-connector#readme`, support `https://github.com/io-hexagonal/toone-connector/issues`, privacy `https://trytoone.com/en/privacy`, terms `https://trytoone.com/en/terms`.
 
 **Example prompts** (the policy asks for at least three):
 
@@ -172,7 +172,7 @@ Optional later: publish to the registry from the release workflow with GitHub OI
 
 ### Owner steps
 
-- [ ] Add the `NPM_TOKEN` secret and release `v0.2.0` (above).
+- [ ] Add the `NPM_TOKEN` secret and release `v0.2.1` (above).
 - [ ] `mcp-publisher publish` for the MCP Registry.
 - [ ] Add `plugin/.claude-plugin/icon.png` (square PNG, 512 to 2048 px, under 2 MB), commit it before the tag so the tagged plugin has it.
 - [ ] Decide on `network.hosts`.
