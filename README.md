@@ -1,6 +1,8 @@
 # Toone connector
 
-See, start and decide on your [Toone](https://trytoone.com) routines from Claude.
+[![io-hexagonal/toone-connector MCP server](https://glama.ai/mcp/servers/io-hexagonal/toone-connector/badges/score.svg)](https://glama.ai/mcp/servers/io-hexagonal/toone-connector)
+
+See, start and decide on your [Toone](https://trytoone.com/en) routines from Claude.
 
 Claude is where you talk. Toone is where repeating jobs run. This connector lets Claude ask Toone what is running, what is waiting for you and what a run did, and lets you start or stop a routine after you confirm. It never does the routine's work itself.
 
@@ -14,7 +16,7 @@ It is three things in one small package:
 
 ## What you need
 
-- A Mac with the Toone app open, **Direct edition** (the download from [trytoone.com](https://trytoone.com)). The App Store edition does not accept outside connections, so the connector cannot reach it.
+- A Mac with the Toone app open, **Direct edition** (the download from [trytoone.com](https://trytoone.com/en)). The App Store edition does not accept outside connections, so the connector cannot reach it.
 - Node.js 20 or newer.
 - With a Toone that can pair, you allow the connector in Toone the first time (see [Pairing](#pairing)).
 
@@ -61,6 +63,8 @@ toone-connector make-routine "Every Monday, list this week's top launches"   # a
 toone-connector explore grants         # search Toone Explore
 toone-connector install LISTING_ID     # asks first; you finish in Toone
 ```
+
+`toone-connector explore grants` searches [Toone Explore](https://trytoone.com/en/explore), the public library of routines people have shared. That search finds, for example, [Find Funding](https://trytoone.com/en/explore/routines/find-funding-hn64ep4n) and the [Find and Apply to Grants](https://trytoone.com/en/explore/bundles/find-and-apply-to-grants-tf7lj72j) bundle.
 
 `toone-connector help` lists every command. From a checkout, `pnpm install && pnpm build`, then `node dist/main.js` in place of `toone-connector`.
 
